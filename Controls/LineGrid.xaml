@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="CarLeasingViewer.Controls.LineGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
+              xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
+              mc:Ignorable="d" 
+              d:DataContext="{d:DesignInstance Type=controls:LineGrid}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!-- Конвертеры для координат !!! Имена используется в коде !!! -->
+        <converters:LineRowConverter x:Key="RowConverter"   />
+        <converters:LineColumnConverter x:Key="ColumnConverter" FirstColumnOffset="{StaticResource LeftColumnWidth}" ColumnWidth="{StaticResource DayColumnWidth}" />
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:LineGrid}}"
+          d:DataContext="{d:DesignInstance Type=controls:LineGrid}">
+        
+        <!-- Строки -->
+        <ItemsControl x:Name="RowsItemControl" ItemsSource="{Binding Rows}" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Line StrokeThickness="{Binding Path=ParentControlRef.LineWidth}" 
+                          Stroke="{Binding Path=ParentControlRef.LineBrush}"  
+                          X1="0" 
+                          X2="{Binding Path=ParentControlRef.ActualWidth}"
+                          Y1="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource RowConverter}}" 
+                          Y2="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource RowConverter}}">
+                    </Line>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <!-- Колонки -->
+        <!-- Координаты линий расчитываются конвертером -->
+        <!-- Координаты линий-колонок не связаны со значениями в коллкеции, кроме как и количества - линий столько, сколько значений в переданной коллекии -->
+        <ItemsControl ItemsSource="{Binding Columns}" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Line 
+                        StrokeThickness="{Binding Path=ParentControlRef.LineWidth}" 
+                        Stroke="{Binding Path=ParentControlRef.LineBrush}"  
+                        X1="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ColumnConverter}}"
+                        X2="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource ColumnConverter}}"
+                        Y1="0"
+                        Y2="{Binding Path=ParentControlRef.LastRowY}">
+                    </Line>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+</UserControl>

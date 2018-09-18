@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="CarLeasingViewer.Controls.WeekDaysPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:CarLeasingViewer"
+             xmlns:models="clr-namespace:CarLeasingViewer.Models"
+             xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="DaysTitlePanel"
+             d:DataContext="{d:DesignInstance Type=models:Month}"
+             >
+    <UserControl.Resources>
+        <sys:Double x:Key="ColumnFontSize">14</sys:Double>
+
+        <DataTemplate x:Key="ColumnTemplate">
+            <Border BorderThickness="1" BorderBrush="Black">
+                <TextBlock FontSize="{StaticResource ColumnFontSize}"
+                       Text="{Binding}"
+                       TextAlignment="Center"
+                       Padding="3"
+                       Width="{Binding ElementName=DaysTitlePanel, Path=ColumnWidth}">
+                </TextBlock>
+            </Border>
+        </DataTemplate>
+
+        <!-- Стиль Дней -->
+        <Style x:Key="DayItemStyle" TargetType="TextBlock" >
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Background" Value="{Binding Background}"/>
+            <!--<Setter Property="VerticalAlignment" Value="Center"/>-->
+            <Setter Property="Width" Value="{StaticResource DayColumnWidth}"/>
+            <Setter Property="Padding" Value="0 6 0 0"/>
+            <EventSetter Event="MouseDown" Handler="Day_MouseDown"/>
+            <EventSetter Event="MouseEnter" Handler="Day_MouseEnter"/>
+            <!--<EventSetter Event="MouseLeave" Handler="Day_MouseLeave"/>-->
+            <EventSetter Event="MouseUp" Handler="Day_MouseUp"/>
+        </Style>
+
+        <!-- Стиль контейнера Дней -->
+        <Style x:Key="ItemsControlStyle" TargetType="ItemsControl" BasedOn="{StaticResource HorizontalItemsControl}">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <!--<Setter Property="VerticalAlignment" Value="Center"/>-->
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="DayItemBorderStyle" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1 0 0 0" />
+            <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+        </Style>
+
+        <DataTemplate x:Key="DayIndexItemTemplate">
+            <Border Style="{StaticResource DayItemBorderStyle}">
+                <TextBlock Style="{StaticResource DayItemStyle}" Background="{Binding Background}" Text="{Binding Index}" ToolTip="{Binding RelativeSource={RelativeSource Self},Path=ActualWidth}" />
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DayNameItemTemplate">
+            <Border Style="{StaticResource DayItemBorderStyle}">
+                <TextBlock Style="{StaticResource DayItemStyle}" Background="{Binding Background}" Text="{Binding ShortName}" />
+            </Border>
+        </DataTemplate>
+
+    </UserControl.Resources>
+    
+    <Grid Grid.Row="0" MinHeight="60" >
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <!--<ColumnDefinition Width="Auto"/>-->
+            <ColumnDefinition MinWidth="0"/>
+        </Grid.ColumnDefinitions>
+        <Rectangle Grid.ColumnSpan="1" Grid.RowSpan="2" Fill="{StaticResource LightBorderBrush}"/>
+        
+        <!-- данные месяца -->
+        <Grid VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <!--<RowDefinition/>-->
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource LeftColumnTextBlock}" HorizontalAlignment="Right" TextAlignment="Right"/>
+            <TextBlock Grid.Column="1" Text="{Binding Year}" Style="{StaticResource LeftColumnTextBlock}" HorizontalAlignment="Left" TextAlignment="Left"/>
+        </Grid>
+
+        <Rectangle Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Fill="{StaticResource LightBorderBrush}"/>
+        
+        <!-- Дни -->
+        <Border Grid.Column="0" Grid.Row="1" BorderThickness="1 1 0 1" BorderBrush="{StaticResource LightBorderBrush}" Width="Auto" x:Name="DaysBorder">
+            <Grid HorizontalAlignment="Left" DataContext="{Binding Days}" Width="auto" >
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="30"/>
+                    <RowDefinition MinHeight="30"/>
+                </Grid.RowDefinitions>
+                <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource LightBorderBrush}">
+                    <!--Сокращённые называния дней-->
+                    <ItemsControl Style="{StaticResource ItemsControlStyle}" ItemTemplate="{StaticResource DayNameItemTemplate}" ItemsSource="{Binding}" />
+                </Border>
+                <!-- Номера дней в месяце -->
+                <ItemsControl Grid.Row="1" Style="{StaticResource ItemsControlStyle}" ItemTemplate="{StaticResource DayIndexItemTemplate}" ItemsSource="{Binding}"/>
+            </Grid>
+        </Border>
+        <!--<Rectangle Grid.Row="1" Fill="{StaticResource LightBorderBrush}" Grid.ColumnSpan="2"/>-->
+        <!--<TextBox Grid.Row="1" Margin="3" Padding="1" MinWidth="194" 
+                         d:DataContext="{d:DesignInstance Type=controls:WeekDaysPanel}"
+                         DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:WeekDaysPanel}}"
+                         Text="{Binding TitleSearch, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+        <TextBox Grid.Row="1" Grid.Column="1" Padding="1" Margin="3 3 0 3" 
+                 DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:WeekDaysPanel}}"
+                         Text="{Binding ContextSearch, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>-->
+    </Grid>
+</UserControl>

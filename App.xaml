@@ -1,0 +1,62 @@
+﻿<Application x:Class="CarLeasingViewer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CarLeasingViewer"
+             xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
+             StartupUri="MainWindow.xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ResourceDictionaries/Colors.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/StandartImages.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="HorizontalItemsControl" TargetType="ItemsControl">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="CenteredTextBlock" TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+            </Style>
+            
+            <!-- Converters -->
+            <converters:VisibilityConverter x:Key="CommonVisibilityConverter"/>
+            <converters:VisibilityConverter x:Key="InverterdVisibilityConverter" OnFalse="Visible" OnTrue="Collapsed"/>
+            <converters:NullableConverter x:Key="NullableBoolConverter"/>
+            <converters:BoolInverterConverter x:Key="BoolInverter"/>
+
+            <!-- Цвет заливки бордеров -->
+            <Color x:Key="LightBorderColor">#FFD3D3D3</Color>
+            <!-- Заливка у бордеров -->
+            <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource LightBorderColor}" />
+            <!-- Вертикальный отступ у элементов списка -->
+            <sys:Double x:Key="ListItemVerticalPadding">3</sys:Double>
+            <!-- Ширина левой колонки с именами машин-->
+            <sys:Double x:Key="LeftColumnWidth">230</sys:Double>
+            <!-- Ширина колонок с днями -->
+            <sys:Double x:Key="DayColumnWidth">21</sys:Double>
+
+            <Style x:Key="StandartBorder" TargetType="Border">
+                <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <Style x:Key="LeftColumnTextBlock" TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="Padding" Value="3"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="MinWidth" Value="{StaticResource LeftColumnWidth}"/>
+                <Setter Property="MaxWidth" Value="{StaticResource LeftColumnWidth}"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
