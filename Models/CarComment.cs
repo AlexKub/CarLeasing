@@ -16,9 +16,10 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string Comment { get { return pv_Comment; } set { if (pv_Comment != value) { pv_Comment = value; OnPropertyChanged(); } } }
 
-        public void SetIndex(int index)
-        {
-            pv_RowIndex = index;
-        }
+        #region IIndexable
+
+        int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
+
+        #endregion
     }
 }

@@ -52,6 +52,8 @@
 
         <converters:BussinessDateConverter x:Key="DateConverter"/>
         <converters:StringValueVisibilityConverter x:Key="StringVisibilityConverter"/>
+        <converters:MonthLeasingsConverter x:Key="MonthLeasingsConverter"/>
+        <converters:MonthesDaysCountConverter x:Key="MonthesDaysCountConverter"/>
 
         <Style x:Key="TitleBox" TargetType="TextBlock" BasedOn="{StaticResource CenteredTextBlock}">
             <Setter Property="Padding" Value="3"/>
@@ -124,39 +126,57 @@
                 </Border>
 
                 <!-- график занятости -->
-                <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" ScrollChanged="LeasingScroll_ScrollChanged">
-                    <ItemsControl ItemsSource="{Binding MonthLeasings}" >
-                        <ItemsControl.ItemContainerStyle>
-                            <Style>
-                                <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <controls:DynamicDefinitionsGrid Orientation="Horizontal" LinesCount="{Binding MonthLeasings.Count}"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <!-- Сетка занятости за текущий месяц -->
-                                <ItemsControl ItemsSource="{Binding Leasings}">
-                                    <ItemsControl.ItemContainerStyle>
-                                        <Style>
-                                            <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
-                                        </Style>
-                                    </ItemsControl.ItemContainerStyle>
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <controls:DynamicDefinitionsGrid Month="{Binding MonthHeader.Month}" Orientation="Vertical" LinesCount="{Binding RowsCount}"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <!-- Плашка занятости одного авто -->
-                                            <controls:BusinessTextBlock Business="{Binding Leasing}"
+                <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CanContentScroll="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" ScrollChanged="LeasingScroll_ScrollChanged">
+                    <Grid>
+                        <!-- Новая сетка -->
+                        <DockPanel>
+                            <controls:LeasingChart RowHeight="16" 
+                                                   Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
+                                                   Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
+                                               LineBrush="{StaticResource LightBorderBrush}" 
+                                               DayCount="{Binding MonthLeasings, Converter={StaticResource MonthesDaysCountConverter}}"
+                                               Leasings="{Binding MonthLeasings, Converter={StaticResource MonthLeasingsConverter}}"
+                                               DayColumnWidth="{StaticResource DayColumnWidth}"
+                                               
+                                                   BarBorderBrush="{StaticResource LightBorderBrush}"
+                                                   BarBrush="{StaticResource BusinessBlockBrush}"
+                                                   Font="C:\WINDOWS\Fonts\TIMES.TTF"
+                                                   FontSize="20"/>
+                        </DockPanel>
+
+                        <!-- Старая сетка -->
+                        <!--<ItemsControl ItemsSource="{Binding MonthLeasings}" Background="Transparent">
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <controls:DynamicDefinitionsGrid Orientation="Horizontal" LinesCount="{Binding MonthLeasings.Count}"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    --><!-- Сетка занятости за текущий месяц --><!--
+                                    <ItemsControl ItemsSource="{Binding Leasings}">
+                                        <ItemsControl.ItemContainerStyle>
+                                            <Style>
+                                                <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
+                                            </Style>
+                                        </ItemsControl.ItemContainerStyle>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <controls:DynamicDefinitionsGrid Background="Transparent" Month="{Binding MonthHeader.Month}" Orientation="Vertical" LinesCount="{Binding RowsCount}"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                --><!-- Плашка занятости одного авто --><!--
+                                                <controls:BusinessTextBlock Business="{Binding Leasing}"
                                                                         Grid.Row="{Binding RowIndex}" 
                                                                         ColumnWidth="{StaticResource DayColumnWidth}" />
-                                            <!--<TextBlock Text="{Binding Leasing.Title}" Grid.Row="{Binding RowIndex}">
+                                                --><!--<TextBlock Text="{Binding Leasing.Title}" Grid.Row="{Binding RowIndex}">
                                                 <TextBlock.ToolTip>
                                                     <ContentControl Width="Auto" Height="Auto" d:DataContext="{d:DesignInstance Type=models:Business}">
                                                         <Grid DataContext="{Binding Leasing}">
@@ -179,13 +199,14 @@
                                                         </RadialGradientBrush.GradientStops>
                                                     </RadialGradientBrush>
                                                 </TextBlock.Background>
-                                            </TextBlock>-->
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                            </TextBlock>--><!--
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>-->
+                    </Grid>
                 </ScrollViewer>
 
                 <!-- комментарии -->

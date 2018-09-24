@@ -24,10 +24,11 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public IReadOnlyList<LeasingBarModel> Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; SetCurrentIndex(value); OnPropertyChanged(); } } }
 
-        public void SetIndex(int index)
-        {
-            pv_RowIndex = index;
-        }
+        #region IIndexable
+
+        int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
+
+        #endregion
 
         void SetCurrentIndex(IEnumerable<LeasingBarModel> leasings)
         {
@@ -35,7 +36,7 @@ namespace CarLeasingViewer.Models
                 return;
 
             foreach (var item in leasings)
-                item.SetIndex(pv_RowIndex);
+                ((IIndexable)item).Index = pv_RowIndex;
         }
     }
 }

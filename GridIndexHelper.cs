@@ -18,8 +18,11 @@ namespace CarLeasingViewer
             int index = 0;
             foreach (var item in indexableCollection)
             {
-                item?.SetIndex(index);
-                index++;
+                if (item != null)
+                {
+                    item.Index = index;
+                    index++;
+                }
             }
         }
     }

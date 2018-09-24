@@ -52,11 +52,11 @@
         /// </summary>
         public string CarName { get { return pv_CarName; } set { if (pv_CarName != value) { pv_CarName = value; OnPropertyChanged(); } } }
 
+        #region IIndexable
 
-        public void SetIndex(int index)
-        {
-            pv_RowIndex = index;
-        }
+        int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
+
+        #endregion
 
         void CalculateParams()
         {

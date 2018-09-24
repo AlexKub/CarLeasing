@@ -5,6 +5,6 @@
     /// </summary>
     public interface IIndexable
     {
-        void SetIndex(int index);
+        int Index { get; set; }
     }
 }

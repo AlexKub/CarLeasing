@@ -33,14 +33,21 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string Text { get { return pv_Text; } set { if (pv_Text != value) { pv_Text = value; OnPropertyChanged(); } } }
 
+        private int _MonthOffset;
+        /// <summary>
+        /// Возвращает или задаёт Смещение текущего месяца
+        /// </summary>
+        public int MonthOffset { get { return _MonthOffset; } set { _MonthOffset = value; OnPropertyChanged(); } }
+
         /// <summary>
         /// Индекс строки
         /// </summary>
         public int RowIndex { get; set; }
 
-        public void SetIndex(int index)
-        {
-            RowIndex = index;
-        }
+        #region IIndexable
+
+        int IIndexable.Index { get => RowIndex; set => RowIndex = value; }
+
+        #endregion
     }
 }

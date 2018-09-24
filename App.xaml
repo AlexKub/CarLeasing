@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CarLeasingViewer"
              xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" 
              StartupUri="MainWindow.xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
@@ -36,7 +37,7 @@
             <!-- Цвет заливки бордеров -->
             <Color x:Key="LightBorderColor">#FFD3D3D3</Color>
             <!-- Заливка у бордеров -->
-            <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource LightBorderColor}" />
+            <SolidColorBrush x:Key="LightBorderBrush" PresentationOptions:Freeze="True" Color="{StaticResource LightBorderColor}" />
             <!-- Вертикальный отступ у элементов списка -->
             <sys:Double x:Key="ListItemVerticalPadding">3</sys:Double>
             <!-- Ширина левой колонки с именами машин-->

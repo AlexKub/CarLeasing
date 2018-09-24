@@ -47,9 +47,10 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int RowsCount { get { return pv_RowsCount; } private set { if (pv_RowsCount != value) { pv_RowsCount = value; OnPropertyChanged(); } } }
 
-        public void SetIndex(int index)
-        {
-            ColumnIndex = index;
-        }
+        #region IIndexable
+
+        int IIndexable.Index { get => ColumnIndex; set => ColumnIndex = value; }
+
+        #endregion
     }
 }

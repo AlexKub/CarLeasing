@@ -68,6 +68,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CanvasBarManager.cs" />
+    <Compile Include="CanvasGridManager.cs" />
+    <Compile Include="CanvasManager.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
@@ -79,6 +82,9 @@
     </Compile>
     <Compile Include="Controls\DynamicDefinitionsGrid.xaml.cs">
       <DependentUpon>DynamicDefinitionsGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LeasingChart.xaml.cs">
+      <DependentUpon>LeasingChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LineGrid.xaml.cs">
       <DependentUpon>LineGrid.xaml</DependentUpon>
@@ -105,6 +111,8 @@
     <Compile Include="Converters\LineColumnConverter.cs" />
     <Compile Include="Converters\LineRowConverter.cs" />
     <Compile Include="Converters\MainTabItemSelector.cs" />
+    <Compile Include="Converters\MonthesDaysCountConverter.cs" />
+    <Compile Include="Converters\MonthLeasingsConverter.cs" />
     <Compile Include="Converters\NullableConverter.cs" />
     <Compile Include="Converters\StringValueVisibilityConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
@@ -185,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\DynamicDefinitionsGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LeasingChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

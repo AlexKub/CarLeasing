@@ -17,10 +17,10 @@ namespace CarLeasingViewer
             if (viewModel == null)
                 throw new NullReferenceException("Передана пустая модель окна для заполнения");
 
-
+            var startMonth = Randomizer.GetRandomMonth(2017);
             var buisnesses = App.SearchSettings.TestData 
                 ? new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() }
-                : DB_Manager.Default.;
+                : new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonth(startMonth), DB_Manager.Default.GetBusinessByMonth(startMonth.Next()), DB_Manager.Default.GetBusinessByMonth(startMonth.Next().Next()) };
             viewModel.Cars = buisnesses
                 .SelectMany(mb => mb.CarBusiness)
             .Select(cb => cb.Name)
