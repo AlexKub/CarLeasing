@@ -3,6 +3,7 @@
     /// <summary>
     /// Модель для плашки занятости авто
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class LeasingBarModel : ViewModels.ViewModelBase, IIndexable
     {
         private MonthHeaderModel pv_Month;
@@ -142,6 +143,12 @@
             #endregion
 
             Width = (pv_DayColumnWidth * dayCount) + dayCount; //прибавляем количество дней, т.к. ширина границ - 1
+        }
+
+        string DebugDisplay()
+        {
+            return (Month == null || Month.Month == null ? "NO MONTH" : (Month.Month.Name + " " + Month.Month.Year.ToString()))
+                + " | " + CarName == null ? "NO CAR" : CarName;
         }
     }
 }

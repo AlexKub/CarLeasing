@@ -95,7 +95,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" TextWrapping="Wrap" FontFamily="Times New Roman"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -140,8 +140,8 @@
                                                
                                                    BarBorderBrush="{StaticResource LightBorderBrush}"
                                                    BarBrush="{StaticResource BusinessBlockBrush}"
-                                                   Font="C:\WINDOWS\Fonts\TIMES.TTF"
-                                                   FontSize="20"/>
+                                                   FontFamily="Times New Roman"
+                                                   FontSize="10"/>
                         </DockPanel>
 
                         <!-- Старая сетка -->

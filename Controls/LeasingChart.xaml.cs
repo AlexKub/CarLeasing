@@ -50,12 +50,15 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                if (_this.m_gridM == null)
-                    return;
-
-                //var val = (double)e.NewValue;
-                //if ((double)e.NewValue < 0) throw new ArgumentOutOfRangeException("Ширина колонки дня не может быть меньше 0");
-                _this.m_gridM.ColumnWidth = ((double)e.NewValue + 1);
+                var newVal = ((double)e.NewValue + 1); //+ 1: захардкожена ширина границы у колонки
+                if (_this.m_gridM != null)
+                {
+                    _this.m_gridM.ColumnWidth = newVal;
+                }
+                if (_this.m_barM != null)
+                {
+                    _this.m_barM.DayColumnWidth = newVal;
+                }
             }
         });
         /// <summary>
@@ -73,10 +76,11 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                if (_this.m_gridM == null)
-                    return;
-
-                _this.m_gridM.LineBrush = e.NewValue as Brush;
+                var newVal = e.NewValue as Brush;
+                if (_this.m_gridM != null)
+                {
+                    _this.m_gridM.LineBrush = newVal;
+                }
             }
         });
         /// <summary>
@@ -123,7 +127,7 @@ namespace CarLeasingViewer.Controls
         });
         public Brush BarBorderBrush { get { return (Brush)GetValue(dp_BarBorderBrush); } set { SetValue(dp_BarBorderBrush, value); } }
 
-        public static DependencyProperty dp_Font = DependencyProperty.Register(nameof(Font), typeof(FontFamily), typeof(LeasingChart), new FrameworkPropertyMetadata()
+        public static DependencyProperty dp_Font = DependencyProperty.Register(nameof(FontFamily), typeof(FontFamily), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
             DefaultValue = default(FontFamily),
             PropertyChangedCallback = (s, e) =>
@@ -136,10 +140,10 @@ namespace CarLeasingViewer.Controls
                 if (_this.m_barM == null)
                     return;
 
-                _this.m_barM.Font = e.NewValue as FontFamily;
+                _this.m_barM.FontFamily = e.NewValue as FontFamily;
             }
         });
-        public FontFamily Font { get { return (FontFamily)GetValue(dp_Font); } set { SetValue(dp_Font, value); } }
+        public FontFamily FontFamily { get { return (FontFamily)GetValue(dp_Font); } set { SetValue(dp_Font, value); } }
 
         public static DependencyProperty dp_FontSize = DependencyProperty.Register(nameof(FontSize), typeof(double), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
@@ -221,6 +225,16 @@ namespace CarLeasingViewer.Controls
             m_barM = new CanvasBarManager(this);
 
             base.Unloaded += LeasingChart_Unloaded;
+        }
+
+
+        protected override void OnRender(DrawingContext dc)
+        {
+            //отрисовываем текст для полосок на Canvas
+            if (m_barM != null)
+                m_barM.DrawText(dc);
+
+            base.OnRender(dc);
         }
 
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)
