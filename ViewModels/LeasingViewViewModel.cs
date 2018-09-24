@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using CarLeasingViewer.Models;
+﻿using CarLeasingViewer.Models;
+using System.Collections.Generic;
 
 namespace CarLeasingViewer.ViewModels
 {
@@ -15,7 +15,36 @@ namespace CarLeasingViewer.ViewModels
         /// <summary>
         /// Возвращает или задаёт Наборы занятости по месяцам
         /// </summary>
-        public IReadOnlyList<MonthLeasing> MonthLeasings { get { return pv_MonthLeasings; } set { if (pv_MonthLeasings != value) { pv_MonthLeasings = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
+        public IReadOnlyList<MonthLeasing> MonthLeasings
+        {
+            get { return pv_MonthLeasings; }
+            set
+            {
+                if (pv_MonthLeasings != value)
+                {
+                    pv_MonthLeasings = value;
+
+                    if (value != null)
+                    {
+                        MonthLeasing curentML = null;
+                        for (int i = 0; i < value.Count; i++)
+                        {
+                            curentML = value[i];
+                            if (curentML.MonthHeader != null)
+                            {
+                                curentML.MonthHeader.Previous = (i - 1) >= 0 ? value[i - 1].MonthHeader : null;
+                                curentML.MonthHeader.Next = (i + 1) < value.Count ? value[i + 1].MonthHeader : null;
+                            }
+                        }
+
+                        //простановка индекса колонок для Grid'а
+                        GridIndexHelper.SetIndexes(value);
+                    }
+
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private IReadOnlyList<CarComment> pv_Comments;
         /// <summary>

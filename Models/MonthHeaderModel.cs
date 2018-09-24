@@ -16,6 +16,18 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int ColumnIndex { get { return pv_ColumnIndex; } set { if (pv_ColumnIndex != value) { pv_ColumnIndex = value; OnPropertyChanged(); } } }
 
+        private MonthHeaderModel pv_Next;
+        /// <summary>
+        /// Доступ к модели следующего месяца
+        /// </summary>
+        public MonthHeaderModel Next { get { return pv_Next; } set { if (pv_Next != value) { pv_Next = value; OnPropertyChanged(); } } }
+
+        private MonthHeaderModel pv_Previous;
+        /// <summary>
+        /// Доступ к модели предыдущего месяца
+        /// </summary>
+        public MonthHeaderModel Previous { get { return pv_Previous; } set { if (pv_Previous != value) { pv_Previous = value; OnPropertyChanged(); } } }
+
         #region IIndexable
 
         int IIndexable.Index { get => pv_ColumnIndex; set => pv_ColumnIndex = value; }

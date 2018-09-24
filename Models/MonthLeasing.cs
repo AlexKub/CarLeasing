@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CarLeasingViewer.Models
 {
@@ -15,7 +14,26 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Возвращает или задаёт модель для шапки Месяца
         /// </summary>
-        public MonthHeaderModel MonthHeader { get { return pv_MonthHeader; } set { if (pv_MonthHeader != value) { pv_MonthHeader = value; OnPropertyChanged(); } } }
+        public MonthHeaderModel MonthHeader
+        {
+            get { return pv_MonthHeader; }
+            set
+            {
+                if (pv_MonthHeader != value)
+                {
+                    pv_MonthHeader = value;
+
+                    if(pv_Leasings != null)
+                    {
+                        foreach (var leasing in pv_Leasings)
+                        {
+                            leasing.Month = value;
+                        }
+                    }
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private IReadOnlyList<LeasingBarModel> pv_Leasings;
         /// <summary>
@@ -32,7 +50,21 @@ namespace CarLeasingViewer.Models
                     //GridIndexHelper.SetIndexes(value);
 
                     //проставляем количество строк, на которые будут биндится модели
-                    var rowCount = value == null ? 0 : value.Select(i => i.RowIndex).Distinct().Count();
+                    var rowCount = 0;
+
+                    if (value != null)
+                    {
+                        var distinctRowIndexes = new List<int>(100);
+                        foreach (var leasing in value)
+                        {
+                            if (!distinctRowIndexes.Contains(leasing.RowIndex))
+                                distinctRowIndexes.Add(leasing.RowIndex);
+
+                            leasing.Month = MonthHeader;
+                        }
+
+                        rowCount = distinctRowIndexes.Count;
+                    }
 
                     RowsCount = rowCount;
 

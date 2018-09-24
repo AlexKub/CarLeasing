@@ -222,7 +222,7 @@ namespace CarLeasingViewer
                 new MonthLeasing()
                 {
                     ColumnIndex = index,
-                    MonthHeader = new MonthHeaderModel() { Month = bus.Month, ColumnIndex = index },
+                    MonthHeader = new MonthHeaderModel() { Month = bus.Month },
                     Leasings = leasingBarModels[index++],
                 }));
 

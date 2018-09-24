@@ -1,12 +1,9 @@
-﻿using System;
+﻿using CarLeasingViewer.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using CarLeasingViewer.Models;
 
 namespace CarLeasingViewer
 {
@@ -38,6 +35,11 @@ namespace CarLeasingViewer
         public double RowHeight { get; set; }
 
         /// <summary>
+        /// Ширина колонки дня
+        /// </summary>
+        public double DayColumnWidth { get; set; }
+
+        /// <summary>
         /// Индекс первого месяца, с которого начинаем отсчёт
         /// </summary>
         public int FirstMonthIndex { get; set; }
@@ -56,39 +58,41 @@ namespace CarLeasingViewer
 
                 var lineNumber = barModel.RowIndex + 1;
                 bd.VerticalOffset = lineNumber * RowHeight;
-                bd.HorizontalOffset = barModel.DayOffset;
+                bd.HorizontalOffset = barModel.DayOffset + GetMonthOffset(barModel);
+                bd.BarModel = barModel;
             }
 
-            var b = DrawBorder(barModel);
+            var b = DrawBorder(bd);
             bd.Border = b;
-            bd.Glyphs = DrawText(barModel);
+            bd.Glyphs = DrawText(bd);
             b.Child = bd.Glyphs;
         }
 
-        Border DrawBorder(LeasingBarModel barModel)
+        Border DrawBorder(BarData bd)
         {
             var b = new Border();
             b.BorderBrush = BorderBrush;
             b.SnapsToDevicePixels = true;
             b.Background = BackgroundBrush;
             b.Height = RowHeight;
-            b.Width = barModel.Width;
+            b.Width = bd.BarModel.Width;
             Panel.SetZIndex(b, Z_Indexes.BarIndex);
 
-            var lineNumber = barModel.RowIndex + 1;
+            var lineNumber = bd.BarModel.RowIndex + 1;
 
             Canvas.Children.Add(b);
 
-            Canvas.SetTop(b, barModel.RowIndex * RowHeight);
-            Canvas.SetLeft(b, barModel.DayOffset);
+            Canvas.SetTop(b, bd.BarModel.RowIndex * RowHeight);
+            Canvas.SetLeft(b, bd.HorizontalOffset);
 
             return b;
         }
 
-        Glyphs DrawText(LeasingBarModel barModel)
+        Glyphs DrawText(BarData bd)
         {
             var g = new Glyphs();
 
+            var barModel = bd.BarModel;
             g.UnicodeString = barModel.Leasing?.Title ?? "NO TITLE";
             g.Height = RowHeight;
             g.Width = (barModel.Leasing.DateEnd - barModel.Leasing.DateStart).Days * barModel.DayColumnWidth;
@@ -118,6 +122,47 @@ namespace CarLeasingViewer
         }
 
         /// <summary>
+        /// Смещение по количеству дней в предидущих месяцах
+        /// </summary>
+        /// <param name="barModel">Данные текущей полоски месяца</param>
+        /// <returns>Возвращает готовой смещение по месяцу или 0</returns>
+        double GetMonthOffset(LeasingBarModel barModel)
+        {
+            /*
+             * расчёт месячного смещения
+             * 
+             * Пример (о чём речь):
+             * если сейчас (в переданной модели) месяц март,
+             * а в шапке перед этим месяцем вставены ещё сколько-то месяцев
+             * то необходимо к текущему смещению добавить ещё количество дней в этих месмяцах
+             * 
+             * количество дней в предидущих месяцах и возвращает этот метод
+             */
+            if (barModel == null)
+                return 0;
+
+            var offset = 0d;
+
+            if (barModel.Month != null)
+            {
+                if (barModel.Month.Previous != null)
+                {
+                    var prev = barModel.Month.Previous;
+
+                    while (prev != null)
+                    {
+                        if (prev.Month != null)
+                            offset += (prev.Month.DayCount * DayColumnWidth);
+
+                        prev = prev.Previous;
+                    }
+                }
+            }
+
+            return offset;
+        }
+
+        /// <summary>
         /// Динамические данные для отрисовки строки
         /// </summary>
         class BarData
@@ -128,11 +173,11 @@ namespace CarLeasingViewer
             /// </summary>
             public int Index { get; set; }
             /// <summary>
-            /// Актуальная высота одного из контролов на строек
+            /// Отступ сверху для текущего элемента
             /// </summary>
             public double VerticalOffset { get; set; }
             /// <summary>
-            /// Актуальная высота одного из контролов на строек
+            /// Отступ сдева для текущего элемента
             /// </summary>
             public double HorizontalOffset { get; set; }
 
@@ -144,6 +189,8 @@ namespace CarLeasingViewer
             /// Отрисованный текст
             /// </summary>
             public Glyphs Glyphs { get; set; }
+
+            public LeasingBarModel BarModel { get; set; }
 
             /// <summary>
             /// Флаг отрисовки линии
@@ -166,6 +213,7 @@ namespace CarLeasingViewer
                     m_manager.Canvas.Children.Remove(Border);
                     Border = null;
                     Glyphs = null;
+                    BarModel = null;
                 }
             }
         }

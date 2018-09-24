@@ -5,6 +5,12 @@
     /// </summary>
     public class LeasingBarModel : ViewModels.ViewModelBase, IIndexable
     {
+        private MonthHeaderModel pv_Month;
+        /// <summary>
+        /// Возвращает или задаёт Модель месяцА, с которым связана текущая Аренда
+        /// </summary>
+        public MonthHeaderModel Month { get { return pv_Month; } set { if (pv_Month != value) { pv_Month = value; OnPropertyChanged(); } } }
+
         private Business pv_Leasing;
         /// <summary>
         /// Возвращает или задаёт информацию о Занятости
