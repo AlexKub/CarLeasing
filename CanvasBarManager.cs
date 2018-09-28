@@ -1,9 +1,11 @@
 ﻿using CarLeasingViewer.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Newtonsoft.Json.Linq;
 
 namespace CarLeasingViewer
 {
@@ -44,6 +46,8 @@ namespace CarLeasingViewer
                 if (value != m_FontFamily)
                 {
                     m_FontFamily = value;
+                    if (m_drawingFont != null)
+                        SetDrawingFont();
                     m_glyphType = GetGlyphTypeface();
                 }
             }
@@ -114,21 +118,35 @@ namespace CarLeasingViewer
             return b;
         }
 
+        int drawIndex = 0;
         public void DrawText(DrawingContext dc)
         {
-            //проверяем инициализацию для интерфйса шрифта
-            //инициализирован при заполнении шрифта (this.FontFamily)
-            if (m_glyphType == null)
-                m_glyphType = GetGlyphTypeface();
+            drawIndex++;
 
-            foreach (var item in m_bars.Values)
+            if (drawIndex == 4)
             {
-                if (!item.TextDrawed)
+                dc.DrawRectangle(Brushes.Black, new Pen(Brushes.Black, 1), new Rect(20, 20, 100, 100));
+
+                //File.WriteAllText("Json_" + drawIndex.ToString() + ".txt", JObject.FromObject(dc).ToString());
+
+                //drawIndex++;
+
+                //проверяем инициализацию для интерфйса шрифта
+                //инициализирован при заполнении шрифта (this.FontFamily)
+                if (m_glyphType == null)
+                    m_glyphType = GetGlyphTypeface();
+
+                foreach (var item in m_bars.Values)
                 {
-                    DrawText(item, dc);
-                    item.TextDrawed = true;
+                    if (!item.TextDrawed)
+                    {
+                        DrawText(item, dc);
+                        item.TextDrawed = true;
+                    }
                 }
             }
+            //using (var sr = File.AppendText("SomeFile.txt"))
+            //    sr.Write(drawIndex.ToString());
         }
 
         /// <summary>
@@ -183,6 +201,7 @@ namespace CarLeasingViewer
             var y = bd.VerticalOffset //отступ по вертикали (строки)
                 + (bd.Border.Height > FontSize ? ((bd.Border.Height - FontSize) / 2) : 0); //центровка текста по вертикали
 
+            
             //точные координаты начала текста на Canvas
             Point origin = new Point(x, y);
 
@@ -191,8 +210,7 @@ namespace CarLeasingViewer
             //    glyphIndexes, origin, advanceWidths, null, null, null, null,
             //    null, null);
 
-            
-            
+
             dc.DrawText(ft, origin);
         }
 
@@ -213,7 +231,7 @@ namespace CarLeasingViewer
             m_bars.Clear();
             m_bars = null;
 
-            if(m_drawingFont != null)
+            if (m_drawingFont != null)
             {
                 m_drawingFont.Dispose();
                 m_drawingFont = null;
@@ -272,8 +290,8 @@ namespace CarLeasingViewer
                                 FontStyles.Normal,
                                 FontWeights.Normal,
                                 FontStretches.Normal);
-            
-            
+
+
             GlyphTypeface glyphTypeface;
             if (!m_Typeface.TryGetGlyphTypeface(out glyphTypeface))
                 throw new InvalidOperationException("No glyphtypeface found");
@@ -287,7 +305,7 @@ namespace CarLeasingViewer
         void SetDrawingFont()
         {
             //при простановке 0 пробросит исключение
-            if (m_FontSize > 0d)
+            if (m_FontSize > 0d && FontFamily != null)
             {
                 if (m_drawingFont != null)
                     m_drawingFont.Dispose();
