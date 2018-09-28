@@ -4,8 +4,13 @@
     /// Модель для плашки занятости авто
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public class LeasingBarModel : ViewModels.ViewModelBase, IIndexable
+    public partial class LeasingElementModel : ViewModels.ViewModelBase, IIndexable
     {
+        /// <summary>
+        /// Уникальный ID элемента в контексте Canvas'а
+        /// </summary>
+        public int ElementID { get; internal set; }
+
         private MonthHeaderModel pv_Month;
         /// <summary>
         /// Возвращает или задаёт Модель месяцА, с которым связана текущая Аренда

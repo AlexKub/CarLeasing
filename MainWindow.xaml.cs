@@ -188,42 +188,42 @@ namespace CarLeasingViewer
             var tabItem = (curentVM.TabItemsModels.First() as OneMonthItem);
 
             var vm = new LeasingViewViewModel();
-            var buisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() };
-            vm.Cars = buisnesses
+            var monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() };
+            vm.Cars = monthBuisnesses
                 .SelectMany(mb => mb.CarBusiness)
             .Select(cb => cb.Name)
             .Distinct()
-            .Select(name => new CarHeaderModel() { Text = name }).ToList();
+            .Select(name => new CarModel() { Text = name }).ToList();
 
             vm.Comments = vm.Cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
             //tabItem.MonthLeasing.CarBusiness.Select(b => new CarHeaderModel() { Text = b.Name }).ToList();
 
-            var leasingBarModels = new List<LeasingBarModel>[buisnesses.Length];
+            var leasingBarModels = new List<LeasingElementModel>[monthBuisnesses.Length];
 
             var index = 0;
             //foreach (var item in tabItem.MonthLeasing.CarBusiness)
-            foreach (var business in buisnesses)
+            foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
                 {
 
                     var car = vm.Cars.FirstOrDefault(c => c.Text.Equals(item.Name));
                     if (leasingBarModels[index] == null)
-                        leasingBarModels[index] = new List<LeasingBarModel>();
+                        leasingBarModels[index] = new List<LeasingElementModel>();
 
-                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingBarModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex, DayColumnWidth = 21d }));
+                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex, DayColumnWidth = 21d }));
                 }
                 index++;
             }
 
             index = 0;
             vm.MonthLeasings = new List<MonthLeasing>(
-                buisnesses.Select(bus =>
+                monthBuisnesses.Select(bus =>
                 new MonthLeasing()
                 {
                     ColumnIndex = index,
                     MonthHeader = new MonthHeaderModel() { Month = bus.Month },
-                    Leasings = leasingBarModels[index++],
+                    Leasings = leasingBarModels[index++]
                 }));
 
             new Views.MainWindow2(vm).ShowDialog();

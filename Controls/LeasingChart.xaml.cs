@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static CarLeasingViewer.LeasingChart;
 
 namespace CarLeasingViewer.Controls
 {
@@ -12,9 +13,9 @@ namespace CarLeasingViewer.Controls
     /// </summary>
     public partial class LeasingChart : Canvas
     {
-        CanvasGridManager m_gridM;
-        CanvasBarManager m_barM;
-
+        CanvasGridDrawManager m_gridM;
+        CanvasBarDrawManager m_barM;
+        CanvasTextDrawManager m_textM;
 
         public static DependencyProperty dp_DayCount = DependencyProperty.Register(nameof(DayCount), typeof(int), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
@@ -137,10 +138,10 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                if (_this.m_barM == null)
-                    return;
-
-                _this.m_barM.FontFamily = e.NewValue as FontFamily;
+                if (_this.m_textM != null)
+                {
+                    _this.m_textM.FontFamily = e.NewValue as FontFamily;
+                }
             }
         });
         public FontFamily FontFamily { get { return (FontFamily)GetValue(dp_Font); } set { SetValue(dp_Font, value); } }
@@ -155,10 +156,10 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                if (_this.m_barM == null)
-                    return;
-
-                _this.m_barM.FontSize = (double)e.NewValue;
+                if (_this.m_textM != null)
+                {
+                    _this.m_textM.FontSize = (double)e.NewValue;
+                }
             }
         });
         public double FontSize { get { return (double)GetValue(dp_FontSize); } set { SetValue(dp_FontSize, value); } }
@@ -183,13 +184,13 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public double RowHeight { get { return (double)GetValue(dp_RowHeight); } set { SetValue(dp_RowHeight, value); } }
 
-        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingBarModel>), typeof(LeasingChart), new FrameworkPropertyMetadata()
+        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
-            DefaultValue = default(IEnumerable<Models.LeasingBarModel>),
+            DefaultValue = default(IEnumerable<Models.LeasingElementModel>),
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as LeasingChart;
-                var val = e.NewValue as IEnumerable<Models.LeasingBarModel>;
+                var val = e.NewValue as IEnumerable<Models.LeasingElementModel>;
 
                 if (val != null)
                 {
@@ -215,14 +216,15 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<Models.LeasingBarModel> Leasings { get { return (IEnumerable<Models.LeasingBarModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<Models.LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
         public LeasingChart()
         {
             InitializeComponent();
 
-            m_gridM = new CanvasGridManager(this);
-            m_barM = new CanvasBarManager(this);
+            m_gridM = new CanvasGridDrawManager(this);
+            m_barM = new CanvasBarDrawManager(this);
+            m_textM = new CanvasTextDrawManager(this);
 
             base.Unloaded += LeasingChart_Unloaded;
         }
@@ -231,8 +233,9 @@ namespace CarLeasingViewer.Controls
         protected override void OnRender(DrawingContext dc)
         {
             //отрисовываем текст для полосок на Canvas
-            if (m_barM != null)
-                m_barM.DrawText(dc);
+            //if (m_barM != null)
+            //    m_barM.DrawText(dc);
+
 
             base.OnRender(dc);
         }
@@ -251,6 +254,12 @@ namespace CarLeasingViewer.Controls
             {
                 m_barM.Dispose();
                 m_barM = null;
+            }
+
+            if(m_textM != null)
+            {
+                m_textM.Dispose();
+                m_textM = null;
             }
         }
     }

@@ -1,10 +1,13 @@
 ﻿namespace CarLeasingViewer
 {
     /// <summary>
-    /// Индексируемое
+    /// Индексируемые
     /// </summary>
     public interface IIndexable
     {
+        /// <summary>
+        /// Индекс
+        /// </summary>
         int Index { get; set; }
     }
 }

@@ -5,11 +5,11 @@ namespace CarLeasingViewer.ViewModels
 {
     public class LeasingViewViewModel : ViewModelBase
     {
-        private IReadOnlyList<CarHeaderModel> pv_Cars;
+        private IReadOnlyList<CarModel> pv_Cars;
         /// <summary>
         /// Возвращает или задаёт набор машин
         /// </summary>
-        public IReadOnlyList<CarHeaderModel> Cars { get { return pv_Cars; } set { if (pv_Cars != value) { pv_Cars = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
+        public IReadOnlyList<CarModel> Cars { get { return pv_Cars; } set { if (pv_Cars != value) { pv_Cars = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
         private IReadOnlyList<MonthLeasing> pv_MonthLeasings;
         /// <summary>

@@ -14,7 +14,7 @@ namespace CarLeasingViewer.Converters
             var monthLeasings = value as IReadOnlyList<MonthLeasing>;
 
             if (monthLeasings == null)
-                return Enumerable.Empty<LeasingBarModel>();
+                return Enumerable.Empty<LeasingElementModel>();
 
             return monthLeasings.SelectMany(ml => ml.Leasings);
         }

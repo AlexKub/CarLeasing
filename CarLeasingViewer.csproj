@@ -71,9 +71,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CanvasBarManager.cs" />
-    <Compile Include="CanvasGridManager.cs" />
-    <Compile Include="CanvasManager.cs" />
+    <Compile Include="Models\LeasingElementID_Manager.cs" />
+    <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
+    <Compile Include="Controls\LeasingChartManagers\CanvasGridDrawManager.cs" />
+    <Compile Include="Controls\LeasingChartManagers\CanvasDrawManager.cs" />
+    <Compile Include="Controls\LeasingChartManagers\CanvasTextDrawManager.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
@@ -129,9 +131,9 @@
     <Compile Include="IGridLengthManager.cs" />
     <Compile Include="IIndexable.cs" />
     <Compile Include="Models\CarComment.cs" />
-    <Compile Include="Models\CarHeaderModel.cs" />
-    <Compile Include="Models\CarLeasingModel.cs" />
-    <Compile Include="Models\LeasingBarModel.cs" />
+    <Compile Include="Models\CarModel.cs" />
+    <Compile Include="Models\LeasingElementsCollectionModel.cs" />
+    <Compile Include="Models\LeasingElementModel.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
     <Compile Include="TabContentExtension.cs" />

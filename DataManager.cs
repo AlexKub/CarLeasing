@@ -25,12 +25,12 @@ namespace CarLeasingViewer
                 .SelectMany(mb => mb.CarBusiness)
             .Select(cb => cb.Name)
             .Distinct()
-            .Select(name => new CarHeaderModel() { Text = name }).ToList();
+            .Select(name => new CarModel() { Text = name }).ToList();
 
             viewModel.Comments = viewModel.Cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
             //tabItem.MonthLeasing.CarBusiness.Select(b => new CarHeaderModel() { Text = b.Name }).ToList();
 
-            var leasingBarModels = new List<LeasingBarModel>[buisnesses.Length];
+            var leasingBarModels = new List<LeasingElementModel>[buisnesses.Length];
 
             var index = 0;
             //foreach (var item in tabItem.MonthLeasing.CarBusiness)
@@ -41,9 +41,9 @@ namespace CarLeasingViewer
 
                     var car = viewModel.Cars.FirstOrDefault(c => c.Text.Equals(item.Name));
                     if (leasingBarModels[index] == null)
-                        leasingBarModels[index] = new List<LeasingBarModel>();
+                        leasingBarModels[index] = new List<LeasingElementModel>();
 
-                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingBarModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex }));
+                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex }));
                 }
                 index++;
             }

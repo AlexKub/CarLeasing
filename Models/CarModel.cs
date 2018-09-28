@@ -3,9 +3,9 @@
 namespace CarLeasingViewer.Models
 {
     /// <summary>
-    /// Модель для заголовка с машиной в списке
+    /// Модель данных для Единицы занятости авто (полоски с текстом) на Canvas
     /// </summary>
-    public class CarHeaderModel : ViewModels.ViewModelBase, IIndexable
+    public class CarModel : ViewModels.ViewModelBase, IIndexable
     {
         private Car pv_Car;
         /// <summary>
