@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
@@ -24,11 +25,6 @@ namespace CarLeasingViewer.Models
 
         private IReadOnlyList<LeasingElementModel> pv_Leasing;
 
-        /// <summary>
-        /// Возвращает или задаёт Периоды аренды
-        /// </summary>
-        public IReadOnlyList<LeasingElementModel> Leasing { get => pv_Leasing; set { if (pv_Leasing != value) { pv_Leasing = value; SetCurrentIndex(value); OnPropertyChanged(); } } }
-
         void SetCurrentIndex(IEnumerable<LeasingElementModel> leasings)
         {
             if (leasings == null)
@@ -38,9 +34,19 @@ namespace CarLeasingViewer.Models
                 ((IIndexable)item).Index = pv_RowIndex;
         }
 
+        /// <summary>
+        /// Добавить элемент
+        /// </summary>
+        /// <param name="model">Новая модель</param>
         public void Add(LeasingElementModel model)
         {
+            m_models.Add(model);
 
+            if (CollectionChanged != null)
+            {
+                var e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, model);
+                CollectionChanged(this, e);
+            }
         }
 
         string DebugDisplay() => "Count: " + Count.ToString();
@@ -59,9 +65,9 @@ namespace CarLeasingViewer.Models
 
         #region IReadOnlyList<LeasingElementModel>
 
-        public int Count => Leasing == null ? 0 : Leasing.Count;
+        public int Count => m_models == null ? 0 : m_models.Count;
 
-        public LeasingElementModel this[int index] => Leasing == null ? null : Leasing[index];
+        public LeasingElementModel this[int index] => m_models == null ? null : m_models[index];
 
         public IEnumerator<LeasingElementModel> GetEnumerator()
         {
