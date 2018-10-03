@@ -9,7 +9,7 @@
         /// <summary>
         /// Уникальный ID элемента в контексте Canvas'а
         /// </summary>
-        public int ElementID { get; internal set; }
+        public string ElementID { get; internal set; }
 
         private MonthHeaderModel pv_Month;
         /// <summary>

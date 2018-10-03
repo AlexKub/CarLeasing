@@ -72,10 +72,6 @@ namespace CarLeasingViewer
                 return b;
             }
 
-
-
-
-
             public CanvasBarDrawManager(Canvas canvas) : base(canvas)
             {
 

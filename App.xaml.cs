@@ -10,6 +10,9 @@ namespace CarLeasingViewer
     /// </summary>
     public partial class App : Application
     {
+        static LogSet m_loger = LogManager.GetDefaultLogSet<App>();
+        public static LogSet Loger { get { return m_loger; } }
+
         public static IDictionary<int, IEnumerable<Month>> AvailableMonthes { get; private set; } = new Dictionary<int, IEnumerable<Month>>();
 
         public static IEnumerable<Month> AvailableMonthesAll

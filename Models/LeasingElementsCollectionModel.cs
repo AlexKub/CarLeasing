@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using CarLeasingViewer.Log;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -15,22 +15,45 @@ namespace CarLeasingViewer.Models
             модель для строки с арендами
         */
 
+        /// <summary>
+        /// Начало ID'шника элемента (с подчёркиванием)
+        /// </summary>
+        string m_prefixID;
+
+        /// <summary>
+        /// Отсортированный список занятости по дате начала
+        /// </summary>
         readonly List<LeasingElementModel> m_models = new List<LeasingElementModel>();
 
         private int pv_RowIndex;
         /// <summary>
         /// Возвращает или задаёт Индекс строки в сетке
         /// </summary>
-        public int RowIndex { get => pv_RowIndex; set { if (pv_RowIndex != value) { pv_RowIndex = value; OnPropertyChanged(); } } }
+        public int RowIndex
+        {
+            get => pv_RowIndex; set
+            {
+                if (pv_RowIndex != value)
+                {
+                    pv_RowIndex = value;
+
+                    m_prefixID = value.ToString() + "_"; //кешируем первую часть, чтобы постоянно не делать впоследствии
+
+                    SetCurrentRowIndex();
+
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private IReadOnlyList<LeasingElementModel> pv_Leasing;
 
-        void SetCurrentIndex(IEnumerable<LeasingElementModel> leasings)
+        /// <summary>
+        /// Проставление индекса строки
+        /// </summary>
+        void SetCurrentRowIndex()
         {
-            if (leasings == null)
-                return;
-
-            foreach (var item in leasings)
+            foreach (var item in m_models)
                 ((IIndexable)item).Index = pv_RowIndex;
         }
 
@@ -40,7 +63,40 @@ namespace CarLeasingViewer.Models
         /// <param name="model">Новая модель</param>
         public void Add(LeasingElementModel model)
         {
-            m_models.Add(model);
+            if (model == null)
+            {
+                App.Loger.Log("Передана пустая ссылка на модель в 'LeasingElementsCollectionModel'", MessageType.Error);
+                return;
+            }
+
+            if (model.Leasing == null)
+            {
+                App.Loger.Log("Передана модель Аренды без данных Аренды. Модель пропущена", MessageType.Error
+                    , new SourceParameter(this));
+                return;
+            }
+
+            bool added = false;
+            //сортируем для простановки индекса
+            int i = 0;
+            for (i = 0; i < m_models.Count; i++)
+            {
+                if (m_models[i].Leasing.DateStart > model.Leasing.DateStart)
+                {
+                    m_models.Insert(i, model);
+                    added = true;
+                    model.ElementID = m_prefixID + i.ToString();
+                    break;
+                }
+            }
+
+            //если у остальных дата начала раньше или коллекция пуста
+            if (!added)
+            {
+                i = m_models.Count;
+                m_models.Add(model);
+                model.ElementID = m_prefixID + i.ToString();
+            }
 
             if (CollectionChanged != null)
             {
