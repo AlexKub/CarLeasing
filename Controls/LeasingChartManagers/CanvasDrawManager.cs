@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows.Controls;
 
-namespace CarLeasingViewer
+namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
-    partial class LeasingChart
-    {
         /// <summary>
         /// Общая логика при управлении Canvas
         /// </summary>
@@ -23,7 +21,7 @@ namespace CarLeasingViewer
             /// <summary>
             /// Canvas для отрисовки
             /// </summary>
-            protected Canvas Canvas { get; private set; }
+            protected LeasingChart Canvas { get; private set; }
 
             /// <summary>
             /// Текущая длина Canvas
@@ -35,7 +33,7 @@ namespace CarLeasingViewer
             /// </summary>
             protected double CanvasHeight => Canvas.ActualHeight;
 
-            public CanvasDrawManager(Canvas canvas)
+            public CanvasDrawManager(LeasingChart canvas)
             {
                 if (canvas == null)
                     throw new ArgumentNullException("Менеджеру сетки не передан Canvas");
@@ -98,6 +96,6 @@ namespace CarLeasingViewer
 
             }
 
-        }
+        
     }
 }

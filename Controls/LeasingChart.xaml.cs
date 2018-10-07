@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static CarLeasingViewer.LeasingChart;
+using CarLeasingViewer.Models;
+using CarLeasingViewer.Controls.LeasingChartManagers;
+using System.Windows.Shapes;
 
 namespace CarLeasingViewer.Controls
 {
@@ -16,6 +18,10 @@ namespace CarLeasingViewer.Controls
         CanvasGridDrawManager m_gridM;
         CanvasBarDrawManager m_barM;
         CanvasTextDrawManager m_textM;
+
+        public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
+
+        public CanvasTextDrawManager TextDrawer { get { return m_textM; } }
 
         public static DependencyProperty dp_DayCount = DependencyProperty.Register(nameof(DayCount), typeof(int), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
@@ -31,9 +37,7 @@ namespace CarLeasingViewer.Controls
                 if (_this.m_gridM == null)
                     return;
 
-                //var val = (double)e.NewValue;
-                //if ((int)e.NewValue < 0) throw new ArgumentOutOfRangeException("Количество дней не может быть меньше 0");
-                _this.m_gridM.DrawColumns((int)e.NewValue);
+                //_this.m_gridM.DrawColumns((int)e.NewValue);
             }
         });
         /// <summary>
@@ -171,7 +175,7 @@ namespace CarLeasingViewer.Controls
             {
                 var _this = s as LeasingChart;
 
-                var newValue = (double)e.NewValue;
+                var newValue = (double)e.NewValue + 1d;
                 if (_this.m_gridM != null)
                     _this.m_gridM.RowHeight = newValue;
 
@@ -186,37 +190,40 @@ namespace CarLeasingViewer.Controls
 
         public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
-            DefaultValue = default(IEnumerable<Models.LeasingElementModel>),
+            DefaultValue = default(IEnumerable<LeasingElementModel>),
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as LeasingChart;
-                var val = e.NewValue as IEnumerable<Models.LeasingElementModel>;
+                var val = e.NewValue as IEnumerable<LeasingElementModel>;
 
                 if (val != null)
                 {
-                    if (_this.m_gridM != null)
-                    {
-                        var rowsI = val.Select(l => l.RowIndex).Distinct();
-                        foreach (var i in rowsI)
-                            _this.m_gridM.DrawRow(i);
-                    }
+                    //if (_this.m_gridM != null)
+                    //{
+                    //    var rowsI = val.Select(l => l.RowIndex).Distinct();
+                    //    foreach (var i in rowsI)
+                    //        _this.m_gridM.DrawRow(i);
+                    //}
 
-                    if(_this.m_barM != null)
-                    {
-                        foreach (var bm in val)
-                        {
-                            _this.m_barM.DrawBar(bm);
-                        }
-                    }
+                    //if (_this.m_barM != null)
+                    //{
+                    //    foreach (var bm in val)
+                    //    {
+                    //        _this.m_barM.DrawBar(bm);
+                    //    }
+                    //}
+                    //
+                    //if (_this.m_textM != null)
+                    //{
+                    //    _this.m_textM.Load(val);
+                    //}
                 }
-
             }
-
         });
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<Models.LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
         public LeasingChart()
         {
@@ -229,15 +236,47 @@ namespace CarLeasingViewer.Controls
             base.Unloaded += LeasingChart_Unloaded;
         }
 
-
+        int m_counter = 0;
         protected override void OnRender(DrawingContext dc)
         {
-            //отрисовываем текст для полосок на Canvas
-            //if (m_barM != null)
-            //    m_barM.DrawText(dc);
+            m_counter++;
+            base.OnRender(dc); //результаты от позиции OnRender у меня не зависили
 
 
-            base.OnRender(dc);
+            /*
+             * Для быстрой отрисовки текста был выбран способ через DrawingContext
+             * 
+             * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
+             * порядок отрисовки = ZIndex
+             */
+            if (m_counter == 4) //хз почему, но нормальная отрисовка только на 4 итерации
+            {
+                //отрисовка сетки
+                if (m_gridM != null)
+                {
+                    var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+                    foreach (var i in rowsI)
+                        m_gridM.DrawRow(i, dc); //строки
+
+                    //колонки
+                    m_gridM.DrawColumns(DayCount, dc);
+                }
+
+                if (m_barM != null)
+                {
+                    foreach (var bm in Leasings)
+                    {
+                        m_barM.DrawBar(bm, dc);
+                    }
+                }
+
+                //отрисовываем текст для полосок на Canvas
+                if (m_textM != null)
+                {
+                    m_textM.Load(Leasings);
+                    m_textM.DrawText(dc);
+                }
+            }
         }
 
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)
@@ -256,7 +295,7 @@ namespace CarLeasingViewer.Controls
                 m_barM = null;
             }
 
-            if(m_textM != null)
+            if (m_textM != null)
             {
                 m_textM.Dispose();
                 m_textM = null;

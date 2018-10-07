@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarLeasingViewer.Models
 {
     /// <summary>
-    /// Общий набор Аренд авто для View
+    /// Общий набор Аренд авто для LeasingChart
     /// </summary>
     public class LeasingSet : ViewModels.ViewModelBase
     {
@@ -33,6 +30,12 @@ namespace CarLeasingViewer.Models
                 }
             }
         }
+
+        private IReadOnlyList<MonthHeaderModel> m_Monthes;
+        /// <summary>
+        /// Возвращает или задаёт месяцы
+        /// </summary>
+        public IReadOnlyList<MonthHeaderModel> Monthes { get { return m_Monthes; } set { m_Monthes = value; OnPropertyChanged(); } }
 
         private IReadOnlyList<CarModel> m_CarModels;
         /// <summary>
@@ -65,7 +68,7 @@ namespace CarLeasingViewer.Models
                             if (!distinctRowIndexes.Contains(leasing.RowIndex))
                                 distinctRowIndexes.Add(leasing.RowIndex);
 
-                            leasing.Month = MonthHeader;
+                            //leasing.Month = MonthHeader;
                         }
 
                         rowCount = distinctRowIndexes.Count;
@@ -78,6 +81,33 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        private IReadOnlyList<CarComment> m_Comments;
+        /// <summary>
+        /// Возвращает или задаёт Комментарии к авто
+        /// </summary>
+        public IReadOnlyList<CarComment> Comments { get { return m_Comments; } set { m_Comments = value; OnPropertyChanged(); } }
+
+        void OnDataChanged()
+        {
+            CarModels = GetCarModels(m_data);
+            RowsCount = CarModels.Count;
+        }
+
+        #region Перевод из одной модели данных в текущую
+
+        /// <summary>
+        /// Перевод из старой модели данныъ в новую (костыль)
+        /// </summary>
+        /// <param name="businesses">Набор занятости авто из БД или тестовый</param>
+        public void ReMapBussinesses(IEnumerable<MonthBusiness> businesses)
+        {
+            CarModels = GetCarModels(businesses);
+            Comments = GetComments(CarModels);
+
+            //!!зависит от заполнения CarModels
+            Leasings = GetLeasingModels(businesses);
+        }
+
         IReadOnlyList<CarModel> GetCarModels(IEnumerable<MonthBusiness> data)
         {
             return data
@@ -87,10 +117,31 @@ namespace CarLeasingViewer.Models
             .Select(name => new CarModel() { Text = name }).ToList();
         }
 
-        void OnDataChanged()
+        IReadOnlyList<CarComment> GetComments(IReadOnlyList<CarModel> cars)
         {
-            CarModels = GetCarModels(m_data);
-            RowsCount = CarModels.Count;
+            return cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
         }
+
+        IReadOnlyList<LeasingElementModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
+        {
+            var leasingBarModels = new List<LeasingElementModel>();
+
+            var index = 0;
+
+            foreach (var business in monthBuisnesses)
+            {
+                foreach (var item in business.CarBusiness)
+                {
+                    var car = m_CarModels.FirstOrDefault(c => c.Text.Equals(item.Name));
+
+                    leasingBarModels.AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex, DayColumnWidth = 21d }));
+                }
+                index++;
+            }
+
+            return leasingBarModels;
+        }
+
+        #endregion
     }
 }

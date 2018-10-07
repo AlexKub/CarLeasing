@@ -52,5 +52,11 @@ namespace CarLeasingViewer.ViewModels
         /// </summary>
         public IReadOnlyList<CarComment> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
+        private LeasingSet m_LeasingSet;
+        /// <summary>
+        /// Возвращает или задаёт Набор занаятости Авто
+        /// </summary>
+        public LeasingSet LeasingSet { get { return m_LeasingSet; } set { m_LeasingSet = value; OnPropertyChanged(); } }
+
     }
 }

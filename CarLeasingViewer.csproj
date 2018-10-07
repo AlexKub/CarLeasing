@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\ColumnWidthConverter.cs" />
     <Compile Include="Log\SourceParameter.cs" />
     <Compile Include="Models\LeasingElementID_Manager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
