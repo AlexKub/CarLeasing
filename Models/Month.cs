@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarLeasingViewer.Models
 {
@@ -161,6 +158,72 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        /// <summary>
+        /// Получение набора месяцев между датами
+        /// </summary>
+        /// <param name="start">Дата начала</param>
+        /// <param name="end">Дата окончания</param>
+        /// <returns>Возвращает набор месяцев</returns>
+        public static Month[] GetMonthes(DateTime start, DateTime end)
+        {
+            var count = GetMonthesCount(start, end);
+
+            switch(count)
+            {
+                case 0:
+                    return new Month[]{ };
+                case 1:
+                    return new Month[] { new Month(start) };
+                default:
+                    var l = new List<Month>();
+                    var curent = new Month(start);
+                    l.Add(curent);
+                    for (int i = 1; i < count; i++)
+                    {
+                        curent = curent.Next();
+                        l.Add(curent);
+                    }
+
+                    return l.ToArray();
+            }
+
+        }
+
+        /// <summary>
+        /// Разница в месяцах между двумя датами
+        /// </summary>
+        /// <param name="start">Дата начала</param>
+        /// <param name="end">Дата конечная</param>
+        /// <returns>Возвращает количество месяцев между датами (включительно) (округление до большего)</returns>
+        public static int GetMonthesCount(DateTime start, DateTime end)
+        {
+            if(start.Year == end.Year)
+            {
+                if (start.Month == end.Month)
+                    return 1;
+
+                var res = Math.Abs(start.Month - end.Month);
+
+                return res;
+            }
+            else
+            {
+                var startTail = start.Month; //количество месяцев в первом году
+                var endTail = end.Month; //количество месяцев в последнем году
+
+                var years = (end.Year - start.Year - 2); //количество полных лет между датами
+                if (years < 0)
+                    years = 0;
+
+                return startTail + endTail + (years * 12);
+            }
+        }
+
+        /// <summary>
+        /// Получение русского имени месяца
+        /// </summary>
+        /// <param name="month">Месяц</param>
+        /// <returns>Возвращает кирилическое имя месяца</returns>
         public static string GetRussianName(Monthes month)
         {
             switch (month)

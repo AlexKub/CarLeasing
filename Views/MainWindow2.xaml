@@ -69,9 +69,18 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <!-- Вертикальная полоса прокрутки -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!--Выбор срока/периода просмотра-->
+            <controls:PeriodSelector Margin="5" FromMonth="{Binding FromMonth}" ToMonth="{Binding ToMonth}" AvailableYears="{Binding AvailableYears}"/>
+        </Grid>
+        
+        <!-- Основной график лизинга -->
         <ScrollViewer Grid.Row="1">
-            <Grid Grid.Row="1" d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}" MaxHeight="600">
+            <Grid Grid.Row="1" d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}">
                 <Grid.Resources>
                     <!-- Стиль TextBlock'а в коллекциях Машин и Комментариев -->
                     <Style x:Key="ItemTextBlockStyle" TargetType="TextBlock">
@@ -89,15 +98,15 @@
                     <RowDefinition Height="{StaticResource ScrollBarWidth}" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="100" MaxWidth="200" />
-                    <ColumnDefinition MinWidth="400" />
+                    <ColumnDefinition MinWidth="200" MaxWidth="300" />
+                    <ColumnDefinition MinWidth="300" />
                     <ColumnDefinition MinWidth="100" MaxWidth="300"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Левая колонка с машинами -->
-                <Border Grid.Column="0" Grid.Row="1" Margin="0 0 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
+                <Border Grid.Column="0" Grid.Row="1" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
                     <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
-                        <ItemsControl ItemsSource="{Binding Cars}">
+                        <ItemsControl ItemsSource="{Binding CarModels}">
                             <ItemsControl.Resources>
                                 <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
                                 <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="0"/>
@@ -130,7 +139,7 @@
                 <!-- Шапка с месяцами -->
                 <Border Grid.Column="1" BorderBrush="{StaticResource LightBorderBrush}" BorderThickness="1 0 1 0">
                     <ScrollViewer Name="MonthesScrollViewer"  VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-                        <ItemsControl ItemsSource="{Binding MonthLeasings}" Margin="-1 0 0 0">
+                        <ItemsControl ItemsSource="{Binding Monthes}" Margin="-1 0 0 0">
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"/>
@@ -138,12 +147,12 @@
                             </ItemsControl.ItemContainerStyle>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <controls:DynamicDefinitionsGrid Orientation="Horizontal" LinesCount="{Binding MonthLeasings.Count}"/>
+                                    <controls:DynamicDefinitionsGrid Orientation="Horizontal" LinesCount="{Binding Monthes.Count}"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <controls:WeekDaysPanel Margin="-1 0 0 0" DataContext="{Binding MonthHeader.Month}" Grid.Column="{Binding MonthHeader.ColumnIndex}"/>
+                                    <controls:WeekDaysPanel Margin="-1 0 0 0" DataContext="{Binding Month}" Grid.Column="{Binding ColumnIndex}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -152,22 +161,21 @@
 
                 <!-- График занятости -->
                 <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CanContentScroll="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" ScrollChanged="LeasingScroll_ScrollChanged">
-                    <Grid>
-                        <!-- Новая сетка -->
-                        <DockPanel>
-                            <controls:LeasingChart RowHeight="{StaticResource RowHeight}" 
+                    <!-- Новая сетка -->
+                        <controls:LeasingChart 
+                            VerticalAlignment="Top"
+                            RowHeight="{StaticResource RowHeight}" 
                                                    Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
                                                    Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
                                                LineBrush="{StaticResource LightBorderBrush}" 
-                                               DayCount="{Binding MonthLeasings, Converter={StaticResource MonthesDaysCountConverter}}"
-                                               Leasings="{Binding MonthLeasings, Converter={StaticResource MonthLeasingsConverter}}"
+                                               DayCount="{Binding DaysCount}"
+                                               Leasings="{Binding Leasings}"
                                                DayColumnWidth="{StaticResource DayColumnWidth}"
                                                    BarBorderBrush="{StaticResource LightBorderBrush}"
                                                    BarBrush="{StaticResource BusinessBlockBrush}"
                                                    FontFamily="Times New Roman"
                                                    FontSize="10" />
-                        </DockPanel>
-
+                        
                         <!-- Старая сетка -->
                         <!--<ItemsControl ItemsSource="{Binding MonthLeasings}" Background="Transparent">
                             <ItemsControl.ItemContainerStyle>
@@ -236,11 +244,10 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>-->
-                    </Grid>
                 </ScrollViewer>
 
                 <!-- Комментарии -->
-                <Border Grid.Row="1" Grid.Column="2" Margin="0 0 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
+                <Border Grid.Row="1" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
                     <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
                         <ItemsControl ItemsSource="{Binding Comments}">
                             <ItemsControl.Resources>

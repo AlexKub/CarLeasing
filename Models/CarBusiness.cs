@@ -28,6 +28,8 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public Month Month { get; set; }
 
+        public Month[] Monthes { get; set; }
+
         /// <summary>
         /// Количество аренд на текущий месяц
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using CarLeasingViewer.Models;
+using RTCManifestGenerator.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,9 @@ namespace CarLeasingViewer.Controls
         static IEnumerable<Month> m_curentYearMonthes = Month.GetMonthes(m_curentYear);
 
         #region Dependency properties
+
+        public static DependencyProperty dp_ShowAction = DependencyProperty.Register(nameof(ShowAction), typeof(ActionCommand), typeof(PeriodSelector), new FrameworkPropertyMetadata() { DefaultValue = default(ActionCommand) });
+        public ActionCommand ShowAction { get { return (ActionCommand)GetValue(dp_ShowAction); } set { SetValue(dp_ShowAction, value); } }
 
         public static readonly DependencyProperty dp_FromMonthesProperty = DependencyProperty.Register(nameof(FromMonthes), typeof(IEnumerable<Month>), typeof(PeriodSelector), new FrameworkPropertyMetadata()
         {

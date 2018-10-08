@@ -150,7 +150,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //return g;
 
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
-            string text = bd?.BarModel?.Leasing?.Title + "_" + bd.BarModel.Leasing.CarName ?? "NO TITLE";
+            string text = bd?.BarModel?.Leasing?.Title ?? "NO TITLE";
             double fontSize = FontSize;
 
             ushort[] glyphIndexes = new ushort[text.Length];

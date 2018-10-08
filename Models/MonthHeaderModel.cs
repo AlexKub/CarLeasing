@@ -2,6 +2,10 @@
 
 namespace CarLeasingViewer.Models
 {
+    /// <summary>
+    /// Модель для месяца на LeasingChart
+    /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class MonthHeaderModel : ViewModels.ViewModelBase, IIndexable
     {
         private Month pv_Month;
@@ -34,5 +38,9 @@ namespace CarLeasingViewer.Models
 
         #endregion
 
+        string DebugDisplay()
+        {
+            return Month == null ? "NO MONTH" : (Month.Name + " " + Month.Year.ToString());
+        }
     }
 }

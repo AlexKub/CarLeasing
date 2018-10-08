@@ -16,6 +16,8 @@ namespace CarLeasingViewer.Models
 
         public Month CurrentMonth { get; set; }
 
+        public Month[] Monthes { get; set; }
+
         public string Width { get; set; }
 
         public string CarName { get; set; }

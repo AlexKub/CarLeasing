@@ -52,7 +52,7 @@ namespace CarLeasingViewer.ViewModels
         /// </summary>
         public IReadOnlyList<CarComment> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
-        private LeasingSet m_LeasingSet;
+        private LeasingSet m_LeasingSet = new LeasingSet();
         /// <summary>
         /// Возвращает или задаёт Набор занаятости Авто
         /// </summary>

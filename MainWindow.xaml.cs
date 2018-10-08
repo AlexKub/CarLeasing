@@ -188,7 +188,21 @@ namespace CarLeasingViewer
             var tabItem = (curentVM.TabItemsModels.First() as OneMonthItem);
 
             var vm = new LeasingViewViewModel();
-            var monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() };
+            MonthBusiness[] monthBuisnesses = null;
+
+            if (App.SearchSettings.TestData)
+            {
+                monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() };
+            }
+            else
+            {
+                var second = curentVM.TabItemsModels.ElementAt(1) as PeriodTabItemModel;
+                monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last()) };
+            }
+
+            var set = new LeasingSet();
+            set.Data = monthBuisnesses;
+            vm.LeasingSet = set;
             vm.Cars = monthBuisnesses
                 .SelectMany(mb => mb.CarBusiness)
             .Select(cb => cb.Name)

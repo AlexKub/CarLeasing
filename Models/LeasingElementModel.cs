@@ -17,6 +17,12 @@
         /// </summary>
         public MonthHeaderModel Month { get { return pv_Month; } set { if (pv_Month != value) { pv_Month = value; OnPropertyChanged(); } } }
 
+        private MonthHeaderModel[] m_Monthes;
+        /// <summary>
+        /// Возвращает или задаёт Месяца, к которым принадлежит текущая аренда
+        /// </summary>
+        public MonthHeaderModel[] Monthes { get { return m_Monthes; } set { m_Monthes = value; OnPropertyChanged(); } }
+
         private Business pv_Leasing;
         /// <summary>
         /// Возвращает или задаёт информацию о Занятости
@@ -85,11 +91,11 @@
             var startDay = b.DateStart.Day;
 
             //если начало в текущем месяце
-            if (b.MonthCount == 1 || b.DateStart.Month == b.CurrentMonth.Index)
+            if (b.MonthCount == 1 || b.DateStart.Month == b.Monthes[0].Index)
             {
                 if (startDay > 1)
                 {
-                    //т.к. дня нумеруются с единицы, то для первого дня отступ будет 0 дней, для второго - 1 и т.д.
+                    //т.к. дни нумеруются с единицы, то для первого дня отступ будет 0 дней, для второго - 1 и т.д.
                     var dayOffsetCount = startDay - 1;
                     offsetLeft = dayOffsetCount * (pv_DayColumnWidth) + (dayOffsetCount * 1); //1 - ширина границ у колонок
                 }
@@ -111,27 +117,35 @@
             //если машина занята несколько месяцев
             else
             {
-                var currentMonth = b.CurrentMonth.Index;
-
-                //для месяца, в котором начали съём
-                if (b.DateStart.Month == currentMonth)
-                    //отсчитываем от конца начального месяца
-                    dayCount += (b.CurrentMonth.DayCount - b.DateStart.Day);
-
-                //для месяца в котором закончили съём
-                else if (b.DateEnd.Month == currentMonth)
-                    dayCount = b.DateEnd.Day; //индекс дня - количество дней от начала месяца
-
-                //если период начинается и заканчивается за пределами текущего месяца
-                else
+                //для полных месяцев просто прибавляем количество дней в месяце
+                for (int i = 1; i < b.Monthes.Length - 1; i++)
                 {
-                    //берём первую дату месяца
-                    var curentDate = b.CurrentMonth[1];
-                    //если 'начало' < 'текущая дата' < 'конец'
-                    dayCount = ((b.DateStart < curentDate) && (curentDate < b.DateEnd))
-                        ? b.CurrentMonth.DayCount //берём количество дней в текущем месяце (закрашиваем всё)
-                        : 0; //0 - хз чего ещё делать. В этом месяце занятости не было, хз как сюда попало
+                    dayCount += b.Monthes[i].DayCount;
                 }
+                dayCount += b.Monthes[0].DayCount - b.DateStart.Day;
+                dayCount += b.Monthes[b.Monthes.Length - 1].DayCount - b.DateEnd.Day;
+
+                //var currentMonth = b.CurrentMonth.Index;
+                //
+                ////для месяца, в котором начали съём
+                //if (b.DateStart.Month == currentMonth)
+                //    //отсчитываем от конца начального месяца
+                //    dayCount += (b.CurrentMonth.DayCount - b.DateStart.Day);
+                //
+                ////для месяца в котором закончили съём
+                //else if (b.DateEnd.Month == currentMonth)
+                //    dayCount = b.DateEnd.Day; //индекс дня - количество дней от начала месяца
+                //
+                ////если период начинается и заканчивается за пределами текущего месяца
+                //else
+                //{
+                //    //берём первую дату месяца
+                //    var curentDate = b.CurrentMonth[1];
+                //    //если 'начало' < 'текущая дата' < 'конец'
+                //    dayCount = ((b.DateStart < curentDate) && (curentDate < b.DateEnd))
+                //        ? b.CurrentMonth.DayCount //берём количество дней в текущем месяце (закрашиваем всё)
+                //        : 0; //0 - хз чего ещё делать. В этом месяце занятости не было, хз как сюда попало
+                //}
             }
 
             if (dayCount < 0)

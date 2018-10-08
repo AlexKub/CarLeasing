@@ -7,6 +7,8 @@ using System.Windows.Media;
 using CarLeasingViewer.Models;
 using CarLeasingViewer.Controls.LeasingChartManagers;
 using System.Windows.Shapes;
+using System.Windows.Input;
+using System.Text;
 
 namespace CarLeasingViewer.Controls
 {
@@ -18,6 +20,8 @@ namespace CarLeasingViewer.Controls
         CanvasGridDrawManager m_gridM;
         CanvasBarDrawManager m_barM;
         CanvasTextDrawManager m_textM;
+        FrameworkElement m_tooltip;
+        CanvasBarDrawManager.BarData m_TooltipedRect;
 
         public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
 
@@ -190,7 +194,7 @@ namespace CarLeasingViewer.Controls
 
         public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
-            DefaultValue = default(IEnumerable<LeasingElementModel>),
+            DefaultValue = new List<LeasingElementModel>(),
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as LeasingChart;
@@ -249,7 +253,7 @@ namespace CarLeasingViewer.Controls
              * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
              * порядок отрисовки = ZIndex
              */
-            if (m_counter == 4) //хз почему, но нормальная отрисовка только на 4 итерации
+            if (m_counter == 4 && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
             {
                 //отрисовка сетки
                 if (m_gridM != null)
@@ -300,6 +304,140 @@ namespace CarLeasingViewer.Controls
                 m_textM.Dispose();
                 m_textM = null;
             }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+
+            HideTooltip();
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            var point = e.GetPosition(this);
+
+            //проверка позиционироввания курсора над ранее обработанным элементом
+            if(m_TooltipedRect != null)
+            {
+                //если мышь всё ещё над тем же элементом - ничего не делаем
+                if (m_TooltipedRect.Border.Contains(point))
+                    return;
+                else //если мышь ушла с элемента
+                {
+                    //скрываем подсказку
+                    HideTooltip();
+                }
+            }
+
+            //поиск элемента, над которым сейчас находится мышь
+            CanvasBarDrawManager.BarData bar = null;
+            foreach (var kvp in m_barM.Data)
+            {
+                bar = kvp.Value;
+                if (bar.VerticalOffset <= point.X)
+                {
+                    if (bar.Border.Contains(point))
+                    {
+                        HideTooltip();
+
+                        DrawTooltip(bar, point);
+                        m_TooltipedRect = bar; //сохраняем найденный элемент
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Отрисовка Tooltip на Canvas
+        /// </summary>
+        void DrawTooltip(CanvasBarDrawManager.BarData bar, Point p)
+        {
+            var grid = new Grid();
+            grid.Background = Brushes.LightGray;
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+
+            TextBlock text0 = null;
+            if (bar.BarModel == null)
+            {
+                text0 = NewStyledTooltipRow();
+                text0.Text = "NO MODEL";
+            }
+            else
+            {
+                text0 = NewStyledTooltipRow();
+                text0.Text = bar.BarModel.Leasing.Title;
+
+                var text1 = NewStyledTooltipRow();
+                text1.Text = bar.BarModel.CarName;
+
+                var text2 = NewStyledTooltipRow();
+                text2.Text = GetDataSpan(bar.BarModel);
+
+                grid.Children.Add(text1);
+                grid.Children.Add(text2);
+                Grid.SetRow(text1, 1);
+                Grid.SetRow(text2, 2);
+            }
+
+            grid.Children.Add(text0);
+
+            m_tooltip = grid;
+
+            Children.Add(grid);
+            Canvas.SetTop(grid, bar.VerticalOffset + bar.Border.Height + 3);
+            Canvas.SetLeft(grid, p.X);
+        }
+
+        TextBlock NewStyledTooltipRow()
+        {
+            var tb = new TextBlock();
+            tb.Margin = new Thickness(5);
+            tb.HorizontalAlignment = HorizontalAlignment.Center;
+
+            return tb;
+        }
+
+        /// <summary>
+        /// Удаление Tooltip'а с Canvas
+        /// </summary>
+        void HideTooltip()
+        {
+            if(m_tooltip != null)
+            {
+                Children.Remove(m_tooltip);
+                m_tooltip = null;
+            }
+
+            //сбрасываем подсвеченный элемент
+            m_TooltipedRect = null;
+        }
+
+        /// <summary>
+        /// Получение строкового представления срока аренды
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <returns>Возвращает срок аренды</returns>
+        string GetDataSpan(LeasingElementModel model)
+        {
+            //копипаста из BussinessDateConverter (старая версия)
+            StringBuilder sb = new StringBuilder();
+            //<действие> c XX по ХХ <месяц>
+            sb.Append("в прокате ").Append(" c ");
+
+            var b = model.Leasing;
+            if (b.MonthCount < 2)
+                sb.Append(b.DateStart.Day.ToString()).Append(" по ").Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty);
+            else
+                sb.Append(b.DateStart.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty).Append(" по ")
+                    .Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateEnd.GetMonthName() ?? string.Empty);
+
+            return sb.ToString();
         }
     }
 }

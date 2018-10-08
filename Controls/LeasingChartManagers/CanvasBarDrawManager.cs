@@ -31,6 +31,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         Dictionary<LeasingElementModel, BarData> m_bars = new Dictionary<LeasingElementModel, BarData>();
 
         /// <summary>
+        /// Отрисованные / просчитанные прямоугольники
+        /// </summary>
+        public IEnumerable<BarData> Bars { get { return m_bars.Values; } }
+
+        /// <summary>
+        /// Данные отрисовки
+        /// </summary>
+        public IReadOnlyDictionary<LeasingElementModel, BarData> Data { get { return m_bars; } }
+
+        /// <summary>
         /// Возвращает данные отрисовки по ссылке на модель
         /// </summary>
         /// <param name="model">Ссылка на отрисовываемую модель</param>
@@ -106,8 +116,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             m_bars.Clear();
             m_bars = null;
 
-
-
             base.Dispose();
         }
 
@@ -133,11 +141,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             var offset = 0d;
 
-            if (barModel.Month != null)
+            if (barModel.Monthes != null && barModel.Monthes.Length > 0)
             {
-                if (barModel.Month.Previous != null)
+                if (barModel.Monthes[0].Previous != null)
                 {
-                    var prev = barModel.Month.Previous;
+                    var prev = barModel.Monthes[0].Previous;
 
                     while (prev != null)
                     {

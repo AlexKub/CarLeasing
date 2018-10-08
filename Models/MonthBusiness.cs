@@ -41,6 +41,8 @@ namespace CarLeasingViewer.Models
             set { if (pv_Month != value) { pv_Month = value; OnPropertyChanged(); } }
         }
 
+        public Month[] Monthes { get; set; }
+
         private ObservableCollection<CarBusiness> pv_CarBusiness;
         /// <summary>
         /// Возвращает или задаёт
