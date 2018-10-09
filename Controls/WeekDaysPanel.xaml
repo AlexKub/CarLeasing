@@ -108,14 +108,5 @@
                 <ItemsControl Grid.Row="1" Style="{StaticResource ItemsControlStyle}" ItemTemplate="{StaticResource DayIndexItemTemplate}" ItemsSource="{Binding}"/>
             </Grid>
         </Border>
-        <!--<Rectangle Grid.Row="1" Fill="{StaticResource LightBorderBrush}" Grid.ColumnSpan="2"/>-->
-        <!--<TextBox Grid.Row="1" Margin="3" Padding="1" MinWidth="194" 
-                         d:DataContext="{d:DesignInstance Type=controls:WeekDaysPanel}"
-                         DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:WeekDaysPanel}}"
-                         Text="{Binding TitleSearch, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-
-        <TextBox Grid.Row="1" Grid.Column="1" Padding="1" Margin="3 3 0 3" 
-                 DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:WeekDaysPanel}}"
-                         Text="{Binding ContextSearch, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>-->
     </Grid>
 </UserControl>

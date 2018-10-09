@@ -11,7 +11,8 @@
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
         mc:Ignorable="d"
-        Title="MainWindow2" Height="300" Width="700">
+        Title="Загрузка ТС" Height="300" Width="700"
+        d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
     <Window.Resources>
         <!-- Ширина(высота) ScrollBar'a -->
         <win:GridLength x:Key="ScrollBarWidth">17</win:GridLength>
@@ -75,11 +76,15 @@
             </Grid.ColumnDefinitions>
 
             <!--Выбор срока/периода просмотра-->
-            <controls:PeriodSelector Margin="5" FromMonth="{Binding FromMonth}" ToMonth="{Binding ToMonth}" AvailableYears="{Binding AvailableYears}"/>
+            <controls:PeriodSelector Margin="5" HorizontalAlignment="Left" 
+                                     FromMonth="{Binding FromMonth, Mode=TwoWay}" 
+                                     ToMonth="{Binding ToMonth, Mode=TwoWay}" 
+                                     AvailableYears="{Binding AvailableYears}" 
+                                     ShowAction="{Binding SortPeriodCommand}"/>
         </Grid>
         
         <!-- Основной график лизинга -->
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <Grid Grid.Row="1" d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}">
                 <Grid.Resources>
                     <!-- Стиль TextBlock'а в коллекциях Машин и Комментариев -->

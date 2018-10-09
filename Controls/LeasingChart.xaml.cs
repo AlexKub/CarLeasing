@@ -241,11 +241,11 @@ namespace CarLeasingViewer.Controls
         }
 
         int m_counter = 0;
+        bool firstDraw = true;
         protected override void OnRender(DrawingContext dc)
         {
             m_counter++;
             base.OnRender(dc); //результаты от позиции OnRender у меня не зависили
-
 
             /*
              * Для быстрой отрисовки текста был выбран способ через DrawingContext
@@ -253,8 +253,12 @@ namespace CarLeasingViewer.Controls
              * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
              * порядок отрисовки = ZIndex
              */
-            if (m_counter == 4 && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
+            if (m_counter == (firstDraw ? 4 : 3) && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
             {
+                firstDraw = false;
+                m_counter = 0;
+                ClearManagers();
+
                 //отрисовка сетки
                 if (m_gridM != null)
                 {
@@ -281,6 +285,14 @@ namespace CarLeasingViewer.Controls
                     m_textM.DrawText(dc);
                 }
             }
+        }
+
+        void ClearManagers()
+        {
+            HideTooltip();
+            m_gridM.Clear();
+            m_textM.Clear();
+            m_barM.Clear();
         }
 
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)

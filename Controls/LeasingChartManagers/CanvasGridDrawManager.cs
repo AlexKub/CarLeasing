@@ -214,9 +214,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         public override void Dispose()
         {
-            ClearCollection(m_rowsData);
-
-            ClearCollection(m_columnsData);
+            Clear();
 
             base.Dispose();
         }
@@ -233,6 +231,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
 
             collection.Clear();
+        }
+
+        public void Clear()
+        {
+            ClearCollection(m_rowsData);
+
+            ClearCollection(m_columnsData);
         }
 
         protected override void M_canvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)

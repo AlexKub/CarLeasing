@@ -108,15 +108,21 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         public override void Dispose()
         {
+            Clear();
+
+            m_bars = null;
+
+            base.Dispose();
+        }
+
+        public void Clear()
+        {
             foreach (var item in m_bars.Values)
             {
                 item.Clear();
             }
 
             m_bars.Clear();
-            m_bars = null;
-
-            base.Dispose();
         }
 
         /// <summary>

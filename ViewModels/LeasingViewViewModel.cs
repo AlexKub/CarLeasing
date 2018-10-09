@@ -1,10 +1,35 @@
 ﻿using CarLeasingViewer.Models;
+using RTCManifestGenerator.Commands;
 using System.Collections.Generic;
 
 namespace CarLeasingViewer.ViewModels
 {
     public class LeasingViewViewModel : ViewModelBase
     {
+        private Month m_FromMonth;
+        /// <summary>
+        /// Возвращает или задаёт Месяц начала просмотра
+        /// </summary>
+        public Month FromMonth { get { return m_FromMonth; } set { m_FromMonth = value; OnPropertyChanged(); } }
+
+        private Month m_ToMonth;
+        /// <summary>
+        /// Возвращает или задаёт Месяц окончания периода осмотра
+        /// </summary>
+        public Month ToMonth { get { return m_ToMonth; } set { m_ToMonth = value; OnPropertyChanged(); } }
+
+        /// <summary>
+        /// Комманда сортировки по периоду
+        /// </summary>
+        public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
+        void SortPeriod()
+        {
+            var newSet = new LeasingSet() { Data = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(FromMonth, ToMonth) } };
+            LeasingSet = newSet;
+        }
+
+        #region Obsolet properties
+
         private IReadOnlyList<CarModel> pv_Cars;
         /// <summary>
         /// Возвращает или задаёт набор машин
@@ -52,11 +77,33 @@ namespace CarLeasingViewer.ViewModels
         /// </summary>
         public IReadOnlyList<CarComment> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
+        #endregion
+
         private LeasingSet m_LeasingSet = new LeasingSet();
         /// <summary>
         /// Возвращает или задаёт Набор занаятости Авто
         /// </summary>
-        public LeasingSet LeasingSet { get { return m_LeasingSet; } set { m_LeasingSet = value; OnPropertyChanged(); } }
+        public LeasingSet LeasingSet { get { return m_LeasingSet; } set { m_LeasingSet = value; OnSetChanged(value); OnPropertyChanged(); } }
 
+
+        void OnSetChanged(LeasingSet set)
+        {
+            if (set == null)
+                return;
+
+            switch(set.Monthes.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    FromMonth = set.Monthes[0].Month;
+                    ToMonth = set.Monthes[0].Month;
+                    break;
+                default:
+                    FromMonth = set.Monthes[0].Month;
+                    ToMonth = set.Monthes[set.Monthes.Count - 1].Month;
+                    break;
+            }
+        }
     }
 }

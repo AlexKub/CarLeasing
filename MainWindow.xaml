@@ -160,7 +160,7 @@
 
                         <TextBlock Text="{}"/>
                         <!--Выбор срока/периода просмотра-->
-                        <controls:PeriodSelector Margin="{StaticResource LeftHeaderOffset}" FromMonth="{Binding FromMonth}" ToMonth="{Binding ToMonth}" AvailableYears="{Binding AvailableYears}"/>
+                        <controls:PeriodSelector Margin="{StaticResource LeftHeaderOffset}" FromMonth="{Binding FromMonth}" ToMonth="{Binding ToMonth}" AvailableYears="{x:Static local:App.AvailableYears}"/>
                         <!--Сетки занятости по месяцам-->
                         <Border Grid.Row="1" Style="{StaticResource StandartBorder}" >
                             <Grid>

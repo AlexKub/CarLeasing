@@ -236,7 +236,17 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             m_glyphType = null;
 
+            Clear();
+
             base.Dispose();
+        }
+
+        public void Clear()
+        {
+            foreach (var item in m_bars)
+                item.Value.Clear();
+
+            m_bars.Clear();
         }
 
         /// <summary>
