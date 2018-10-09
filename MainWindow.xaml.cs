@@ -49,8 +49,9 @@ namespace CarLeasingViewer
         {
             vm.CurrentMonthBusiness = GetRandomBusiness();
 
+            var rMonth = Randomizer.GetRandomMonth(2018);
             vm.TotalBusiness = new Models.Selections.TotalSelection("Общее",
-                new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() });
+                new MonthBusiness[] { Randomizer.GetRandomBusiness(rMonth), Randomizer.GetRandomBusiness(rMonth.Next()), Randomizer.GetRandomBusiness(rMonth.Next(2)) });
 
             var monthes = vm.TotalBusiness.Select(b => b.Month).Distinct();
 
@@ -188,17 +189,23 @@ namespace CarLeasingViewer
             var tabItem = (curentVM.TabItemsModels.First() as OneMonthItem);
 
             var vm = new LeasingViewViewModel();
-            MonthBusiness[] monthBuisnesses = null;
+            var rMonth = Randomizer.GetRandomMonth(2018);
 
-            if (App.SearchSettings.TestData)
-            {
-                monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() };
-            }
-            else
-            {
-                var second = curentVM.TabItemsModels.ElementAt(1) as PeriodTabItemModel;
-                monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last()) };
-            }
+            MonthBusiness[] monthBuisnesses = App.SearchSettings.TestData 
+                ? DataManager.GetDataset(rMonth, rMonth.Next(2)) 
+                : DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
+
+            //if (App.SearchSettings.TestData)
+            //{
+            //    var rMonth = Randomizer.GetRandomMonth(2018);
+            //
+            //    monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(rMonth), Randomizer.GetRandomBusiness(rMonth.Next()), Randomizer.GetRandomBusiness(rMonth.Next(2)) };
+            //}
+            //else
+            //{
+            //    var second = curentVM.TabItemsModels.ElementAt(1) as PeriodTabItemModel;
+            //    monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last()) };
+            //}
 
             var set = new LeasingSet();
             set.Data = monthBuisnesses;
@@ -236,7 +243,7 @@ namespace CarLeasingViewer
                 new MonthLeasing()
                 {
                     ColumnIndex = index,
-                    MonthHeader = new MonthHeaderModel() { Month = bus.Month },
+                    MonthHeader = new MonthHeaderModel(set) { Month = bus.Month },
                     Leasings = leasingBarModels[index++]
                 }));
 

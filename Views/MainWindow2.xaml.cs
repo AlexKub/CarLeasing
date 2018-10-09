@@ -1,4 +1,5 @@
 ﻿using CarLeasingViewer.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 
 namespace CarLeasingViewer.Views
@@ -32,6 +33,16 @@ namespace CarLeasingViewer.Views
         {
             LeasingScroll.ScrollToVerticalOffset(e.VerticalOffset);
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            if (vm != null)
+                vm.Dispose();
+
+            base.OnClosing(e);
         }
     }
 }

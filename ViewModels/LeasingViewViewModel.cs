@@ -1,10 +1,11 @@
 ﻿using CarLeasingViewer.Models;
 using RTCManifestGenerator.Commands;
+using System;
 using System.Collections.Generic;
 
 namespace CarLeasingViewer.ViewModels
 {
-    public class LeasingViewViewModel : ViewModelBase
+    public class LeasingViewViewModel : ViewModelBase, IDisposable
     {
         private Month m_FromMonth;
         /// <summary>
@@ -24,7 +25,7 @@ namespace CarLeasingViewer.ViewModels
         public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
         void SortPeriod()
         {
-            var newSet = new LeasingSet() { Data = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(FromMonth, ToMonth) } };
+            var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
             LeasingSet = newSet;
         }
 
@@ -103,6 +104,15 @@ namespace CarLeasingViewer.ViewModels
                     FromMonth = set.Monthes[0].Month;
                     ToMonth = set.Monthes[set.Monthes.Count - 1].Month;
                     break;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (LeasingSet != null)
+            {
+                LeasingSet.Dispose();
+                LeasingSet = null;
             }
         }
     }

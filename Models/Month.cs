@@ -168,10 +168,10 @@ namespace CarLeasingViewer.Models
         {
             var count = GetMonthesCount(start, end);
 
-            switch(count)
+            switch (count)
             {
                 case 0:
-                    return new Month[]{ };
+                    return new Month[] { };
                 case 1:
                     return new Month[] { new Month(start) };
                 default:
@@ -189,6 +189,11 @@ namespace CarLeasingViewer.Models
 
         }
 
+        public static Month[] GetMonthes(Month start, Month end)
+        {
+            return GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+        }
+
         /// <summary>
         /// Разница в месяцах между двумя датами
         /// </summary>
@@ -197,7 +202,7 @@ namespace CarLeasingViewer.Models
         /// <returns>Возвращает количество месяцев между датами (включительно) (округление до большего)</returns>
         public static int GetMonthesCount(DateTime start, DateTime end)
         {
-            if(start.Year == end.Year)
+            if (start.Year == end.Year)
             {
                 if (start.Month == end.Month)
                     return 1;
@@ -301,6 +306,10 @@ namespace CarLeasingViewer.Models
             return Year.ToString() + (Index).ToString("00") + dayIndex.ToString("00");
         }
 
+        /// <summary>
+        /// Cледующий месяц
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр месяца</returns>
         public Month Next()
         {
             if (Value == Monthes.December)
@@ -310,6 +319,46 @@ namespace CarLeasingViewer.Models
             }
 
             return new Month(Year, Value + 1);
+        }
+
+        /// <summary>
+        /// Cледующий n-месяц от текущего
+        /// </summary>
+        /// <param name="offset">Смещения (месяцеа)</param>
+        /// <returns>ВОзвращает месяц через n-месяце после текущего</returns>
+        public Month Next(int offset)
+        {
+            var year = Year;
+
+            //Раз следующий, то должен быть следующим
+            //нефиг отрицательные значения передавать
+            if (offset < 1)
+                offset = 1;
+
+            if (offset == 12)
+                return new Month(year + 1, Value); //тот же месяц, но в следующем году
+
+            var yCount = offset / 12; //колиечство лет
+            offset = offset % 12; //значимые месяцы
+
+            if (yCount > 0)
+            {
+                year = year + yCount;
+                if (offset == 0)//если это тот же месяц, но через сколько-то лет
+                    return new Month(year, Value);
+            }
+
+            var nextIndex = Index + offset;
+
+            if (nextIndex < 13)
+                return new Month(year, (Monthes)nextIndex);
+
+            else //если пошёл следующий год
+            {
+                year++;
+                offset = nextIndex - 12;
+                return new Month(year, (Monthes)offset);
+            }
         }
 
         public Month Previos()

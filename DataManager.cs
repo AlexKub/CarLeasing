@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarLeasingViewer
 {
@@ -12,14 +10,46 @@ namespace CarLeasingViewer
     /// </summary>
     public static class DataManager
     {
+        /// <summary>
+        /// Получает данные по занятости авто между указанными месяцами (включительно)
+        /// </summary>
+        /// <param name="first">Месяц начала</param>
+        /// <param name="last">Месяц окончания</param>
+        /// <returns></returns>
+        public static MonthBusiness[] GetDataset(Month first, Month last)
+        {
+            MonthBusiness[] monthBuisnesses = null;
+
+            if (App.SearchSettings.TestData)
+            {
+                var rMonth = Randomizer.GetRandomMonth(2018);
+                List<MonthBusiness> businesses = new List<MonthBusiness>();
+
+                foreach (var month in Month.GetMonthes(first, last))
+                {
+                    businesses.Add(Randomizer.GetRandomBusiness(month));
+                }
+
+                return businesses.ToArray();
+            }
+            else
+            {
+                monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(first, last) };
+            }
+
+            return monthBuisnesses;
+        }
+
+        [Obsolete]
         public static void FillMainWindow2ViewModel(ViewModels.LeasingViewViewModel viewModel)
         {
             if (viewModel == null)
                 throw new NullReferenceException("Передана пустая модель окна для заполнения");
 
             var startMonth = Randomizer.GetRandomMonth(2017);
+            var rMonth = Randomizer.GetRandomMonth(2018);
             var buisnesses = App.SearchSettings.TestData 
-                ? new MonthBusiness[] { Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness(), Randomizer.GetRandomBusiness() }
+                ? new MonthBusiness[] { Randomizer.GetRandomBusiness(rMonth), Randomizer.GetRandomBusiness(rMonth.Next()), Randomizer.GetRandomBusiness(rMonth.Next(2)) }
                 : new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonth(startMonth), DB_Manager.Default.GetBusinessByMonth(startMonth.Next()), DB_Manager.Default.GetBusinessByMonth(startMonth.Next().Next()) };
             viewModel.Cars = buisnesses
                 .SelectMany(mb => mb.CarBusiness)
@@ -54,7 +84,7 @@ namespace CarLeasingViewer
                 new MonthLeasing()
                 {
                     ColumnIndex = index,
-                    MonthHeader = new MonthHeaderModel() { Month = bus.Month, ColumnIndex = index },
+                    //MonthHeader = new MonthHeaderModel() { Month = bus.Month, ColumnIndex = index },
                     Leasings = leasingBarModels[index++],
                 }));
         }

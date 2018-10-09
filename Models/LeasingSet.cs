@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CarLeasingViewer.Models
 {
     /// <summary>
+    /// Событие набора Занятости авто
+    /// </summary>
+    /// <param name="set">Набор, в котоом произошло изменение</param>
+    public delegate void LeasingSetEvent(LeasingSet set);
+
+    /// <summary>
     /// Общий набор Аренд авто для LeasingChart
     /// </summary>
-    public class LeasingSet : ViewModels.ViewModelBase
+    public class LeasingSet : ViewModels.ViewModelBase, IDisposable
     {
         private int m_RowsCount;
         /// <summary>
@@ -47,26 +54,33 @@ namespace CarLeasingViewer.Models
             get { return m_Monthes; }
             set
             {
-                m_Monthes = value;
-
-                if (value != null)
+                if (m_Monthes != value)
                 {
-                    MonthHeaderModel curentML = null;
-                    for (int i = 0; i < value.Count; i++)
+                    m_Monthes = value;
+
+                    if (value != null)
                     {
-                        curentML = value[i];
-                        if (curentML != null)
+                        MonthHeaderModel curentML = null;
+                        for (int i = 0; i < value.Count; i++)
                         {
-                            curentML.Previous = (i - 1) >= 0 ? value[i - 1] : null;
-                            curentML.Next = (i + 1) < value.Count ? value[i + 1] : null;
+                            curentML = value[i];
+                            if (curentML != null)
+                            {
+                                curentML.Previous = (i - 1) >= 0 ? value[i - 1] : null;
+                                curentML.Next = (i + 1) < value.Count ? value[i + 1] : null;
+                            }
                         }
+
+                        //простановка индекса колонок для Grid'а
+                        GridIndexHelper.SetIndexes(value);
+
                     }
 
-                    //простановка индекса колонок для Grid'а
-                    GridIndexHelper.SetIndexes(value);
-                }
+                    if (MonthesChanged != null)
+                        MonthesChanged(this);
 
-                OnPropertyChanged();
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -120,6 +134,11 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public IReadOnlyList<CarComment> Comments { get { return m_Comments; } set { m_Comments = value; OnPropertyChanged(); } }
 
+        /// <summary>
+        /// При изменении наборма месяцев
+        /// </summary>
+        public event LeasingSetEvent MonthesChanged;
+
         #region Перевод из одной модели данных в текущую
 
         /// <summary>
@@ -134,7 +153,7 @@ namespace CarLeasingViewer.Models
             Monthes = GetMonthes(businesses);
             //!!зависит от заполнения CarModels
             Leasings = GetLeasingModels(businesses);
-            
+
             DaysCount = Monthes.Sum(m => m.Month.DayCount);
         }
 
@@ -161,7 +180,6 @@ namespace CarLeasingViewer.Models
 
             foreach (var business in monthBuisnesses)
             {
-
                 foreach (var item in business.CarBusiness)
                 {
                     var car = m_CarModels.FirstOrDefault(c => c.Text.Equals(item.Name));
@@ -170,14 +188,20 @@ namespace CarLeasingViewer.Models
                         b =>
                         {
                             rowIndex = car == null ? 0 : car.RowIndex;
-                            return new LeasingElementModel()
+                            var model = new LeasingElementModel()
                             {
                                 CarName = m_CarModels.Count > 0 ? m_CarModels[rowIndex].Text : b.CarName,
                                 Leasing = b,
                                 RowIndex = rowIndex,
-                                DayColumnWidth = 21d,
-                                Monthes = this.Monthes.Where(m => b.Monthes.Any(bm => bm.Equals(m.Month))).ToArray()
+                                DayColumnWidth = 21d
                             };
+
+                            if (b.CurrentMonth != null)
+                                model.Monthes = new MonthHeaderModel[] { new MonthHeaderModel(this) { Month = b.CurrentMonth } };
+                            else
+                                model.Monthes = this.Monthes.Where(m => b.Monthes.Any(bm => bm.Equals(m.Month))).ToArray();
+
+                            return model;
                         }));
                 }
                 index++;
@@ -195,18 +219,27 @@ namespace CarLeasingViewer.Models
             {
                 foreach (var item in first.Monthes)
                 {
-                    monthes.Add(new MonthHeaderModel() { Month = item });
+                    monthes.Add(new MonthHeaderModel(this) { Month = item });
                 }
             }
             else
             {
                 foreach (var item in businesses)
                 {
-                    monthes.Add(new MonthHeaderModel() { Month = item.Month });
+                    monthes.Add(new MonthHeaderModel(this) { Month = item.Month });
                 }
             }
 
             return monthes;
+        }
+
+        public void Dispose()
+        {
+            if(Monthes != null)
+                foreach (var monthHeader in Monthes)
+                {
+                    monthHeader.Dispose();
+                }
         }
 
         #endregion

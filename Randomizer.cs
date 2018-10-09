@@ -27,11 +27,6 @@ namespace CarLeasingViewer
             return new Month(year, (Monthes)index);
         }
 
-        public static MonthBusiness GetRandomBusiness(int year = 2018)
-        {
-            return GetRandomBusiness(GetRandomMonth(year));
-        }
-
         public static MonthBusiness GetRandomBusiness(Month month)
         {
             var mb = new MonthBusiness(Generate(month));
