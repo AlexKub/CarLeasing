@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace CarLeasingViewer
 {
@@ -51,6 +52,11 @@ namespace CarLeasingViewer
                 LogManager.Settings.LogSetFlag = LogManager.LogSetFlag_File;
             }
             finally { }
+
+            //http://www.abhisheksur.com/2011/03/deal-with-cpu-usage-in-wpf-applications.html
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //    typeof(Timeline),
+            //    new FrameworkPropertyMetadata { DefaultValue = 25 } );
         }
 
         public static MainWindow GetMainWindow()

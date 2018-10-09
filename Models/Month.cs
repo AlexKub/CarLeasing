@@ -207,7 +207,7 @@ namespace CarLeasingViewer.Models
                 if (start.Month == end.Month)
                     return 1;
 
-                var res = Math.Abs(start.Month - end.Month);
+                var res = Math.Abs(start.Month - end.Month) + 1; //+1 чтобы включительно с последним месяцем
 
                 return res;
             }
