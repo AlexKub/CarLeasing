@@ -167,7 +167,7 @@
                 <!-- График занятости -->
                 <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CanContentScroll="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" ScrollChanged="LeasingScroll_ScrollChanged">
                     <!-- Новая сетка -->
-                        <controls:LeasingChart 
+                        <controls:LeasingChart x:Name="LeasingChart"
                             VerticalAlignment="Top"
                             RowHeight="{StaticResource RowHeight}" 
                                                    Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"

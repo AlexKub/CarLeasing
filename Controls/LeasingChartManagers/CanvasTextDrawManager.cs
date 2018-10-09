@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 
@@ -106,25 +105,34 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             TextBrush.Freeze();
         }
 
-        public void DrawText(DrawingContext dc)
+        public DrawingVisual DrawText(LeasingElementModel model)
         {
             //проверяем инициализацию для интерфейса шрифта
             //инициализирован при заполнении шрифта (this.FontFamily)
             //if (m_glyphType == null)
             //    m_glyphType = GetGlyphTypeface();
             //
-            foreach (var item in m_bars.Values)
-            {
-                if (!item.TextDrawed)
-                {
-                    //если ещё не проставлены смещения
-                    if (item.Border == null)
-                        SetOffset(item);
 
-                    DrawText(item, dc);
-                    item.TextDrawed = true;
-                }
+            BarData bd = null;
+            DrawingVisual dv = null;
+
+            if (m_bars.ContainsKey(model))
+                bd = m_bars[model];
+            else
+            {
+                bd = new BarData(this) { Index = model.RowIndex, BarModel = model };
+                m_bars.Add(model, bd);
+                SetOffset(bd);
             }
+
+            //если ещё не проставлены смещения
+            if (bd.Border == null)
+                SetOffset(bd);
+
+            dv = DrawText(bd);
+            bd.TextDrawed = true;
+
+            return dv;
         }
 
         /// <summary>
@@ -132,23 +140,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         /// <param name="bd">Данные для отрисовки</param>
         /// <returns>Возвращает</returns>
-        void DrawText(BarData bd, DrawingContext dc)
+        DrawingVisual DrawText(BarData bd)
         {
-            //var g = new Glyphs();
-            //
-            //var barModel = bd.BarModel;
-            //g.UnicodeString = barModel.Leasing?.Title ?? "NO TITLE";
-            //g.Height = RowHeight;
-            //g.Width = (barModel.Leasing.DateEnd - barModel.Leasing.DateStart).Days * barModel.DayColumnWidth;
-            //g.Fill = Brushes.Black;
-            //g.Fill.Freeze();
-            //g.OriginX = 0;
-            //g.OriginY = ((RowHeight - FontSize) / 2) + FontSize;
-            //g.FontRenderingEmSize = FontSize;
-            //g.FontUri = new Uri(@"C:\WINDOWS\Fonts\TIMES.TTF");
-            //
-            //return g;
-
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
             string text = bd?.BarModel?.Leasing?.Title ?? "NO TITLE";
             double fontSize = FontSize;
@@ -186,13 +179,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //точные координаты начала текста на Canvas
             Point origin = new Point(x, y);
 
-            //объект отрисовки текста
-            //GlyphRun glyphRun = new GlyphRun(m_glyphType, 0, false, fontSize,
-            //    glyphIndexes, origin, advanceWidths, null, null, null, null,
-            //    null, null);
-
+            var dv = new DrawingVisual();
+            var dc = dv.RenderOpen();
 
             dc.DrawText(ft, origin);
+
+            dc.Close();
+
+            return dv;
         }
 
         GlyphTypeface GetGlyphTypeface()

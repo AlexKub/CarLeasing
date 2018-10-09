@@ -1,22 +1,24 @@
-﻿using System;
-using System.Linq;
+﻿using CarLeasingViewer.Controls.LeasingChartManagers;
+using CarLeasingViewer.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using CarLeasingViewer.Models;
-using CarLeasingViewer.Controls.LeasingChartManagers;
-using System.Windows.Shapes;
 using System.Windows.Input;
-using System.Text;
+using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls
 {
     /// <summary>
     /// График занятости автомобилей
     /// </summary>
-    public partial class LeasingChart : Canvas
+    public partial class LeasingChart : FrameworkElement
     {
+        // Create a collection of child visual objects.
+        private readonly VisualCollection m_children;
+
         CanvasGridDrawManager m_gridM;
         CanvasBarDrawManager m_barM;
         CanvasTextDrawManager m_textM;
@@ -192,38 +194,7 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public double RowHeight { get { return (double)GetValue(dp_RowHeight); } set { SetValue(dp_RowHeight, value); } }
 
-        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata()
-        {
-            DefaultValue = new List<LeasingElementModel>(),
-            PropertyChangedCallback = (s, e) =>
-            {
-                var _this = s as LeasingChart;
-                var val = e.NewValue as IEnumerable<LeasingElementModel>;
-
-                if (val != null)
-                {
-                    //if (_this.m_gridM != null)
-                    //{
-                    //    var rowsI = val.Select(l => l.RowIndex).Distinct();
-                    //    foreach (var i in rowsI)
-                    //        _this.m_gridM.DrawRow(i);
-                    //}
-
-                    //if (_this.m_barM != null)
-                    //{
-                    //    foreach (var bm in val)
-                    //    {
-                    //        _this.m_barM.DrawBar(bm);
-                    //    }
-                    //}
-                    //
-                    //if (_this.m_textM != null)
-                    //{
-                    //    _this.m_textM.Load(val);
-                    //}
-                }
-            }
-        });
+        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingElementModel>() });
         /// <summary>
         /// Набор аренд авто
         /// </summary>
@@ -238,53 +209,115 @@ namespace CarLeasingViewer.Controls
             m_textM = new CanvasTextDrawManager(this);
 
             base.Unloaded += LeasingChart_Unloaded;
+
+            m_children = new VisualCollection(this);
         }
 
         int m_counter = 0;
         bool firstDraw = true;
-        protected override void OnRender(DrawingContext dc)
+
+        public void Draw()
         {
-            m_counter++;
-            
-            /*
-             * Для быстрой отрисовки текста был выбран способ через DrawingContext
-             * 
-             * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
-             * порядок отрисовки = ZIndex
-             */
-             //if(Leasings != null && (!firstDraw || (firstDraw && m_counter == 4)))
-            if ((m_counter == 4) && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
+            m_children.Clear();
+
+            ClearManagers();
+            DrawingVisual dv = null;
+
+            //отрисовка сетки
+            if (m_gridM != null)
             {
-                firstDraw = false;
-                m_counter = 0;
-                ClearManagers();
-
-                //отрисовка сетки
-                if (m_gridM != null)
+                var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+                foreach (var i in rowsI)
                 {
-                    var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
-                    foreach (var i in rowsI)
-                        m_gridM.DrawRow(i, dc); //строки
-
-                    //колонки
-                    m_gridM.DrawColumns(DayCount, dc);
+                    dv = m_gridM.DrawRow(i);
+                    if(dv != null)
+                        m_children.Add(dv); //строки
                 }
 
-                if (m_barM != null)
+                //колонки
+                var colCount = DayCount + 1;
+                for (int i = 1; i < colCount; i++)
                 {
-                    foreach (var bm in Leasings)
-                    {
-                        m_barM.DrawBar(bm, dc);
-                    }
+                    dv = m_gridM.DrawColumn(i);
+                    if (dv != null)
+                        m_children.Add(dv);
                 }
+                
+            }
 
-                //отрисовываем текст для полосок на Canvas
-                if (m_textM != null)
+            if (m_barM != null && m_textM != null)
+            {
+                foreach (var bm in Leasings)
                 {
-                    m_textM.Load(Leasings);
-                    m_textM.DrawText(dc);
+                    dv = m_barM.DrawBar(bm);
+
+                    if (dv != null)
+                        m_children.Add(dv);
+
+                    dv = m_textM.DrawText(bm);
+
+                    if (dv != null)
+                        m_children.Add(dv);
                 }
             }
+        }
+
+        // Provide a required override for the VisualChildrenCount property.
+        protected override int VisualChildrenCount => m_children.Count;
+
+        protected override Visual GetVisualChild(int index)
+        {
+            if (index < 0 || index >= m_children.Count)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return m_children[index];
+        }
+
+        protected override void OnRender(DrawingContext dc)
+        {
+            //m_counter++;
+            //
+            ///*
+            // * Для быстрой отрисовки текста был выбран способ через DrawingContext
+            // * 
+            // * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
+            // * порядок отрисовки = ZIndex
+            // */
+            // //if(Leasings != null && (!firstDraw || (firstDraw && m_counter == 4)))
+            //if (m_counter == (firstDraw ? 4 : 2) && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
+            //{
+            //    firstDraw = false;
+            //    m_counter = 0;
+            //    ClearManagers();
+            //
+            //    //отрисовка сетки
+            //    if (m_gridM != null)
+            //    {
+            //        var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+            //        foreach (var i in rowsI)
+            //            m_gridM.DrawRow(i, dc); //строки
+            //
+            //        //колонки
+            //        m_gridM.DrawColumns(DayCount, dc);
+            //    }
+            //
+            //    if (m_barM != null)
+            //    {
+            //        foreach (var bm in Leasings)
+            //        {
+            //            m_barM.DrawBar(bm, dc);
+            //        }
+            //    }
+            //
+            //    //отрисовываем текст для полосок на Canvas
+            //    if (m_textM != null)
+            //    {
+            //        m_textM.Load(Leasings);
+            //        m_textM.DrawText(dc);
+            //    }
+            //}
 
             base.OnRender(dc); //результаты от позиции OnRender у меня не зависили
         }
@@ -334,7 +367,7 @@ namespace CarLeasingViewer.Controls
             var point = e.GetPosition(this);
 
             //проверка позиционироввания курсора над ранее обработанным элементом
-            if(m_TooltipedRect != null)
+            if (m_TooltipedRect != null)
             {
                 //если мышь всё ещё над тем же элементом - ничего не делаем
                 if (m_TooltipedRect.Border.Contains(point))
@@ -403,9 +436,16 @@ namespace CarLeasingViewer.Controls
 
             m_tooltip = grid;
 
-            Children.Add(grid);
-            Canvas.SetTop(grid, bar.VerticalOffset + bar.Border.Height + 3);
-            Canvas.SetLeft(grid, p.X);
+            var dv = new DrawingVisual();
+            using (var dc = dv.RenderOpen())
+            {
+                var vb = new VisualBrush(grid);
+                dc.DrawRectangle(vb, null, new Rect(p.X, bar.VerticalOffset + bar.Border.Height + 3d, 300d, 300d));
+
+                //Children.Add(grid);
+                //Canvas.SetTop(grid, bar.VerticalOffset + bar.Border.Height + 3);
+                //Canvas.SetLeft(grid, p.X);
+            }
         }
 
         TextBlock NewStyledTooltipRow()
@@ -422,9 +462,10 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         void HideTooltip()
         {
-            if(m_tooltip != null)
+            if (m_tooltip != null)
             {
-                Children.Remove(m_tooltip);
+                RemoveVisualChild(m_tooltip);
+                //Children.Remove(m_tooltip);
                 m_tooltip = null;
             }
 

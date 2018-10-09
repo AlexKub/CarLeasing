@@ -11,8 +11,18 @@ namespace CarLeasingViewer.Views
     {
         public MainWindow2(LeasingViewViewModel vm)
         {
+            vm.Window = this;
             DataContext = vm;
             InitializeComponent();
+
+            Loaded += MainWindow2_Loaded;
+        }
+
+        private void MainWindow2_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= MainWindow2_Loaded;
+
+            LeasingChart.Draw();
         }
 
         private void LeasingScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
@@ -44,5 +54,7 @@ namespace CarLeasingViewer.Views
 
             base.OnClosing(e);
         }
+
+        
     }
 }

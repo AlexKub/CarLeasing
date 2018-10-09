@@ -47,9 +47,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <returns>Возвращает данные отрисовки прямоугольника для модели</returns>
         public BarData this[LeasingElementModel model] { get { if (m_bars.ContainsKey(model)) return m_bars[model]; else return null; } }
 
-        public void DrawBar(LeasingElementModel barModel, DrawingContext dc)
+        public DrawingVisual DrawBar(LeasingElementModel barModel)
         {
             BarData bd = null;
+            DrawingVisual dv = null;
 
             if (m_bars.ContainsKey(barModel))
                 bd = m_bars[barModel];
@@ -64,27 +65,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 m_bars.Add(barModel, bd);
             }
 
-            DrawBorder(bd, dc);
+            dv = DrawBorder(bd);
             //bd.Border = b;
+
+            return dv;
         }
 
-        void DrawBorder(BarData bd, DrawingContext dc)
+        DrawingVisual DrawBorder(BarData bd)
         {
-            //var b = new Border();
-            //b.BorderBrush = BorderBrush;
-            //b.SnapsToDevicePixels = true;
-            //b.Background = BackgroundBrush;
-            //b.Height = RowHeight;
-            //b.Width = bd.BarModel.Width;
-            //Panel.SetZIndex(b, Z_Indexes.BarIndex);
-            //
-            ////var lineNumber = bd.BarModel.RowIndex + 1;
-            //
-            //Canvas.Children.Add(b);
-            //
-            //System.Windows.Controls.Canvas.SetTop(b, bd.VerticalOffset);
-            //System.Windows.Controls.Canvas.SetLeft(b, bd.HorizontalOffset);
-
             Pen pen = new Pen(BorderBrush, 1);
             Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, bd.BarModel.Width, RowHeight);
             bd.Border = rect;
@@ -97,11 +85,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guidelines.GuidelinesY.Add(rect.Top + halfPenWidth);
             guidelines.GuidelinesY.Add(rect.Bottom + halfPenWidth);
 
+            var dv = new DrawingVisual();
+            var dc = dv.RenderOpen();
+
             dc.PushGuidelineSet(guidelines);
             dc.DrawRectangle(BackgroundBrush, pen, rect);
             dc.Pop();
 
+            dc.Close();
+
             bd.Drawed = true;
+
+            return dv;
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }

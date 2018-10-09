@@ -29,9 +29,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         /// <param name="index">Индекс строки</param>
         /// <param name="height">Высота строки</param>
-        public void DrawRow(int index, double height, DrawingContext dc)
+        public DrawingVisual DrawRow(int index, double height)
         {
             LineData rData = null;
+            DrawingVisual dv = null;
 
             if (m_rowsData.ContainsKey(index))
                 rData = m_rowsData[index];
@@ -75,7 +76,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                     if (index == 0)
                     {
-                        rData.Line = DrawRow(height, dc); //первую строку просто рисуем
+                        dv = DrawRow(height, rData); //первую строку просто рисуем
                     }
                     else
                     {
@@ -85,23 +86,26 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                             height += m_rowsData[i].Offset;
                         }
 
-                        rData.Line = DrawRow(height, dc);
+                        dv = DrawRow(height, rData);
                     }
                 }
             }
+
+            return dv;
         }
 
         /// <summary>
         /// Отрисовка строки по указанному индексу
         /// </summary>
         /// <param name="index">Индекс строки</param>
-        public void DrawRow(int index, DrawingContext dc)
+        public DrawingVisual DrawRow(int index)
         {
-            DrawRow(index, RowHeight, dc);
+            return DrawRow(index, RowHeight);
         }
 
-        Line DrawRow(double offset, DrawingContext dc)
+        DrawingVisual DrawRow(double offset, LineData data)
         {
+            data.Line = new Line();
             //var l = new Line();
             //l.X1 = 0;
             //l.Y1 = offset;
@@ -126,11 +130,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guideSet.GuidelinesY.Add(offset + halfPenWidth);
             guideSet.GuidelinesY.Add(offset + halfPenWidth);
 
+
+            var dv = new DrawingVisual();
+            var dc = dv.RenderOpen();
+
             dc.PushGuidelineSet(guideSet);
             dc.DrawLine(pen, new System.Windows.Point(0d, offset), new System.Windows.Point(CanvasWidth, offset));
             dc.Pop();
+            dc.Close();
 
-            return new Line();
+            return dv;
         }
 
         /// <summary>
@@ -147,35 +156,36 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
-        public void DrawColumns(int count, DrawingContext dc)
+        public DrawingVisual DrawColumn(int index)
         {
-            if (count > 0d)
+            DrawingVisual dv = null;
+            if (index > 0)
             {
                 LineData ld = null;
 
-                var offset = 0d;
-                for (int i = 0; i < count; i++)
+                var offset = ColumnWidth * index;
+
+                if (m_columnsData.ContainsKey(index))
+                    ld = m_columnsData[index];
+                else
                 {
-                    offset += ColumnWidth;
-                    if (m_columnsData.ContainsKey(i))
-                        ld = m_columnsData[i];
-                    else
-                    {
-                        ld = new LineData(this) { Index = i };
-                        m_columnsData.Add(i, ld);
-                    }
+                    ld = new LineData(this) { Index = index };
+                    m_columnsData.Add(index, ld);
+                }
 
-                    ld.Offset = offset;
+                ld.Offset = offset;
 
-                    if (offset > 0d && CanvasHeight > 0d && !ld.Drawed)
-                    {
-                        ld.Line = DrawColumn(offset, dc);
-                    }
+                if (offset > 0d && CanvasHeight > 0d && !ld.Drawed)
+                {
+                    ld.Line = new Line();
+                    dv = DrawColumn(offset);
                 }
             }
+
+            return dv;
         }
 
-        Line DrawColumn(double offset, DrawingContext dc)
+        DrawingVisual DrawColumn(double offset)
         {
             //var l = new Line();
             //l.X1 = offset;
@@ -203,11 +213,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guideSet.GuidelinesY.Add(0d + halfPenWidth);
             guideSet.GuidelinesY.Add(CanvasHeight + halfPenWidth);
 
+            var dv = new DrawingVisual();
+            var dc = dv.RenderOpen();
+
             dc.PushGuidelineSet(guideSet);
             dc.DrawLine(pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, CanvasHeight));
             dc.Pop();
+            dc.Close();
 
-            return new Line();
+            return dv;
         }
 
         public CanvasGridDrawManager(LeasingChart canvas) : base(canvas) { }
@@ -328,7 +342,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 if (Drawed)
                 {
-                    m_manager.Canvas.Children.Remove(Line);
+                    //m_manager.Canvas.Children.Remove(Line);
                     Line = null;
                 }
                 Offset = 0d;

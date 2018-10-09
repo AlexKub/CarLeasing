@@ -7,6 +7,8 @@ namespace CarLeasingViewer.ViewModels
 {
     public class LeasingViewViewModel : ViewModelBase, IDisposable
     {
+        Views.MainWindow2 m_Window;
+
         private Month m_FromMonth;
         /// <summary>
         /// Возвращает или задаёт Месяц начала просмотра
@@ -27,6 +29,18 @@ namespace CarLeasingViewer.ViewModels
         {
             var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
             LeasingSet = newSet;
+
+            if (m_Window != null)
+                m_Window.LeasingChart.Draw();
+        }
+
+        public Views.MainWindow2 Window { get { return m_Window; } set { m_Window = value; } }
+
+        public LeasingViewViewModel() { }
+
+        public LeasingViewViewModel(Views.MainWindow2 window)
+        {
+            m_Window = window;
         }
 
         #region Obsolet properties
@@ -85,7 +99,6 @@ namespace CarLeasingViewer.ViewModels
         /// Возвращает или задаёт Набор занаятости Авто
         /// </summary>
         public LeasingSet LeasingSet { get { return m_LeasingSet; } set { m_LeasingSet = value; OnSetChanged(value); OnPropertyChanged(); } }
-
 
         void OnSetChanged(LeasingSet set)
         {
