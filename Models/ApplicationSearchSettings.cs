@@ -27,7 +27,10 @@ namespace CarLeasingViewer.Models
 
             SaveSettings();
 
-            App.GetMainWindow().UpdateSearchSettings();
+            var vm = App.GetMainWindow().DataContext as ViewModels.LeasingViewViewModel;
+
+            if (vm != null)
+                vm.Update();
         }
 
         public ApplicationSearchSettings()

@@ -1,8 +1,8 @@
 ﻿using CarLeasingViewer.Models;
+using CarLeasingViewer.Views;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media.Animation;
 
 namespace CarLeasingViewer
 {
@@ -59,9 +59,9 @@ namespace CarLeasingViewer
             //    new FrameworkPropertyMetadata { DefaultValue = 25 } );
         }
 
-        public static MainWindow GetMainWindow()
+        public static MainWindow2 GetMainWindow()
         {
-            return App.Current.MainWindow as MainWindow;
+            return App.Current.MainWindow as MainWindow2;
         }
 
         /// <summary>

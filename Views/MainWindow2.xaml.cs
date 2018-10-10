@@ -1,5 +1,8 @@
-﻿using CarLeasingViewer.ViewModels;
+﻿using CarLeasingViewer.Models;
+using CarLeasingViewer.ViewModels;
+using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 
 namespace CarLeasingViewer.Views
@@ -11,8 +14,29 @@ namespace CarLeasingViewer.Views
     {
         public MainWindow2()
         {
-            DataContext = new LeasingViewViewModel(this);
+            var vm = new LeasingViewViewModel(this);
+
+
+            var curentYear = DateTime.Now.Year;
+            var rMonth = Randomizer.GetRandomMonth(curentYear);
+            MonthBusiness[] monthBuisnesses = null;
+
+            if (App.SearchSettings.TestData)
+            {
+                App.SetAvailable(Month.GetMonthes(new DateTime(curentYear, 1, 1), new DateTime(curentYear, 12, 1)));
+                monthBuisnesses = DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
+            }
+            else
+                monthBuisnesses = DataManager.GetDataset(rMonth, rMonth.Next(2));
+
+            var set = new LeasingSet();
+            set.Data = monthBuisnesses;
+
             InitializeComponent();
+            DataContext = vm;
+
+            //Set проставляем после инициализации, т.к. не явно заполняется контрол
+            vm.LeasingSet = set;
 
             Loaded += MainWindow2_Loaded;
         }
@@ -62,12 +86,14 @@ namespace CarLeasingViewer.Views
             base.OnClosing(e);
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void OnSearchSettingsChanged(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as LeasingViewViewModel;
 
-            if (vm != null)
-                vm.Update();
+            if (vm == null)
+                return;
+
+            vm.Update();
         }
     }
 }

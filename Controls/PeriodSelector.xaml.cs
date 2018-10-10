@@ -183,7 +183,7 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         void RefreshSelectedIndex(Period p)
         {
-            if (FromMonth == null) //если месяц не проставлен по каким-то причинам
+            if (FromMonth == null|| ToMonth == null) //если месяц не проставлен по каким-то причинам
             {
                 if (FromMonthIndex >= 0)
                     FromMonthIndex = -1; //ставим отрицательное значение
