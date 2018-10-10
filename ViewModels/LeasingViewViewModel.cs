@@ -82,11 +82,11 @@ namespace CarLeasingViewer.ViewModels
             }
         }
 
-        private IReadOnlyList<CarComment> pv_Comments;
+        private IReadOnlyList<CarCommentModel> pv_Comments;
         /// <summary>
         /// Возвращает или задаёт набор Комментариев к машинам
         /// </summary>
-        public IReadOnlyList<CarComment> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
+        public IReadOnlyList<CarCommentModel> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
         #endregion
 

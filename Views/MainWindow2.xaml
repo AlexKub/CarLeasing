@@ -150,7 +150,9 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Style="{StaticResource ItemBorderStyle}" >
+                                    <Border d:DataContext="{d:DesignInstance models:CarModel}"
+                                            Style="{StaticResource ItemBorderStyle}" 
+                                            Background="{Binding HightlightBrush}" >
                                         <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
                                     </Border>
                                 </DataTemplate>
@@ -221,7 +223,9 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Style="{StaticResource ItemBorderStyle}" >
+                                    <Border d:DataContext="{d:DesignInstance models:CarCommentModel}"
+                                            Style="{StaticResource ItemBorderStyle}"
+                                            Background="{Binding HightlightBrush}">
                                         <TextBlock Text="{Binding Comment}" Style="{StaticResource ItemTextBlockStyle}" TextAlignment="Left" Margin="3 0 0 0"/>
                                     </Border>
                                 </DataTemplate>

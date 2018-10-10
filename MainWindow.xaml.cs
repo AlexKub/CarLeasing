@@ -205,7 +205,7 @@ namespace CarLeasingViewer
             .Distinct()
             .Select(name => new CarModel() { Text = name }).ToList();
 
-            vm.Comments = vm.Cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
+            vm.Comments = vm.Cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
             //tabItem.MonthLeasing.CarBusiness.Select(b => new CarHeaderModel() { Text = b.Name }).ToList();
 
             var leasingBarModels = new List<LeasingElementModel>[monthBuisnesses.Length];

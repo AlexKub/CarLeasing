@@ -337,5 +337,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 }
             }
         }
+
+        
     }
 }

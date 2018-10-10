@@ -69,7 +69,7 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        private void OwnerSet_MonthesChanged(LeasingSet set)
+        private void OwnerSet_MonthesChanged(LeasingSetEventArgs e)
         {
             SetNextPrevios();
         }

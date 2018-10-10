@@ -1,18 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace CarLeasingViewer.Models
 {
     /// <summary>
     /// Событие набора Занятости авто
     /// </summary>
-    /// <param name="set">Набор, в котоом произошло изменение</param>
-    public delegate void LeasingSetEvent(LeasingSet set);
+    /// <param name="set">Набор, в котором произошло изменение</param>
+    public delegate void LeasingSetEvent(LeasingSetEventArgs e);
+
+    /// <summary>
+    /// Аргументы события Набора логирования
+    /// </summary>
+    public class LeasingSetEventArgs
+    {
+        /// <summary>
+        /// Старый набор
+        /// </summary>
+        public LeasingSet Old { get; private set; }
+        /// <summary>
+        /// Новый набор
+        /// </summary>
+        public LeasingSet New { get; private set; }
+
+        public LeasingSetEventArgs(LeasingSet n) : this(n, n) { }
+
+        public LeasingSetEventArgs(LeasingSet n, LeasingSet o)
+        {
+            New = n;
+            Old = o;
+        }
+    }
 
     /// <summary>
     /// Общий набор Аренд авто для LeasingChart
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class LeasingSet : ViewModels.ViewModelBase, IDisposable
     {
         private int m_RowsCount;
@@ -77,7 +102,7 @@ namespace CarLeasingViewer.Models
                     }
 
                     if (MonthesChanged != null)
-                        MonthesChanged(this);
+                        MonthesChanged(new LeasingSetEventArgs(this));
 
                     OnPropertyChanged();
                 }
@@ -88,7 +113,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Возвращает или задаёт набор моделей авто для View
         /// </summary>
-        public IReadOnlyList<CarModel> CarModels { get { return m_CarModels; } set { m_CarModels = value; OnPropertyChanged(); } }
+        public IReadOnlyList<CarModel> CarModels { get { return m_CarModels; } set { m_CarModels = value; CarsChanged?.Invoke(new LeasingSetEventArgs(this)); OnPropertyChanged(); } }
 
         private IReadOnlyList<LeasingElementModel> pv_Leasings = new List<LeasingElementModel>();
         /// <summary>
@@ -128,16 +153,24 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        private IReadOnlyList<CarComment> m_Comments = new List<CarComment>();
+        private IReadOnlyList<CarCommentModel> m_Comments = new List<CarCommentModel>();
         /// <summary>
         /// Возвращает или задаёт Комментарии к авто
         /// </summary>
-        public IReadOnlyList<CarComment> Comments { get { return m_Comments; } set { m_Comments = value; OnPropertyChanged(); } }
+        public IReadOnlyList<CarCommentModel> Comments { get { return m_Comments; } set { m_Comments = value; CommentsChanged?.Invoke(new LeasingSetEventArgs(this)); OnPropertyChanged(); } }
 
         /// <summary>
-        /// При изменении наборма месяцев
+        /// При изменении набора месяцев
         /// </summary>
         public event LeasingSetEvent MonthesChanged;
+        /// <summary>
+        /// При изменении набора Машин
+        /// </summary>
+        public event LeasingSetEvent CarsChanged;
+        /// <summary>
+        /// При изменении набора Комментариев
+        /// </summary>
+        public event LeasingSetEvent CommentsChanged;
 
         #region Перевод из одной модели данных в текущую
 
@@ -167,9 +200,9 @@ namespace CarLeasingViewer.Models
             .Select(name => new CarModel() { Text = name, RowIndex = rowIndex++ }).ToList();
         }
 
-        IReadOnlyList<CarComment> GetComments(IReadOnlyList<CarModel> cars)
+        IReadOnlyList<CarCommentModel> GetComments(IReadOnlyList<CarModel> cars)
         {
-            return cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
+            return cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
         }
 
         IReadOnlyList<LeasingElementModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
@@ -243,5 +276,45 @@ namespace CarLeasingViewer.Models
         }
 
         #endregion
+
+        string DebugDisplay()
+        {
+            if (Monthes == null || Monthes.Count() == 0)
+                return "NO MONTHES IN SET";
+
+            //копипаста из BussinessDateConverter (старая версия)
+            StringBuilder sb = new StringBuilder();
+            //<действие> c XX по ХХ <месяц>
+
+            if (Monthes.Count() == 1)
+            {
+                var m = Monthes.First().Month;
+
+                if (m == null)
+                    return "NULL MONTH";
+
+                sb.Append(m.Name).Append(" ").Append(m.Year.ToString());
+            }
+            else
+            {
+                var m1 = Monthes.First().Month;
+                var mn = Monthes.Last().Month;
+
+                sb.Append("С ");
+                if (m1 == null)
+                    sb.Append("NULL");
+                else
+                    sb.Append(m1.Name).Append(" ").Append(m1.Year.ToString());
+
+                sb.Append(" по ");
+
+                if (mn == null)
+                    sb.Append("NULL");
+                else
+                    sb.Append(mn.Name).Append(" ").Append(mn.Year.ToString());
+            }
+
+            return sb.ToString();
+        }
     }
 }
