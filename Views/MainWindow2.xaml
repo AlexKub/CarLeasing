@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:CarLeasingViewer.ViewModels"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:win="clr-namespace:System.Windows;assembly=PresentationFramework"
-        xmlns:local="clr-namespace:CarLeasingViewer.Views"
+        xmlns:local="clr-namespace:CarLeasingViewer"
         xmlns:models="clr-namespace:CarLeasingViewer.Models"
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
@@ -73,6 +73,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <!--Выбор срока/периода просмотра-->
@@ -81,6 +82,15 @@
                                      ToMonth="{Binding ToMonth, Mode=TwoWay}" 
                                      AvailableYears="{Binding AvailableYears}" 
                                      ShowAction="{Binding SortPeriodCommand}"/>
+
+            <Grid Grid.Column="1" HorizontalAlignment="Right" DataContext="{x:Static local:App.SearchSettings}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+                <CheckBox Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" Grid.Column="2" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+            </Grid>
         </Grid>
         
         <!-- Основной график лизинга -->

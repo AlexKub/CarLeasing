@@ -27,11 +27,7 @@ namespace CarLeasingViewer.ViewModels
         public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
         void SortPeriod()
         {
-            var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
-            LeasingSet = newSet;
-
-            if (m_Window != null)
-                m_Window.LeasingChart.Draw();
+            Update();
         }
 
         public Views.MainWindow2 Window { get { return m_Window; } set { m_Window = value; } }
@@ -121,6 +117,14 @@ namespace CarLeasingViewer.ViewModels
 
             if (m_Window != null)
                 m_Window.LeasingChart.LeasingSet = set;
+        }
+
+        public void Update()
+        {
+            LeasingSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
+
+            if (m_Window != null)
+                m_Window.LeasingChart.Draw();
         }
 
         public void Dispose()
