@@ -11,14 +11,14 @@
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
         mc:Ignorable="d"
-        Title="Загрузка ТС" Height="300" Width="700"
+        Title="Загрузка ТС" Height="300" Width="700" MinWidth="900"
         d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
     <Window.Resources>
         <!-- Ширина(высота) ScrollBar'a -->
         <win:GridLength x:Key="ScrollBarWidth">17</win:GridLength>
 
         <!-- Высота строки на Canvas View -->
-        <sys:Double x:Key="RowHeight">16</sys:Double>
+        <sys:Double x:Key="RowHeight">18</sys:Double>
 
         <Style x:Key="MonthItemsControl" TargetType="ItemsControl">
             <Setter Property="ItemContainerStyle">
@@ -70,7 +70,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <!-- Настройки выборки -->
+        <Grid Margin="10 0 10 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -94,17 +95,25 @@
         </Grid>
         
         <!-- Основной график лизинга -->
-        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <Grid Grid.Row="1" d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}">
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top" Margin="10 0 10 0">
+            
+            <Grid d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}" >
                 <Grid.Resources>
                     <!-- Стиль TextBlock'а в коллекциях Машин и Комментариев -->
                     <Style x:Key="ItemTextBlockStyle" TargetType="TextBlock">
                         <Setter Property="TextWrapping" Value="Wrap"/>
                         <Setter Property="FontFamily" Value="Times New Roman"/>
-                        <Setter Property="Height" Value="{StaticResource RowHeight}"/>
                         <Setter Property="TextAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+
+                    <!-- Стили границ у элементов в коллекциях Машин и Комментариев -->
+                    <Style x:Key="ItemBorderStyle" TargetType="Border">
+                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+                        <Setter Property="Height" Value="{StaticResource RowHeight}"/>
+                        <Setter Property="Margin" Value="0 1 0 0"/>
                     </Style>
                 </Grid.Resources>
                 <Grid.RowDefinitions>
@@ -118,8 +127,11 @@
                     <ColumnDefinition MinWidth="100" MaxWidth="300"/>
                 </Grid.ColumnDefinitions>
 
+                <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}"/>
+                <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}"/>
+                
                 <!-- Левая колонка с машинами -->
-                <Border Grid.Column="0" Grid.Row="1" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
+                <Border Grid.Column="0" Grid.Row="1" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
                     <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
                         <ItemsControl ItemsSource="{Binding CarModels}">
                             <ItemsControl.Resources>
@@ -138,7 +150,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource LightBorderBrush}">
+                                    <Border Style="{StaticResource ItemBorderStyle}" >
                                         <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
                                     </Border>
                                 </DataTemplate>
@@ -148,9 +160,9 @@
                 </Border>
 
                 <!-- Шапка с месяцами -->
-                <Border Grid.Column="1" BorderBrush="{StaticResource LightBorderBrush}" BorderThickness="1 0 1 0">
+                <Border Grid.Column="1" BorderBrush="{StaticResource LightBorderBrush}" BorderThickness="1 0 1 0" Margin="-1 0 -1 0">
                     <ScrollViewer Name="MonthesScrollViewer"  VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-                        <ItemsControl ItemsSource="{Binding Monthes}" Margin="-1 0 0 0">
+                        <ItemsControl ItemsSource="{Binding Monthes}" >
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"/>
@@ -209,7 +221,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource LightBorderBrush}" SnapsToDevicePixels="True">
+                                    <Border Style="{StaticResource ItemBorderStyle}" >
                                         <TextBlock Text="{Binding Comment}" Style="{StaticResource ItemTextBlockStyle}" TextAlignment="Left" Margin="3 0 0 0"/>
                                     </Border>
                                 </DataTemplate>

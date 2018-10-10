@@ -409,10 +409,10 @@ namespace CarLeasingViewer.Controls
 
                 //расчёт выхода tooltip за нижнюю границу контрола
                 var y = bar.VerticalOffset + bar.Border.Height + 3d;
-                var botPoint = y + grid.ActualHeight + 2d;
+                var botPoint = y + grid.ActualHeight + 20d;
                 if(botPoint > ActualHeight)
                 {
-                    var diff = botPoint - ActualHeight - RowHeight;
+                    var diff = botPoint - grid.ActualHeight - RowHeight - 20d; //20 - основной скролл чуть больше видимого
                     y -= diff;
                 }
 

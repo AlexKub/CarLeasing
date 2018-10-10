@@ -133,7 +133,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //если машину взяли/вернули в течении 1 месяца
             if (b.MonthCount == 1)
             {
-                dayCount += (b.DateEnd - b.DateStart).Days;
+                dayCount += ((b.DateEnd - b.DateStart).Days + 1);
             }
             //если машина взята в аренду на несколько месяцев
             else
