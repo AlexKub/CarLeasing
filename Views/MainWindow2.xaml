@@ -101,6 +101,7 @@
             
             <Grid d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}" >
                 <Grid.Resources>
+                    <converters:ItemHeightConverter x:Key="HeightConverter"/>
                     <!-- Стиль TextBlock'а в коллекциях Машин и Комментариев -->
                     <Style x:Key="ItemTextBlockStyle" TargetType="TextBlock">
                         <Setter Property="TextWrapping" Value="Wrap"/>
@@ -114,8 +115,7 @@
                         <Setter Property="SnapsToDevicePixels" Value="True"/>
                         <Setter Property="BorderThickness" Value="0 0 0 1"/>
                         <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
-                        <Setter Property="Height" Value="{StaticResource RowHeight}"/>
-                        <Setter Property="Margin" Value="0 1 0 0"/>
+                        <Setter Property="Height" Value="{Binding Source={StaticResource RowHeight}, Converter={StaticResource HeightConverter}}"/>
                     </Style>
                 </Grid.Resources>
                 <Grid.RowDefinitions>

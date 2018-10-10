@@ -69,6 +69,7 @@
     <Compile Include="Controls\LeasingChartManagers\RowManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasRowLayoutDrawManager.cs" />
     <Compile Include="Converters\ColumnWidthConverter.cs" />
+    <Compile Include="Converters\ItemHeightConverter.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
     <Compile Include="Models\LeasingElementID_Manager.cs" />

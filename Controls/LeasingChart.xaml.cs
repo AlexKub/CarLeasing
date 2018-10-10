@@ -389,18 +389,20 @@ namespace CarLeasingViewer.Controls
                 m_rowLayoutM = null;
             }
 
-            if(m_hightlightM != null)
+            if (m_hightlightM != null)
             {
                 m_hightlightM.Dispose();
                 m_hightlightM = null;
             }
 
-            if(m_rowM != null)
+            if (m_rowM != null)
             {
                 m_rowM.Dispose();
                 m_rowM = null;
             }
         }
+
+        #region Mouse handlers
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
@@ -412,6 +414,44 @@ namespace CarLeasingViewer.Controls
             m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.Hightlight);
         }
 
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonDown(e);
+
+            //снимаем все подсветки
+            m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.None);
+
+            var point = e.GetPosition(this);
+
+            //получаем Layout, над которым находится мышь
+            var rLayout = m_rowLayoutM.Contains(point);
+
+            if (rLayout != null)
+            {
+                if (!rLayout.Hightlighted)
+                    //подсвечиваем как при наведении мышью
+                    m_hightlightM.Hightlight(rLayout.RowIndex, HightlightManager.HightlightAction.Hightlight);
+            }
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+            var point = e.GetPosition(this);
+
+            //получаем Layout, над которым находится мышь
+            var rLayout = m_rowLayoutM.Contains(point);
+
+            if (rLayout != null)
+            {
+                //выбираем строку
+                m_hightlightM.Hightlight(rLayout.RowIndex, HightlightManager.HightlightAction.Select);
+            }
+            else
+                m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.None);
+        }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
@@ -420,11 +460,18 @@ namespace CarLeasingViewer.Controls
 
             //получаем Layout, над которым находится мышь
             var rLayout = m_rowLayoutM.Contains(point);
-            //индекс строки, над которой сейчас находится курсор мыши
-            var rowIndex = rLayout == null ? -1 : rLayout.RowIndex;
+            var rowIndex = -1;
 
-            //подсвечиваем элементы, над которыми находится мышь
-            m_hightlightM.Hightlight(rowIndex, rowIndex == -1 ? HightlightManager.HightlightAction.None : HightlightManager.HightlightAction.Hightlight);
+            if (rLayout != null)
+            {
+                rowIndex = rLayout.RowIndex;
+
+                if (!rLayout.Hightlighted)
+                    m_hightlightM.Hightlight(rowIndex, HightlightManager.HightlightAction.Hightlight);
+            }
+            else
+                //подсвечиваем элементы, над которыми находится мышь
+                m_hightlightM.Hightlight(rowIndex, HightlightManager.HightlightAction.None);
 
             //проверка позиционироввания курсора над ранее обработанным элементом
             if (m_TooltipedRect != null)
@@ -457,6 +504,8 @@ namespace CarLeasingViewer.Controls
                 }
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Отрисовка Tooltip на Canvas
@@ -514,7 +563,7 @@ namespace CarLeasingViewer.Controls
                 var y = bar.VerticalOffset + bar.Border.Height + 3d;
 
                 var botPoint = y + grid.ActualHeight + 20d;
-                
+
                 if (botPoint > ActualHeight)
                 {
                     var diff = botPoint - grid.ActualHeight - RowHeight - 20d; //20 - основной скролл чуть больше видимого

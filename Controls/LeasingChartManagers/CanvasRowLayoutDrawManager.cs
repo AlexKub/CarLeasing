@@ -77,8 +77,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawLayoutRect(RowLayout rl)
         {
-            var index = rl.RowIndex + 1;
-            var verticalOffset = index * RowHeight;
+            var verticalOffset = rl.RowIndex * RowHeight;
 
             Rect rect = new Rect(0, verticalOffset, Canvas.ActualWidth, RowHeight);
             rl.Rectangle = rect;
