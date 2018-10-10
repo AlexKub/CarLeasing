@@ -62,6 +62,12 @@ namespace CarLeasingViewer.Views
             base.OnClosing(e);
         }
 
-        
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            if (vm != null)
+                vm.Update();
+        }
     }
 }

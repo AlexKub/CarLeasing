@@ -61,7 +61,7 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                var newVal = ((double)e.NewValue); 
+                var newVal = ((double)e.NewValue);
                 if (_this.m_gridM != null)
                 {
                     _this.m_gridM.ColumnWidth = newVal + 1; //+ 1: захардкожена ширина границы у колонки
@@ -232,7 +232,7 @@ namespace CarLeasingViewer.Controls
                 foreach (var i in rowsI)
                 {
                     dv = m_gridM.DrawRow(i);
-                    if(dv != null)
+                    if (dv != null)
                         m_children.Add(dv); //строки
                 }
 
@@ -244,7 +244,7 @@ namespace CarLeasingViewer.Controls
                     if (dv != null)
                         m_children.Add(dv);
                 }
-                
+
             }
 
             if (m_barM != null && m_textM != null)
@@ -345,7 +345,7 @@ namespace CarLeasingViewer.Controls
                     {
                         HideTooltip();
 
-                        DrawTooltip(bar, point);
+                        ShowTooltip(bar, point);
                         m_TooltipedRect = bar; //сохраняем найденный элемент
                         return;
                     }
@@ -356,38 +356,36 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Отрисовка Tooltip на Canvas
         /// </summary>
-        void DrawTooltip(CanvasBarDrawManager.BarData bar, Point p)
+        void ShowTooltip(CanvasBarDrawManager.BarData bar, Point p)
         {
             var grid = new Grid();
             grid.Background = Brushes.LightGray;
+            grid.Background.Freeze();
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
 
-            TextBlock text0 = null;
+            var hasComment = !string.IsNullOrEmpty(bar.BarModel?.Leasing.Comment);
+            if (hasComment)
+                grid.RowDefinitions.Add(new RowDefinition());
+
             if (bar.BarModel == null)
             {
-                text0 = NewStyledTooltipRow();
-                text0.Text = "NO MODEL";
+                NewStyledTooltipRow(grid, "NO MODEL", 0);
             }
             else
             {
-                text0 = NewStyledTooltipRow();
-                text0.Text = bar.BarModel.Leasing.Title;
+                NewStyledTooltipRow(grid, bar.BarModel.Leasing.Title, 0);
 
-                var text1 = NewStyledTooltipRow();
-                text1.Text = bar.BarModel.CarName;
+                NewStyledTooltipRow(grid, bar.BarModel.CarName, 1);
 
-                var text2 = NewStyledTooltipRow();
-                text2.Text = GetDataSpan(bar.BarModel);
+                NewStyledTooltipRow(grid, GetDataSpan(bar.BarModel), 2);
 
-                grid.Children.Add(text1);
-                grid.Children.Add(text2);
-                Grid.SetRow(text1, 1);
-                Grid.SetRow(text2, 2);
+                if (hasComment)
+                {
+                    NewStyledTooltipRow(grid, bar.BarModel.Leasing.Comment, 3);
+                }
             }
-
-            grid.Children.Add(text0);
 
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
@@ -410,7 +408,7 @@ namespace CarLeasingViewer.Controls
                 //расчёт выхода tooltip за нижнюю границу контрола
                 var y = bar.VerticalOffset + bar.Border.Height + 3d;
                 var botPoint = y + grid.ActualHeight + 2d;
-                if(botPoint > ActualHeight)
+                if (botPoint > ActualHeight)
                 {
                     var diff = botPoint - ActualHeight - RowHeight;
                     y -= diff;
@@ -423,11 +421,14 @@ namespace CarLeasingViewer.Controls
             m_tooltip = dv;
         }
 
-        TextBlock NewStyledTooltipRow()
+        TextBlock NewStyledTooltipRow(Grid grid, string text, int index)
         {
             var tb = new TextBlock();
-            tb.Margin = new Thickness(5);
+            tb.Margin = new Thickness(10d, 5d, 10d, 5d);
             tb.HorizontalAlignment = HorizontalAlignment.Center;
+            tb.Text = text;
+            grid.Children.Add(tb);
+            Grid.SetRow(tb, index);
 
             return tb;
         }

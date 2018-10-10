@@ -16,7 +16,7 @@ namespace CarLeasingViewer.Models
 
         private Month pv_Month;
         /// <summary>
-        /// Возвращает или задаёт
+        /// Возвращает или задаёт значение Месяца для текущей обёртки
         /// </summary>
         public Month Month { get { return pv_Month; } set { if (pv_Month != value) { pv_Month = value; SetNextPrevios(); OnPropertyChanged(); } } }
 
