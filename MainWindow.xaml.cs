@@ -196,18 +196,6 @@ namespace CarLeasingViewer
                 ? DataManager.GetDataset(rMonth, rMonth.Next(2)) 
                 : DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
 
-            //if (App.SearchSettings.TestData)
-            //{
-            //    var rMonth = Randomizer.GetRandomMonth(2018);
-            //
-            //    monthBuisnesses = new MonthBusiness[] { Randomizer.GetRandomBusiness(rMonth), Randomizer.GetRandomBusiness(rMonth.Next()), Randomizer.GetRandomBusiness(rMonth.Next(2)) };
-            //}
-            //else
-            //{
-            //    var second = curentVM.TabItemsModels.ElementAt(1) as PeriodTabItemModel;
-            //    monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last()) };
-            //}
-
             var set = new LeasingSet();
             set.Data = monthBuisnesses;
             vm.LeasingSet = set;
@@ -217,7 +205,7 @@ namespace CarLeasingViewer
             .Distinct()
             .Select(name => new CarModel() { Text = name }).ToList();
 
-            vm.Comments = vm.Cars.Select(car => new CarComment() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
+            vm.Comments = vm.Cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
             //tabItem.MonthLeasing.CarBusiness.Select(b => new CarHeaderModel() { Text = b.Name }).ToList();
 
             var leasingBarModels = new List<LeasingElementModel>[monthBuisnesses.Length];

@@ -19,33 +19,64 @@ namespace CarLeasingViewer.Controls
         // Create a collection of child visual objects.
         private readonly VisualCollection m_children;
 
+        #region Managers
+
+        /// <summary>
+        /// Управление отрисовки сетки
+        /// </summary>
         CanvasGridDrawManager m_gridM;
+        /// <summary>
+        /// Управление отрисовкой прямоугольников на графике
+        /// </summary>
         CanvasBarDrawManager m_barM;
+        /// <summary>
+        /// Управление отрисовкой текста на графике
+        /// </summary>
         CanvasTextDrawManager m_textM;
+        /// <summary>
+        /// Управление отрисовкой Layout'ов строк
+        /// </summary>
+        CanvasRowLayoutDrawManager m_rowLayoutM;
+        /// <summary>
+        /// Управление абстракциями строк
+        /// </summary>
+        RowManager m_rowM;
+        /// <summary>
+        /// Управление подсветкой
+        /// </summary>
+        HightlightManager m_hightlightM;
+
+        /// <summary>
+        /// Отрисовка прямоугольников на графике
+        /// </summary>
+        public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
+
+        /// <summary>
+        /// Отрисовка текса на графике
+        /// </summary>
+        public CanvasTextDrawManager TextDrawer { get { return m_textM; } }
+
+        /// <summary>
+        /// Layout'ы строк на графике
+        /// </summary>
+        public CanvasRowLayoutDrawManager RowLayoutDrawer { get { return m_rowLayoutM; } }
+
+        /// <summary>
+        /// Строки на графике
+        /// </summary>
+        public RowManager RowManager { get { return m_rowM; } }
+
+        #endregion
+
         DrawingVisual m_tooltip;
         CanvasBarDrawManager.BarData m_TooltipedRect;
 
-        public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
+        /// <summary>
+        /// При изменении Набора аренды
+        /// </summary>
+        public event LeasingSetEvent SetChanged;
 
-        public CanvasTextDrawManager TextDrawer { get { return m_textM; } }
-
-        public static DependencyProperty dp_DayCount = DependencyProperty.Register(nameof(DayCount), typeof(int), typeof(LeasingChart), new FrameworkPropertyMetadata()
-        {
-            DefaultValue = default(int),
-            PropertyChangedCallback = (s, e) =>
-            {
-
-                var _this = s as LeasingChart;
-
-                if (_this == null)
-                    return;
-
-                if (_this.m_gridM == null)
-                    return;
-
-                //_this.m_gridM.DrawColumns((int)e.NewValue);
-            }
-        });
+        public static DependencyProperty dp_DayCount = DependencyProperty.Register(nameof(DayCount), typeof(int), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = default(int) });
         /// <summary>
         /// Суммарное количество дней, отображаемое на графике
         /// </summary>
@@ -61,7 +92,7 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                var newVal = ((double)e.NewValue); 
+                var newVal = ((double)e.NewValue);
                 if (_this.m_gridM != null)
                 {
                     _this.m_gridM.ColumnWidth = newVal + 1; //+ 1: захардкожена ширина границы у колонки
@@ -187,6 +218,9 @@ namespace CarLeasingViewer.Controls
 
                 if (_this.m_barM != null)
                     _this.m_barM.RowHeight = newValue;
+
+                if (_this.m_rowLayoutM != null)
+                    _this.m_rowLayoutM.RowHeight = newValue;
             }
         });
         /// <summary>
@@ -200,10 +234,25 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
+        LeasingSet m_set;
         /// <summary>
         /// Текущий набор данных
         /// </summary>
-        public LeasingSet LeasingSet { get; set; }
+        public LeasingSet LeasingSet
+        {
+            get { return m_set; }
+            set
+            {
+                if (value != m_set)
+                {
+                    var e = new LeasingSetEventArgs(value, m_set);
+
+                    m_set = value;
+
+                    SetChanged?.Invoke(e);
+                }
+            }
+        }
 
         public LeasingChart()
         {
@@ -212,12 +261,19 @@ namespace CarLeasingViewer.Controls
             m_gridM = new CanvasGridDrawManager(this);
             m_barM = new CanvasBarDrawManager(this);
             m_textM = new CanvasTextDrawManager(this);
+            m_rowLayoutM = new CanvasRowLayoutDrawManager(this);
+            //важно!!! подписывать крайним - зависим (подписывается) от других
+            m_rowM = new RowManager(this);
+            m_hightlightM = new HightlightManager(this);
 
             base.Unloaded += LeasingChart_Unloaded;
 
             m_children = new VisualCollection(this);
         }
 
+        /// <summary>
+        /// Отрисовка данных на графике
+        /// </summary>
         public void Draw()
         {
             m_children.Clear();
@@ -225,14 +281,27 @@ namespace CarLeasingViewer.Controls
             ClearManagers();
             DrawingVisual dv = null;
 
+            var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+
+            //отрисовка Layout'ов для строк графика
+            if (m_rowLayoutM != null)
+            {
+                foreach (var i in rowsI)
+                {
+                    dv = m_rowLayoutM.DrawRowLayout(i);
+
+                    if (dv != null)
+                        m_children.Add(dv);
+                }
+            }
+
             //отрисовка сетки
             if (m_gridM != null)
             {
-                var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
                 foreach (var i in rowsI)
                 {
                     dv = m_gridM.DrawRow(i);
-                    if(dv != null)
+                    if (dv != null)
                         m_children.Add(dv); //строки
                 }
 
@@ -244,9 +313,10 @@ namespace CarLeasingViewer.Controls
                     if (dv != null)
                         m_children.Add(dv);
                 }
-                
+
             }
 
+            //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
             {
                 foreach (var bm in Leasings)
@@ -264,6 +334,8 @@ namespace CarLeasingViewer.Controls
             }
         }
 
+        #region FrameworkElement
+
         // Provide a required override for the VisualChildrenCount property.
         protected override int VisualChildrenCount => m_children.Count;
 
@@ -277,12 +349,16 @@ namespace CarLeasingViewer.Controls
             return m_children[index];
         }
 
+        #endregion
+
         void ClearManagers()
         {
             HideTooltip();
             m_gridM.Clear();
             m_textM.Clear();
             m_barM.Clear();
+            m_rowLayoutM.Clear();
+            m_hightlightM.Clear();
         }
 
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)
@@ -306,6 +382,24 @@ namespace CarLeasingViewer.Controls
                 m_textM.Dispose();
                 m_textM = null;
             }
+
+            if (m_rowLayoutM != null)
+            {
+                m_rowLayoutM.Dispose();
+                m_rowLayoutM = null;
+            }
+
+            if(m_hightlightM != null)
+            {
+                m_hightlightM.Dispose();
+                m_hightlightM = null;
+            }
+
+            if(m_rowM != null)
+            {
+                m_rowM.Dispose();
+                m_rowM = null;
+            }
         }
 
         protected override void OnMouseLeave(MouseEventArgs e)
@@ -313,6 +407,9 @@ namespace CarLeasingViewer.Controls
             base.OnMouseLeave(e);
 
             HideTooltip();
+
+            //снимаем подсветку при наведении при выходе мыши за границы контрола
+            m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.Hightlight);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -320,6 +417,14 @@ namespace CarLeasingViewer.Controls
             base.OnMouseMove(e);
 
             var point = e.GetPosition(this);
+
+            //получаем Layout, над которым находится мышь
+            var rLayout = m_rowLayoutM.Contains(point);
+            //индекс строки, над которой сейчас находится курсор мыши
+            var rowIndex = rLayout == null ? -1 : rLayout.RowIndex;
+
+            //подсвечиваем элементы, над которыми находится мышь
+            m_hightlightM.Hightlight(rowIndex, rowIndex == -1 ? HightlightManager.HightlightAction.None : HightlightManager.HightlightAction.Hightlight);
 
             //проверка позиционироввания курсора над ранее обработанным элементом
             if (m_TooltipedRect != null)
@@ -345,7 +450,7 @@ namespace CarLeasingViewer.Controls
                     {
                         HideTooltip();
 
-                        DrawTooltip(bar, point);
+                        ShowTooltip(bar, point);
                         m_TooltipedRect = bar; //сохраняем найденный элемент
                         return;
                     }
@@ -356,7 +461,7 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Отрисовка Tooltip на Canvas
         /// </summary>
-        void DrawTooltip(CanvasBarDrawManager.BarData bar, Point p)
+        void ShowTooltip(CanvasBarDrawManager.BarData bar, Point p)
         {
             var grid = new Grid();
             grid.Background = Brushes.LightGray;
@@ -409,10 +514,10 @@ namespace CarLeasingViewer.Controls
 
                 //расчёт выхода tooltip за нижнюю границу контрола
                 var y = bar.VerticalOffset + bar.Border.Height + 3d;
-                var botPoint = y + grid.ActualHeight + 2d;
-                if(botPoint > ActualHeight)
+                var botPoint = y + grid.ActualHeight + 20d;
+                if (botPoint > ActualHeight)
                 {
-                    var diff = botPoint - ActualHeight - RowHeight;
+                    var diff = botPoint - grid.ActualHeight - RowHeight - 20d; //20 - основной скролл чуть больше видимого
                     y -= diff;
                 }
 

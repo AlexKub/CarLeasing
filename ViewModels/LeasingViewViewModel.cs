@@ -27,11 +27,7 @@ namespace CarLeasingViewer.ViewModels
         public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
         void SortPeriod()
         {
-            var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
-            LeasingSet = newSet;
-
-            if (m_Window != null)
-                m_Window.LeasingChart.Draw();
+            Update();
         }
 
         public Views.MainWindow2 Window { get { return m_Window; } set { m_Window = value; } }
@@ -86,11 +82,11 @@ namespace CarLeasingViewer.ViewModels
             }
         }
 
-        private IReadOnlyList<CarComment> pv_Comments;
+        private IReadOnlyList<CarCommentModel> pv_Comments;
         /// <summary>
         /// Возвращает или задаёт набор Комментариев к машинам
         /// </summary>
-        public IReadOnlyList<CarComment> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
+        public IReadOnlyList<CarCommentModel> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
 
         #endregion
 
@@ -121,6 +117,14 @@ namespace CarLeasingViewer.ViewModels
 
             if (m_Window != null)
                 m_Window.LeasingChart.LeasingSet = set;
+        }
+
+        public void Update()
+        {
+            LeasingSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
+
+            if (m_Window != null)
+                m_Window.LeasingChart.Draw();
         }
 
         public void Dispose()

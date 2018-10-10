@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Windows.Media;
+using CarLeasingViewer.Interfaces;
 
 namespace CarLeasingViewer.Models
 {
     /// <summary>
     /// Модель данных для Единицы занятости авто (полоски с текстом) на Canvas
     /// </summary>
-    public class CarModel : ViewModels.ViewModelBase, IIndexable
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
+    public class CarModel : ViewModels.ViewModelBase, IIndexable, IHightlightable
     {
         private Car pv_Car;
         /// <summary>
@@ -49,5 +52,25 @@ namespace CarLeasingViewer.Models
         int IIndexable.Index { get => RowIndex; set => RowIndex = value; }
 
         #endregion
+
+        #region IHightlightable
+
+        private Brush pv_HightlightBrush;
+        /// <summary>
+        /// Возвращает или задаёт кисть подсветки
+        /// </summary>
+        public Brush HightlightBrush { get { return pv_HightlightBrush; } set { if (pv_HightlightBrush != value) { pv_HightlightBrush = value; OnPropertyChanged(); } } }
+
+        /// <summary>
+        /// Флаг подсветки
+        /// </summary>
+        public bool Hightlighted { get; set; }
+
+        #endregion
+
+        string DebugDisplay()
+        {
+            return RowIndex.ToString() + " | " + (string.IsNullOrEmpty(Text) ? "NO TEXT" : Text);
+        }
     }
 }
