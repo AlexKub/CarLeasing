@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CarLeasingViewer.Models
 {
@@ -9,7 +10,7 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class Month
     {
-        readonly IEnumerable<Day> m_days;
+        readonly IReadOnlyList<Day> m_days;
 
         public IEnumerable<Day> Days => m_days;
 
@@ -55,6 +56,26 @@ namespace CarLeasingViewer.Models
         /// Количество дней в месяце
         /// </summary>
         public int DayCount { get; private set; }
+
+        /// <summary>
+        /// Последний день текущего месяца
+        /// </summary>
+        public Day LastDay { get { return m_days[m_days.Count - 1]; } }
+
+        /// <summary>
+        /// Последняя дата месяца
+        /// </summary>
+        public DateTime LastDate { get { return new DateTime(Year, Index, DayCount); } }
+
+        /// <summary>
+        /// Первы день месяца
+        /// </summary>
+        public Day FirstDay { get { return m_days[0]; } }
+
+        /// <summary>
+        /// Первая дата месяца
+        /// </summary>
+        public DateTime FirstDate { get { return new DateTime(Year, Index, 1); } }
 
         /// <summary>
         /// Проверка на не пустой экземпляр
@@ -120,7 +141,7 @@ namespace CarLeasingViewer.Models
             Value = month;
             Index = (int)month;
             DayCount = GetDayCount(month);
-            m_days = GetDays();
+            m_days = GetDays().ToList();
         }
 
         public Month(DateTime date) : this(date.Year, (Monthes)date.Month) { }
@@ -486,6 +507,28 @@ namespace CarLeasingViewer.Models
 
             else
                 return m1.Year <= m2.Year;
+        }
+
+        public static bool operator ==(Month m1, Month m2)
+        {
+            if (ReferenceEquals(m1, m2))
+                return true;
+
+            if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
+                return false;
+
+            return m1.Year == m2.Year && m1.Index == m2.Index;
+        }
+
+        public static bool operator !=(Month m1, Month m2)
+        {
+            if (ReferenceEquals(m1, m2))
+                return false;
+
+            if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
+                return true;
+
+            return m1.Index != m2.Index || m1.Year != m2.Year;
         }
     }
 }

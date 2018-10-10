@@ -83,7 +83,7 @@ namespace CarLeasingViewer
         TabItemModel[] GetTabItemsModels(IEnumerable<Month> monthes, IEnumerable<MonthBusiness> leasings)
         {
             var leasing = leasings.FirstOrDefault();
-            var monthItem = new OneMonthItem(leasing == null ? "NULL" : leasing.Month.Name)
+            var monthItem = new OneMonthItem(leasing == null ? "NULL" : (leasing.Month?.Name ?? "NULL"))
             {
                 MonthLeasing = leasing
             };
@@ -188,7 +188,8 @@ namespace CarLeasingViewer
             var curentVM = DataContext as MainWindowViewModel;
             var tabItem = (curentVM.TabItemsModels.First() as OneMonthItem);
 
-            var vm = new LeasingViewViewModel();
+            var w = new Views.MainWindow2();
+            var vm = w.DataContext as LeasingViewViewModel;
             var rMonth = Randomizer.GetRandomMonth(2018);
 
             MonthBusiness[] monthBuisnesses = App.SearchSettings.TestData 
@@ -247,7 +248,7 @@ namespace CarLeasingViewer
                     Leasings = leasingBarModels[index++]
                 }));
 
-            new Views.MainWindow2(vm).ShowDialog();
+            w.ShowDialog();
         }
     }
 }

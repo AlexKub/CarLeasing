@@ -87,21 +87,45 @@
             if (b == null)
                 DayOffset = 0d;
 
-            var offsetLeft = 0d;
-            var startDay = b.DateStart.Day;
+            var dayCount = 0;
+            var startMonth = b.DateStart.GetMonth();
 
             //если начало в текущем месяце
-            if (b.MonthCount == 1 || b.DateStart.Month == b.Monthes[0].Index)
-            {
-                if (startDay > 1)
+            if (b.Monthes != null)
+            {    
+                if (b.Monthes[0] > startMonth) //если съем начался ранее
                 {
-                    //т.к. дни нумеруются с единицы, то для первого дня отступ будет 0 дней, для второго - 1 и т.д.
-                    var dayOffsetCount = startDay - 1;
-                    offsetLeft = dayOffsetCount * (pv_DayColumnWidth) + (dayOffsetCount * 1); //1 - ширина границ у колонок
+                    DayOffset = 0d;
+                    return;
+                }
+                else
+                {
+                    if (b.Monthes[0] < startMonth) //если первый месяц выбранного периода начинается раньше
+                    {
+                        var prevMonth = b.Monthes[0];
+
+                        //перебираем месяцы с лева на право
+                        //пока не наткнёмся на начальный месяц съёма авто
+                        do
+                        {
+                            dayCount += prevMonth.DayCount;
+                            prevMonth = prevMonth.Next();
+                        }
+                        while (prevMonth != null && prevMonth != startMonth);
+                    }
                 }
             }
+            //по каким-то причинам не заданы месяцы или дата начала ранее начального месяца
+            else if(b.CurrentMonth == null || b.CurrentMonth != startMonth)
+            {
+                DayOffset = 0d;
+                return;
+            }
 
-            DayOffset = offsetLeft;
+            dayCount += b.DateStart.Day - 1;
+
+            //смещение слева в точках
+            DayOffset = dayCount * pv_DayColumnWidth + (dayCount * 1);
         }
 
         void CalculateWidth(Business b)
@@ -112,50 +136,48 @@
 
             //если машину взяли/вернули в течении 1 месяца
             if (b.MonthCount == 1)
+            {
                 dayCount += (b.DateEnd - b.DateStart).Days;
-
-            //если машина занята несколько месяцев
+            }
+            //если машина взята в аренду на несколько месяцев
             else
             {
-                //для полных месяцев просто прибавляем количество дней в месяце
-                for (int i = 1; i < b.Monthes.Length - 1; i++)
-                {
-                    dayCount += b.Monthes[i].DayCount;
-                }
-                dayCount += b.Monthes[0].DayCount - b.DateStart.Day;
-                dayCount += b.Monthes[b.Monthes.Length - 1].DayCount - b.DateEnd.Day;
+                var startDate = b.DateStart;
+                var endDate = b.DateEnd;
 
-                //var currentMonth = b.CurrentMonth.Index;
-                //
-                ////для месяца, в котором начали съём
-                //if (b.DateStart.Month == currentMonth)
-                //    //отсчитываем от конца начального месяца
-                //    dayCount += (b.CurrentMonth.DayCount - b.DateStart.Day);
-                //
-                ////для месяца в котором закончили съём
-                //else if (b.DateEnd.Month == currentMonth)
-                //    dayCount = b.DateEnd.Day; //индекс дня - количество дней от начала месяца
-                //
-                ////если период начинается и заканчивается за пределами текущего месяца
-                //else
-                //{
-                //    //берём первую дату месяца
-                //    var curentDate = b.CurrentMonth[1];
-                //    //если 'начало' < 'текущая дата' < 'конец'
-                //    dayCount = ((b.DateStart < curentDate) && (curentDate < b.DateEnd))
-                //        ? b.CurrentMonth.DayCount //берём количество дней в текущем месяце (закрашиваем всё)
-                //        : 0; //0 - хз чего ещё делать. В этом месяце занятости не было, хз как сюда попало
-                //}
+                //если съём начался за пределами первого месяца в выбранном периоде
+                if (b.Monthes[0] > b.DateStart.GetMonth())
+                    startDate = b.Monthes[0][1];
+
+                //если съём заканчивается за последним месяцем в выбранном периоде
+                if (b.Monthes[b.Monthes.Length - 1] < b.DateEnd.GetMonth())
+                    endDate = b.Monthes[b.Monthes.Length - 1].LastDate;
+
+                //получаем месяцы между датами (включительно)
+                var monthes = Models.Month.GetMonthes(startDate, endDate);
+
+                //суммируем дни в полученном периоде
+                var lastIndex = monthes.Length - 1;
+                for (int i = 0; i < monthes.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        if (startDate.Day == 1)
+                            dayCount += monthes[i].DayCount;
+                        else
+                            dayCount += (monthes[i].DayCount - startDate.Day + 1);
+                    }
+                    else if (i == lastIndex)
+                    {
+                        dayCount += endDate.Day;
+                    }
+                    else
+                        dayCount += monthes[i].DayCount;
+                }
             }
 
             if (dayCount < 0)
             {
-                //m_loger.Log("Получен отрицательный период аренды. Значение сброшено в 0", MessageType.Debug
-                //    , new LogParameter("Съёмщик", b.Title)
-                //    , new LogParameter("Комментарий", b.Comment)
-                //    , new LogParameter("Дата начала", b.DateStart.ToShortDateString())
-                //    , new LogParameter("Дата окончания", b.DateEnd.ToShortDateString()));
-
                 dayCount = 0;
             }
 

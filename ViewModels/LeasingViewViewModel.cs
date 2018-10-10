@@ -118,6 +118,9 @@ namespace CarLeasingViewer.ViewModels
                     ToMonth = set.Monthes[set.Monthes.Count - 1].Month;
                     break;
             }
+
+            if (m_Window != null)
+                m_Window.LeasingChart.LeasingSet = set;
         }
 
         public void Dispose()

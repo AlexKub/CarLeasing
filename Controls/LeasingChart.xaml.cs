@@ -22,7 +22,7 @@ namespace CarLeasingViewer.Controls
         CanvasGridDrawManager m_gridM;
         CanvasBarDrawManager m_barM;
         CanvasTextDrawManager m_textM;
-        FrameworkElement m_tooltip;
+        DrawingVisual m_tooltip;
         CanvasBarDrawManager.BarData m_TooltipedRect;
 
         public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
@@ -61,10 +61,10 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                var newVal = ((double)e.NewValue + 1); //+ 1: захардкожена ширина границы у колонки
+                var newVal = ((double)e.NewValue); 
                 if (_this.m_gridM != null)
                 {
-                    _this.m_gridM.ColumnWidth = newVal;
+                    _this.m_gridM.ColumnWidth = newVal + 1; //+ 1: захардкожена ширина границы у колонки
                 }
                 if (_this.m_barM != null)
                 {
@@ -200,6 +200,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
+        /// <summary>
+        /// Текущий набор данных
+        /// </summary>
+        public LeasingSet LeasingSet { get; set; }
+
         public LeasingChart()
         {
             InitializeComponent();
@@ -212,9 +217,6 @@ namespace CarLeasingViewer.Controls
 
             m_children = new VisualCollection(this);
         }
-
-        int m_counter = 0;
-        bool firstDraw = true;
 
         public void Draw()
         {
@@ -273,53 +275,6 @@ namespace CarLeasingViewer.Controls
             }
 
             return m_children[index];
-        }
-
-        protected override void OnRender(DrawingContext dc)
-        {
-            //m_counter++;
-            //
-            ///*
-            // * Для быстрой отрисовки текста был выбран способ через DrawingContext
-            // * 
-            // * Для простановки ZIndex текста относительно остальных объектов, вынес отрисовку всех остальных объектов сюда
-            // * порядок отрисовки = ZIndex
-            // */
-            // //if(Leasings != null && (!firstDraw || (firstDraw && m_counter == 4)))
-            //if (m_counter == (firstDraw ? 4 : 2) && Leasings != null) //хз почему, но нормальная отрисовка только на 4 итерации
-            //{
-            //    firstDraw = false;
-            //    m_counter = 0;
-            //    ClearManagers();
-            //
-            //    //отрисовка сетки
-            //    if (m_gridM != null)
-            //    {
-            //        var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
-            //        foreach (var i in rowsI)
-            //            m_gridM.DrawRow(i, dc); //строки
-            //
-            //        //колонки
-            //        m_gridM.DrawColumns(DayCount, dc);
-            //    }
-            //
-            //    if (m_barM != null)
-            //    {
-            //        foreach (var bm in Leasings)
-            //        {
-            //            m_barM.DrawBar(bm, dc);
-            //        }
-            //    }
-            //
-            //    //отрисовываем текст для полосок на Canvas
-            //    if (m_textM != null)
-            //    {
-            //        m_textM.Load(Leasings);
-            //        m_textM.DrawText(dc);
-            //    }
-            //}
-
-            base.OnRender(dc); //результаты от позиции OnRender у меня не зависили
         }
 
         void ClearManagers()
@@ -384,7 +339,7 @@ namespace CarLeasingViewer.Controls
             foreach (var kvp in m_barM.Data)
             {
                 bar = kvp.Value;
-                if (bar.VerticalOffset <= point.X)
+                if (bar.VerticalOffset <= point.Y)
                 {
                     if (bar.Border.Contains(point))
                     {
@@ -434,18 +389,38 @@ namespace CarLeasingViewer.Controls
 
             grid.Children.Add(text0);
 
-            m_tooltip = grid;
-
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
                 var vb = new VisualBrush(grid);
-                dc.DrawRectangle(vb, null, new Rect(p.X, bar.VerticalOffset + bar.Border.Height + 3d, 300d, 300d));
+                //force render
+                grid.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+                grid.Arrange(new Rect(grid.DesiredSize));
 
-                //Children.Add(grid);
-                //Canvas.SetTop(grid, bar.VerticalOffset + bar.Border.Height + 3);
-                //Canvas.SetLeft(grid, p.X);
+                //расчёт выхода tooltip за правую границу контрола
+                var x = p.X;
+                var leftPoint = x + grid.ActualWidth + 2d;
+                if (leftPoint > ActualWidth)
+                {
+                    var diff = leftPoint - ActualWidth;
+
+                    x -= diff;
+                }
+
+                //расчёт выхода tooltip за нижнюю границу контрола
+                var y = bar.VerticalOffset + bar.Border.Height + 3d;
+                var botPoint = y + grid.ActualHeight + 2d;
+                if(botPoint > ActualHeight)
+                {
+                    var diff = botPoint - ActualHeight - RowHeight;
+                    y -= diff;
+                }
+
+                dc.DrawRectangle(vb, null, new Rect(x, y, grid.ActualWidth, grid.ActualHeight));
+                m_TooltipedRect = bar;
             }
+            m_children.Add(dv);
+            m_tooltip = dv;
         }
 
         TextBlock NewStyledTooltipRow()
@@ -464,7 +439,7 @@ namespace CarLeasingViewer.Controls
         {
             if (m_tooltip != null)
             {
-                RemoveVisualChild(m_tooltip);
+                m_children.Remove(m_tooltip);
                 //Children.Remove(m_tooltip);
                 m_tooltip = null;
             }

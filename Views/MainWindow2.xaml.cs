@@ -9,6 +9,13 @@ namespace CarLeasingViewer.Views
     /// </summary>
     public partial class MainWindow2 : Window
     {
+        public MainWindow2()
+        {
+            DataContext = new LeasingViewViewModel(this);
+            InitializeComponent();
+
+            Loaded += MainWindow2_Loaded;
+        }
         public MainWindow2(LeasingViewViewModel vm)
         {
             vm.Window = this;
