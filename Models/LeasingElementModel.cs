@@ -29,6 +29,11 @@
         /// </summary>
         public Business Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
 
+        /// <summary>
+        /// Общее количество дней в аренде
+        /// </summary>
+        public int DaysCount { get { return Leasing == null ? 0 : (Leasing.DateEnd - Leasing.DateEnd).Days + 1; } }
+
         private int pv_RowIndex;
         /// <summary>
         /// Возвращает или задаёт индекс строки Grid'а, к которому будет приставлен контрол

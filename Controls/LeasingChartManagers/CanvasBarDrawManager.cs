@@ -7,6 +7,7 @@ using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
+    public delegate void BarDataHandler(CanvasBarDrawManager.BarData bar);
     /// <summary>
     /// Управление отрисовкой полосок занятости авто на Canvas
     /// </summary>
@@ -40,6 +41,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Данные отрисовки
         /// </summary>
         public IReadOnlyDictionary<LeasingElementModel, BarData> Data { get { return m_bars; } }
+
+        public event BarDataHandler BarAdded;
 
         /// <summary>
         /// Возвращает данные отрисовки по ссылке на модель
@@ -96,6 +99,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dc.Close();
 
             bd.Drawed = true;
+
+            BarAdded?.Invoke(bd);
 
             return dv;
         }

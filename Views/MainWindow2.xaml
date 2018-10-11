@@ -11,7 +11,7 @@
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
         mc:Ignorable="d"
-        Title="Загрузка ТС" Height="300" Width="700" MinWidth="900"
+        Title="Загрузка ТС" Height="450" Width="700" MinWidth="900"
         d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
     <Window.Resources>
         <!-- Ширина(высота) ScrollBar'a -->
@@ -68,6 +68,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <!-- Настройки выборки -->
@@ -84,7 +85,6 @@
                                      AvailableYears="{Binding AvailableYears}" 
                                      ShowAction="{Binding SortPeriodCommand}"/>
 
-
             <Grid Grid.Column="1" HorizontalAlignment="Right" DataContext="{x:Static local:App.SearchSettings}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -95,7 +95,7 @@
                 <CheckBox Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" Grid.Column="2" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
             </Grid>
         </Grid>
-        
+
         <!-- Основной график лизинга -->
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top" Margin="10 0 10 0" MouseLeave="ScrollViewer_MouseLeave">
             <Grid d:DataContext="{d:DesignInstance Type=models:LeasingSet}" MaxHeight="600" DataContext="{Binding LeasingSet}" >
@@ -133,7 +133,7 @@
 
                 <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
                 <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
-                
+
                 <!-- Левая колонка с машинами -->
                 <Border Grid.Column="0" Grid.Row="1" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
                     <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
@@ -241,5 +241,21 @@
                 </Border>
             </Grid>
         </ScrollViewer>
+
+        <!-- Строка внизу со статистикой -->
+        <Border Grid.Row="2" SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
+            <ItemsControl ItemsSource="{Binding Statistic}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="3" Padding="2" VerticalAlignment="Center" Text="{Binding Text}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
     </Grid>
 </Window>

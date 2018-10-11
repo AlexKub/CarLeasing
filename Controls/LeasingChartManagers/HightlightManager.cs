@@ -65,6 +65,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     {
                         HightlightRow(row, SelectedBrush);
                         row.HightlightState = HightlightAction.Select;
+                        row.Selected = true;
+                        m_chart.RowManager.CallRowSelectionChanged(row);
                     }
                     break;
                 case HightlightAction.None:
@@ -155,8 +157,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         void UnLightRow(Row row)
         {
             row.Hightlight(DefaultBrush);
+            var oldState = row.HightlightState;
             row.HightlightState = HightlightAction.None;
+            row.Selected = false;
             m_hightlighted.Remove(row);
+
+            if (oldState == HightlightAction.Select)
+                m_chart.RowManager.CallRowSelectionChanged(row);
         }
 
         void HightlightRow(Row row, Brush brush)

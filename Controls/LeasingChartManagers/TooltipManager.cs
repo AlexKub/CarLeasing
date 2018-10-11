@@ -53,7 +53,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             //поиск элемента, над которым сейчас находится мышь
             CanvasBarDrawManager.BarData bar = null;
-            foreach (var kvp in m_chart.BorderDrawer.Data)
+            foreach (var kvp in m_chart.BarManager.Data)
             {
                 bar = kvp.Value;
                 if (bar.VerticalOffset <= point.Y)

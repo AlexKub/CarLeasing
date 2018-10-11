@@ -34,6 +34,9 @@ namespace CarLeasingViewer.Views
             set.Data = monthBuisnesses;
 
             InitializeComponent();
+
+            Subscribe(true);
+
             DataContext = vm;
 
             //Set проставляем после инициализации, т.к. не явно заполняется контрол
@@ -88,6 +91,8 @@ namespace CarLeasingViewer.Views
         protected override void OnClosing(CancelEventArgs e)
         {
             var vm = DataContext as LeasingViewViewModel;
+
+            Subscribe(false);
 
             if (vm != null)
                 vm.Dispose();
@@ -147,6 +152,39 @@ namespace CarLeasingViewer.Views
         {
             LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
             LeasingChart.VisibleArea.ChartWith = LeasingScroll.ActualWidth;
+        }
+
+        void Subscribe(bool subscribe)
+        {
+            if (subscribe)
+            {
+                LeasingChart.RowSelectionChanged += LeasingChart_RowSelectionChanged;
+            }
+            else
+            {
+                LeasingChart.RowSelectionChanged -= LeasingChart_RowSelectionChanged;
+            }
+        }
+
+        private void LeasingChart_RowSelectionChanged(RowManager.Row row)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            if (vm != null)
+            {
+                if (row.Selected)
+                {
+                    var s = new StatisticModel();
+                    s.Load(row, vm.LeasingSet);
+                    vm.Statistic = s;
+                }
+                else
+                {
+                    var s = new StatisticModel();
+                    s.Load(vm.LeasingSet);
+                    vm.Statistic = s;
+                }
+            }
         }
     }
 }
