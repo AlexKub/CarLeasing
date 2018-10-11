@@ -1,4 +1,5 @@
-﻿using CarLeasingViewer.Models;
+﻿using CarLeasingViewer.Controls.LeasingChartManagers;
+using CarLeasingViewer.Models;
 using CarLeasingViewer.ViewModels;
 using System;
 using System.ComponentModel;
@@ -94,6 +95,44 @@ namespace CarLeasingViewer.Views
                 return;
 
             vm.Update();
+        }
+
+        private void TextBlock_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            var model = (sender as FrameworkElement)?.DataContext as IIndexable;
+
+            LeasingChart.HightlightManager.Hightlight(model == null ? -1 : model.Index);
+        }
+
+        private void ScrollViewer_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            LeasingChart.HightlightManager.Clear();
+        }
+
+        private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            var model = (sender as FrameworkElement)?.DataContext as IIndexable;
+
+            LeasingChart.HightlightManager.Select(model == null ? -1 : model.Index);
+        }
+
+        private void TextBlock_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            var model = (sender as FrameworkElement)?.DataContext as IIndexable;
+
+            LeasingChart.HightlightManager.UnSelect(model == null ? -1 : model.Index);
+        }
+
+        private void Grid_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            //снимаем подсветку при наведении при выходе мыши за границы контрола
+            LeasingChart.HightlightManager.UnHightlightAll();
         }
     }
 }

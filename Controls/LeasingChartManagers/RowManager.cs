@@ -22,6 +22,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <returns></returns>
         public Row this[int index] { get { return m_rows.ContainsKey(index) ? m_rows[index] : null; } }
 
+        /// <summary>
+        /// Количество строк
+        /// </summary>
+        public int Count { get { return m_rows.Count; } }
+
         public RowManager(LeasingChart chart)
         {
             m_chart = chart;

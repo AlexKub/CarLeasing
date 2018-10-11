@@ -523,6 +523,9 @@ namespace CarLeasingViewer
 
         String GetBusinessByMonthesQuery(Month start, Month end, SearchSettings settings = null, Region region = null)
         {
+            if (settings == null)
+                settings = App.SearchSettings;
+
             return $@"SELECT 
                          i.[No_]
                         , i.[Description] as CarName

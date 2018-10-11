@@ -9,6 +9,8 @@ namespace CarLeasingViewer.ViewModels
     {
         Views.MainWindow2 m_Window;
 
+
+
         private Month m_FromMonth;
         /// <summary>
         /// Возвращает или задаёт Месяц начала просмотра
@@ -20,6 +22,11 @@ namespace CarLeasingViewer.ViewModels
         /// Возвращает или задаёт Месяц окончания периода осмотра
         /// </summary>
         public Month ToMonth { get { return m_ToMonth; } set { m_ToMonth = value; OnPropertyChanged(); } }
+
+        /// <summary>
+        /// Общие настройки поиска
+        /// </summary>
+        public SearchSettings SearchSettings { get { return App.SearchSettings; } }
 
         /// <summary>
         /// Комманда сортировки по периоду
@@ -121,7 +128,12 @@ namespace CarLeasingViewer.ViewModels
 
         public void Update()
         {
-            LeasingSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
+            if (FromMonth == null || ToMonth == null)
+                return;
+
+            var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
+            LeasingSet = newSet;
+
 
             if (m_Window != null)
                 m_Window.LeasingChart.Draw();
