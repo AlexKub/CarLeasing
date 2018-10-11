@@ -9,6 +9,8 @@ namespace CarLeasingViewer.ViewModels
     {
         Views.MainWindow2 m_Window;
 
+
+
         private Month m_FromMonth;
         /// <summary>
         /// Возвращает или задаёт Месяц начала просмотра

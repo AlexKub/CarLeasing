@@ -112,7 +112,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <param name="index">Индекс строки</param>
         public void Hightlight(int index)
         {
-            if (index > 0)
+            if (index >= 0)
             {
                 var row = GetRow(index);
                 if (!(row.HightlightState == HightlightAction.Select))
@@ -131,7 +131,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var row = GetRow(index);
 
             if (row != null)
-                UnLightRow(row);
+                if (row.HightlightState != HightlightAction.Select)
+                    UnLightRow(row);
         }
 
         public void UnHightlightAll()

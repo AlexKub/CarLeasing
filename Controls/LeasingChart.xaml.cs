@@ -37,6 +37,7 @@ namespace CarLeasingViewer.Controls
         /// Управление отрисовкой Layout'ов строк
         /// </summary>
         CanvasRowLayoutDrawManager m_rowLayoutM;
+
         /// <summary>
         /// Управление абстракциями строк
         /// </summary>
