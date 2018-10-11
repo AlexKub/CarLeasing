@@ -101,6 +101,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <returns>Возвращает содержащий Layout или null</returns>
         public RowLayout Contains(Point p)
         {
+            if (m_indexes.Count == 0)
+                return null;
+
             var rowIndex = (int)(p.Y / RowHeight) - 1;
 
             if (rowIndex < 0)
@@ -113,12 +116,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             
             if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
                 return m_bars[m_indexes[rowIndex]];
-
-            //for (int i = 0; i < m_indexes.Count; i++)
-            //{
-            //    if (m_bars[m_indexes[i]].Rectangle.Contains(p))
-            //        return m_bars[m_indexes[i]];
-            //}
 
             return null;
         }

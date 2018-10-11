@@ -66,6 +66,8 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public RowManager RowManager { get { return m_rowM; } }
 
+        public HightlightManager HightlightManager { get { return m_hightlightM; } }
+
         #endregion
 
         DrawingVisual m_tooltip;
@@ -409,29 +411,18 @@ namespace CarLeasingViewer.Controls
             base.OnMouseLeave(e);
 
             HideTooltip();
-
-            //снимаем подсветку при наведении при выходе мыши за границы контрола
-            m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.Hightlight);
         }
 
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonDown(e);
 
-            //снимаем все подсветки
-            m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.None);
-
             var point = e.GetPosition(this);
 
             //получаем Layout, над которым находится мышь
             var rLayout = m_rowLayoutM.Contains(point);
 
-            if (rLayout != null)
-            {
-                if (!rLayout.Hightlighted)
-                    //подсвечиваем как при наведении мышью
-                    m_hightlightM.Hightlight(rLayout.RowIndex, HightlightManager.HightlightAction.Hightlight);
-            }
+            m_hightlightM.UnSelect(rLayout == null ? -1 : rLayout.RowIndex);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -443,13 +434,7 @@ namespace CarLeasingViewer.Controls
             //получаем Layout, над которым находится мышь
             var rLayout = m_rowLayoutM.Contains(point);
 
-            if (rLayout != null)
-            {
-                //выбираем строку
-                m_hightlightM.Hightlight(rLayout.RowIndex, HightlightManager.HightlightAction.Select);
-            }
-            else
-                m_hightlightM.Hightlight(-1, HightlightManager.HightlightAction.None);
+            m_hightlightM.Select(rLayout == null ? -1 : rLayout.RowIndex);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -460,18 +445,9 @@ namespace CarLeasingViewer.Controls
 
             //получаем Layout, над которым находится мышь
             var rLayout = m_rowLayoutM.Contains(point);
-            var rowIndex = -1;
 
-            if (rLayout != null)
-            {
-                rowIndex = rLayout.RowIndex;
-
-                if (!rLayout.Hightlighted)
-                    m_hightlightM.Hightlight(rowIndex, HightlightManager.HightlightAction.Hightlight);
-            }
-            else
-                //подсвечиваем элементы, над которыми находится мышь
-                m_hightlightM.Hightlight(rowIndex, HightlightManager.HightlightAction.None);
+            //подсвечиваем наведённую строку
+            m_hightlightM.Hightlight(rLayout == null ? -1 : rLayout.RowIndex);
 
             //проверка позиционироввания курсора над ранее обработанным элементом
             if (m_TooltipedRect != null)

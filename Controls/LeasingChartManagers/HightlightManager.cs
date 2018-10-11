@@ -42,7 +42,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <param name="action">Действие по подсветке</param>
         public void Hightlight(int index, HightlightAction action)
         {
-            var row = m_chart.RowManager[index];
+            var row = GetRow(index);
 
             switch (action)
             {
@@ -77,6 +77,77 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         }
 
         /// <summary>
+        /// Выбрать строку
+        /// </summary>
+        /// <param name="index">Индекс строки</param>
+        public void Select(int index)
+        {
+            if (index >= 0)
+            {
+                //выбираем строку
+                Hightlight(index, HightlightAction.Select);
+            }
+            else
+                Hightlight(index, HightlightAction.None);
+        }
+
+        /// <summary>
+        /// Снимает выбор
+        /// </summary>
+        /// <param name="index"></param>
+        public void UnSelect(int index)
+        {
+            Clear();
+
+            var row = GetRow(index);
+
+            if (!row.RowLayout.Hightlighted)
+                //подсвечиваем как при наведении мышью
+                Hightlight(index, HightlightAction.Hightlight);
+        }
+
+        /// <summary>
+        /// Подсветка строки
+        /// </summary>
+        /// <param name="index">Индекс строки</param>
+        public void Hightlight(int index)
+        {
+            if (index > 0)
+            {
+                var row = GetRow(index);
+                if (!(row.HightlightState == HightlightAction.Select))
+                    Hightlight(index, HightlightAction.Hightlight);
+            }
+            else
+                Clear();
+        }
+
+        /// <summary>
+        /// Снять подсветку со строки
+        /// </summary>
+        /// <param name="index">Индекс строки</param>
+        public void UnHightlight(int index)
+        {
+            var row = GetRow(index);
+
+            if (row != null)
+                UnLightRow(row);
+        }
+
+        public void UnHightlightAll()
+        {
+            for (int i = 0; i < m_chart.RowManager.Count; i++)
+            {
+                UnHightlight(i);
+            }
+        }
+
+        Row GetRow(int index)
+        {
+            return m_chart.RowManager[index];
+        }
+
+        /// <summary>
         /// Снятие подсветки со строки
         /// </summary>
         /// <param name="row">Строка</param>
@@ -93,6 +164,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             m_hightlighted.Add(row);
         }
 
+        /// <summary>
+        /// Снимает все подсветки со всех строк
+        /// </summary>
         public void Clear()
         {
             foreach (var r in HightlightedRows.ToList())
