@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CarLeasingViewer.Controls.LeasingChartManagers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,8 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class LeasingSet : ViewModels.ViewModelBase, IDisposable
     {
+        
+
         private int m_RowsCount;
         /// <summary>
         /// Возвращает или задаёт Количество отрисовываемых строк 

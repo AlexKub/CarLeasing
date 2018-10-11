@@ -89,7 +89,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
              * отрисованного и расчитанного другим менеджером
              * 
              */
-            var border = Canvas.BorderDrawer[bd.BarModel];
+            var border = Canvas.BarManager[bd.BarModel];
             if (border != null)
             {
                 bd.Border = border.Border;

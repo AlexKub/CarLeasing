@@ -35,6 +35,12 @@ namespace CarLeasingViewer.ViewModels
             Update();
         }
 
+        private StatisticModel pv_Statistic;
+        /// <summary>
+        /// Возвращает или задаёт Статистику внизу
+        /// </summary>
+        public StatisticModel Statistic { get { return pv_Statistic; } set { if (pv_Statistic != value) { pv_Statistic = value; OnPropertyChanged(); } } }
+
         public Views.MainWindow2 Window { get { return m_Window; } set { m_Window = value; } }
 
         public LeasingViewViewModel() { }
@@ -122,6 +128,9 @@ namespace CarLeasingViewer.ViewModels
 
             if (m_Window != null)
                 m_Window.LeasingChart.LeasingSet = set;
+
+            Statistic = new StatisticModel();
+            Statistic.Load(set);
         }
 
         public void Update()
@@ -144,6 +153,8 @@ namespace CarLeasingViewer.ViewModels
                 LeasingSet.Dispose();
                 LeasingSet = null;
             }
+
+            Statistic = null;
         }
     }
 }

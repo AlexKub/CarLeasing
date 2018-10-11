@@ -34,6 +34,9 @@ namespace CarLeasingViewer.Views
             set.Data = monthBuisnesses;
 
             InitializeComponent();
+
+            Subscribe(true);
+
             DataContext = vm;
 
             //Set проставляем после инициализации, т.к. не явно заполняется контрол
@@ -54,6 +57,9 @@ namespace CarLeasingViewer.Views
         {
             Loaded -= MainWindow2_Loaded;
 
+            LeasingChart.VisibleArea.ChartHeight = LeasingChart.ActualHeight;
+            LeasingChart.VisibleArea.ChartWith = LeasingChart.ActualWidth;
+
             LeasingChart.Draw();
         }
 
@@ -63,23 +69,30 @@ namespace CarLeasingViewer.Views
 
             CarColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
+
+            LeasingChart.VisibleArea.HorisontalScrollOffset = e.HorizontalOffset;
         }
 
         private void CommentsColumnScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
             LeasingScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            LeasingChart.VisibleArea.VerticalScrollOffset = e.VerticalOffset;
+
             CarColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
         }
 
         private void CarColumnScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
             LeasingScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            LeasingChart.VisibleArea.VerticalScrollOffset = e.VerticalOffset;
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             var vm = DataContext as LeasingViewViewModel;
+
+            Subscribe(false);
 
             if (vm != null)
                 vm.Dispose();
@@ -133,6 +146,45 @@ namespace CarLeasingViewer.Views
         {
             //снимаем подсветку при наведении при выходе мыши за границы контрола
             LeasingChart.HightlightManager.UnHightlightAll();
+        }
+
+        private void LeasingScroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
+            LeasingChart.VisibleArea.ChartWith = LeasingScroll.ActualWidth;
+        }
+
+        void Subscribe(bool subscribe)
+        {
+            if (subscribe)
+            {
+                LeasingChart.RowSelectionChanged += LeasingChart_RowSelectionChanged;
+            }
+            else
+            {
+                LeasingChart.RowSelectionChanged -= LeasingChart_RowSelectionChanged;
+            }
+        }
+
+        private void LeasingChart_RowSelectionChanged(RowManager.Row row)
+        {
+            var vm = DataContext as LeasingViewViewModel;
+
+            if (vm != null)
+            {
+                if (row.Selected)
+                {
+                    var s = new StatisticModel();
+                    s.Load(row, vm.LeasingSet);
+                    vm.Statistic = s;
+                }
+                else
+                {
+                    var s = new StatisticModel();
+                    s.Load(vm.LeasingSet);
+                    vm.Statistic = s;
+                }
+            }
         }
     }
 }
