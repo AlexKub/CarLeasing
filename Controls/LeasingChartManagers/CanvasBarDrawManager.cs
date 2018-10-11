@@ -13,10 +13,30 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     /// </summary>
     public class CanvasBarDrawManager : CanvasDrawManager
     {
+        double m_halfPenWidth;
+
+        Brush m_brush;
         /// <summary>
         /// Кисть для заливки границы
         /// </summary>
-        public Brush BorderBrush { get; set; }
+        public Brush BorderBrush
+        {
+            get { return m_brush; }
+            set
+            {
+                m_brush = value;
+                Pen = new Pen(value, 1);
+                m_halfPenWidth = 1 / 2;
+                Pen.Freeze();
+            }
+        }
+
+        /// <summary>
+        /// Основная кисть
+        /// </summary>
+        public Pen Pen { get; private set; }
+
+
 
         /// <summary>
         /// Кисть для заливки фона полосок
@@ -64,7 +84,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 bd.Index = barModel.RowIndex;
                 bd.VerticalOffset = barModel.RowIndex * RowHeight;
                 bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
-                bd.BarModel = barModel;
+                bd.Model = barModel;
                 m_bars.Add(barModel, bd);
             }
 
@@ -75,32 +95,81 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawBorder(BarData bd)
         {
-            Pen pen = new Pen(BorderBrush, 1);
-            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.BarModel), RowHeight);
-            bd.Border = rect;
+            var startDay = bd.Model.Leasing.DateStart;
 
-            //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
-            double halfPenWidth = pen.Thickness / 2;
-            GuidelineSet guidelines = new GuidelineSet();
-            guidelines.GuidelinesX.Add(rect.Left + halfPenWidth);
-            guidelines.GuidelinesX.Add(rect.Right + halfPenWidth);
-            guidelines.GuidelinesY.Add(rect.Top + halfPenWidth);
-            guidelines.GuidelinesY.Add(rect.Bottom + halfPenWidth);
+            bool drawGeo = false;
+            foreach (var item in Canvas.RowManager[bd.Index].Bars)
+            {
+                if (item.Model != null)
+                    if (item.Model.Leasing.DateEnd == startDay)
+                    {
+                        drawGeo = true;
+                        break;
+                    }
+            }
 
             var dv = new DrawingVisual();
-            var dc = dv.RenderOpen();
+            using (var dc = dv.RenderOpen())
+            {
+                if (drawGeo)
+                    DrawGeometry(dc, bd);
+                else
+                    DrawRect(dc, bd);
 
-            dc.PushGuidelineSet(guidelines);
-            dc.DrawRectangle(BackgroundBrush, pen, rect);
-            dc.Pop();
-
-            dc.Close();
+                dc.Close();
+            }
 
             bd.Drawed = true;
 
             BarAdded?.Invoke(bd);
 
             return dv;
+        }
+
+        void DrawRect(DrawingContext dc, BarData bd)
+        {
+            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model), RowHeight);
+            bd.Bar = rect;
+
+            //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
+            GuidelineSet guidelines = new GuidelineSet();
+            guidelines.GuidelinesX.Add(rect.Left + m_halfPenWidth);
+            guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
+
+            dc.PushGuidelineSet(guidelines);
+            dc.DrawRectangle(BackgroundBrush, Pen, rect);
+            dc.Pop();
+        }
+
+        void DrawGeometry(DrawingContext dc, BarData bd)
+        {
+            PathGeometry g = new PathGeometry();
+            PathFigure pf = new PathFigure();
+            var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + Canvas.RowHeight);
+            var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
+            pf.StartPoint = start;
+            var s = new LineSegment(new Point(end.X, start.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+            s = new LineSegment(new Point(end.X, end.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+            s = new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true);
+            s.Freeze();
+            pf.Segments.Add(new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true));
+            s = new LineSegment(new Point(start.X, start.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+
+            pf.Freeze();
+
+            g.Figures.Add(pf);
+            g.Freeze();
+
+            bd.Bar = g;
+            dc.DrawGeometry(BackgroundBrush, Pen, g);
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
@@ -309,9 +378,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// <summary>
             /// Отрисованный прямоугольник на графике
             /// </summary>
-            public Rect Border { get; set; }
+            public Figure Bar { get; set; }
 
-            public LeasingElementModel BarModel { get; set; }
+            public LeasingElementModel Model { get; set; }
 
             /// <summary>
             /// Индекс видимости
@@ -342,16 +411,118 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                     //m_manager.Canvas.Children.Remove(Border);
                     Drawed = false;
-                    BarModel = null;
+                    Model = null;
                 }
             }
 
             string DebugerDisplay()
             {
-                return Index.ToString() + " | " + (BarModel == null ? "NO_MODEL" : BarModel.CarName);
+                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.CarName);
+            }
+
+            /// <summary>
+            /// Фигура на графике
+            /// </summary>
+            [System.Diagnostics.DebuggerDisplay("{DebugerDisplay()}")]
+            public class Figure
+            {
+                readonly FigureType m_type;
+
+                /// <summary>
+                /// Прямоугольник
+                /// </summary>
+                public Rect Rectangle { get; private set; }
+                /// <summary>
+                /// Многоугольник
+                /// </summary>
+                public Geometry Geometry { get; private set; }
+                /// <summary>
+                /// Ширина фигуры
+                /// </summary>
+                public double Width { get; private set; }
+                /// <summary>
+                /// Тип фигуры
+                /// </summary>
+                public FigureType Type { get { return m_type; } }
+
+                /// <summary>
+                /// Проверка пересечения фигур
+                /// </summary>
+                /// <param name="f">Другая фигура</param>
+                /// <returns>Возвращает true, если описывающие прямоугольники пересекаются</returns>
+                public bool IntersectsWith(Figure f)
+                {
+                    switch (Type)
+                    {
+                        case FigureType.Rect:
+                            return f.Type == FigureType.Rect ? Rectangle.IntersectsWith(f.Rectangle) : Rectangle.IntersectsWith(f.Geometry.Bounds);
+                        case FigureType.Geometry:
+                            return f.Type == FigureType.Rect ? Geometry.Bounds.IntersectsWith(f.Rectangle) : Geometry.Bounds.IntersectsWith(f.Geometry.Bounds);
+                        default:
+                            return false;
+                    }
+                }
+
+                public bool Contains(Point p)
+                {
+                    switch (Type)
+                    {
+                        case FigureType.Rect:
+                            return Rectangle.Contains(p);
+                        case FigureType.Geometry:
+                            return Geometry.FillContains(p);
+                        default:
+                            return false;
+                    }
+                }
+
+                public Figure(Rect r)
+                {
+                    Rectangle = r;
+                    m_type = FigureType.Rect;
+                    Width = r.Width;
+                }
+                public Figure(Geometry g)
+                {
+                    Geometry = g;
+                    m_type = FigureType.Geometry;
+                    Width = Geometry.Bounds.Width;
+                }
+
+                public static implicit operator Rect(Figure f)
+                {
+                    if (f == null)
+                        return new Rect();
+
+                    return f.Rectangle;
+                }
+                public static implicit operator Geometry(Figure g) => g?.Geometry;
+
+                public static implicit operator Figure(Rect r) => new Figure(r);
+                public static implicit operator Figure(Geometry g) => new Figure(g);
+
+                string DebugerDisplay()
+                {
+                    return Type.ToString() + " | " + Width.ToString();
+                }
+
+                /// <summary>
+                /// Типы фигур
+                /// </summary>
+                public enum FigureType
+                {
+                    /// <summary>
+                    /// Прямоугольник
+                    /// </summary>
+                    Rect,
+                    /// <summary>
+                    /// Многоугольник
+                    /// </summary>
+                    Geometry
+                }
             }
         }
 
-        
+
     }
 }

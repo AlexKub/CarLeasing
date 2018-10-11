@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-
+using static CarLeasingViewer.Controls.LeasingChartManagers.CanvasBarDrawManager.BarData;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
@@ -68,7 +68,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             foreach (var item in data)
             {
                 //создаём модель данных для отрисовки текста
-                var bd = new BarData(this) { Index = item.RowIndex, BarModel = item };
+                var bd = new BarData(this) { Index = item.RowIndex, Model = item };
 
                 //добавляем связь между моделью отрисовки и моделью элемента
                 m_bars.Add(item, bd);
@@ -89,10 +89,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
              * отрисованного и расчитанного другим менеджером
              * 
              */
-            var border = Canvas.BarManager[bd.BarModel];
+            var border = Canvas.BarManager[bd.Model];
             if (border != null)
             {
-                bd.Border = border.Border;
+                bd.Border = border.Bar;
                 bd.HorizontalOffset = border.HorizontalOffset;
                 bd.VerticalOffset = border.VerticalOffset;
             }
@@ -120,7 +120,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 bd = m_bars[model];
             else
             {
-                bd = new BarData(this) { Index = model.RowIndex, BarModel = model };
+                bd = new BarData(this) { Index = model.RowIndex, Model = model };
                 m_bars.Add(model, bd);
                 SetOffset(bd);
             }
@@ -143,7 +143,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         DrawingVisual DrawText(BarData bd)
         {
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
-            string text = bd?.BarModel?.Leasing?.Title ?? "NO TITLE";
+            string text = bd?.Model?.Leasing?.Title ?? "NO TITLE";
             double fontSize = FontSize;
 
             ushort[] glyphIndexes = new ushort[text.Length];
@@ -166,7 +166,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //расчитываем ширину / высоту перед отрисовкой для центровки текста
             var culture = System.Globalization.CultureInfo.CurrentCulture;
             FormattedText ft = new FormattedText(text, culture, FlowDirection.LeftToRight, m_Typeface, fontSize, TextBrush);
-            if (bd.Border.Width - 4 < ft.Width)
+
+            //получаем размеры пустой области для текста на полоске
+            var emptySpace = bd.Border.Type == Figure.FigureType.Rect ? bd.Border.Width - 4 : bd.Border.Width - 4 - (Canvas.DayColumnWidth * 2);
+            if (emptySpace < ft.Width)
                 ft = new FormattedText("...", culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
 
             var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
@@ -174,7 +177,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 + ((bd.Border.Width - textRect.Width) / 2); //центровка на полоске
 
             var y = bd.VerticalOffset //отступ по вертикали (строки)
-                + (bd.Border.Height > FontSize ? ((bd.Border.Height - FontSize) / 2) : 0); //центровка текста по вертикали
+                + (Canvas.RowHeight > FontSize ? ((Canvas.RowHeight - FontSize) / 2) : 0); //центровка текста по вертикали
 
             //точные координаты начала текста на Canvas
             Point origin = new Point(x, y);
@@ -265,9 +268,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// <summary>
             /// Отрисованная граница
             /// </summary>
-            public Rect Border { get; set; }
+            public Figure Border { get; set; }
 
-            public LeasingElementModel BarModel { get; set; }
+            public LeasingElementModel Model { get; set; }
 
             /// <summary>
             /// Флаг отрисовки текста для данной полоски
@@ -287,7 +290,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 m_manager = null;
                 //m_manager.Canvas.Children.Remove(Border);
                 //Border = null;
-                BarModel = null;
+                Model = null;
                 TextDrawed = false;
             }
         }
