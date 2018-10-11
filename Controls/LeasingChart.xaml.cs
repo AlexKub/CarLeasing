@@ -37,7 +37,6 @@ namespace CarLeasingViewer.Controls
         /// Управление отрисовкой Layout'ов строк
         /// </summary>
         CanvasRowLayoutDrawManager m_rowLayoutM;
-
         /// <summary>
         /// Управление абстракциями строк
         /// </summary>
@@ -46,6 +45,10 @@ namespace CarLeasingViewer.Controls
         /// Управление подсветкой
         /// </summary>
         HightlightManager m_hightlightM;
+        /// <summary>
+        /// Управление Tooltip'ом
+        /// </summary>
+        TooltipManager m_tooltipM;
 
         /// <summary>
         /// Отрисовка прямоугольников на графике
@@ -70,9 +73,6 @@ namespace CarLeasingViewer.Controls
         public HightlightManager HightlightManager { get { return m_hightlightM; } }
 
         #endregion
-
-        DrawingVisual m_tooltip;
-        CanvasBarDrawManager.BarData m_TooltipedRect;
 
         /// <summary>
         /// При изменении Набора аренды
@@ -268,6 +268,7 @@ namespace CarLeasingViewer.Controls
             //важно!!! подписывать крайним - зависим (подписывается) от других
             m_rowM = new RowManager(this);
             m_hightlightM = new HightlightManager(this);
+            m_tooltipM = new TooltipManager(this);
 
             base.Unloaded += LeasingChart_Unloaded;
 
@@ -356,7 +357,7 @@ namespace CarLeasingViewer.Controls
 
         void ClearManagers()
         {
-            HideTooltip();
+            m_tooltipM.HideTooltip();
             m_gridM.Clear();
             m_textM.Clear();
             m_barM.Clear();
@@ -403,6 +404,12 @@ namespace CarLeasingViewer.Controls
                 m_rowM.Dispose();
                 m_rowM = null;
             }
+
+            if(m_tooltipM != null)
+            {
+                m_tooltipM.Dispose();
+                m_tooltipM = null;
+            }
         }
 
         #region Mouse handlers
@@ -411,7 +418,7 @@ namespace CarLeasingViewer.Controls
         {
             base.OnMouseLeave(e);
 
-            HideTooltip();
+            m_tooltipM.HideTooltip();
         }
 
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
@@ -450,158 +457,19 @@ namespace CarLeasingViewer.Controls
             //подсвечиваем наведённую строку
             m_hightlightM.Hightlight(rLayout == null ? -1 : rLayout.RowIndex);
 
-            //проверка позиционироввания курсора над ранее обработанным элементом
-            if (m_TooltipedRect != null)
-            {
-                //если мышь всё ещё над тем же элементом - ничего не делаем
-                if (m_TooltipedRect.Border.Contains(point))
-                    return;
-                else //если мышь ушла с элемента
-                {
-                    //скрываем подсказку
-                    HideTooltip();
-                }
-            }
-
-            //поиск элемента, над которым сейчас находится мышь
-            CanvasBarDrawManager.BarData bar = null;
-            foreach (var kvp in m_barM.Data)
-            {
-                bar = kvp.Value;
-                if (bar.VerticalOffset <= point.Y)
-                {
-                    if (bar.Border.Contains(point))
-                    {
-                        HideTooltip();
-
-                        ShowTooltip(bar, point);
-                        m_TooltipedRect = bar; //сохраняем найденный элемент
-                        return;
-                    }
-                }
-            }
+            m_tooltipM.HandleTooltip(point);
         }
 
         #endregion
 
-        /// <summary>
-        /// Отрисовка Tooltip на Canvas
-        /// </summary>
-        void ShowTooltip(CanvasBarDrawManager.BarData bar, Point p)
+        public void AddVisual(DrawingVisual visual)
         {
-            var grid = new Grid();
-            grid.Background = Brushes.LightGray;
-            grid.Background.Freeze();
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition());
-
-            var hasComment = !string.IsNullOrEmpty(bar.BarModel?.Leasing.Comment);
-            if (hasComment)
-                grid.RowDefinitions.Add(new RowDefinition());
-
-            if (bar.BarModel == null)
-            {
-                NewStyledTooltipRow(grid, "NO MODEL", 0);
-            }
-            else
-            {
-                NewStyledTooltipRow(grid, bar.BarModel.Leasing.Title, 0);
-
-                NewStyledTooltipRow(grid, bar.BarModel.CarName, 1);
-
-                NewStyledTooltipRow(grid, GetDataSpan(bar.BarModel), 2);
-
-                if (hasComment)
-                {
-                    NewStyledTooltipRow(grid, bar.BarModel.Leasing.Comment, 3);
-                }
-            }
-
-            var dv = new DrawingVisual();
-            using (var dc = dv.RenderOpen())
-            {
-                var vb = new VisualBrush(grid);
-                //force render
-                grid.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-                grid.Arrange(new Rect(grid.DesiredSize));
-
-                //расчёт выхода tooltip за правую границу контрола
-                var x = p.X;
-                var leftPoint = x + grid.ActualWidth + 2d;
-                if (leftPoint > ActualWidth)
-                {
-                    var diff = leftPoint - ActualWidth;
-
-                    x -= diff;
-                }
-
-                //расчёт выхода tooltip за нижнюю границу контрола
-                var y = bar.VerticalOffset + bar.Border.Height + 3d;
-
-                var botPoint = y + grid.ActualHeight + 20d;
-
-                if (botPoint > ActualHeight)
-                {
-                    var diff = botPoint - grid.ActualHeight - RowHeight - 20d; //20 - основной скролл чуть больше видимого
-                    y -= diff;
-                }
-
-                dc.DrawRectangle(vb, null, new Rect(x, y, grid.ActualWidth, grid.ActualHeight));
-                m_TooltipedRect = bar;
-            }
-            m_children.Add(dv);
-            m_tooltip = dv;
+            m_children.Add(visual);
         }
 
-        TextBlock NewStyledTooltipRow(Grid grid, string text, int index)
+        public void Remove(DrawingVisual visual)
         {
-            var tb = new TextBlock();
-            tb.Margin = new Thickness(10d, 5d, 10d, 5d);
-            tb.HorizontalAlignment = HorizontalAlignment.Center;
-            tb.Text = text;
-            grid.Children.Add(tb);
-            Grid.SetRow(tb, index);
-
-            return tb;
-        }
-
-        /// <summary>
-        /// Удаление Tooltip'а с Canvas
-        /// </summary>
-        void HideTooltip()
-        {
-            if (m_tooltip != null)
-            {
-                m_children.Remove(m_tooltip);
-                //Children.Remove(m_tooltip);
-                m_tooltip = null;
-            }
-
-            //сбрасываем подсвеченный элемент
-            m_TooltipedRect = null;
-        }
-
-        /// <summary>
-        /// Получение строкового представления срока аренды
-        /// </summary>
-        /// <param name="model">Модель</param>
-        /// <returns>Возвращает срок аренды</returns>
-        string GetDataSpan(LeasingElementModel model)
-        {
-            //копипаста из BussinessDateConverter (старая версия)
-            StringBuilder sb = new StringBuilder();
-            //<действие> c XX по ХХ <месяц>
-            sb.Append("в прокате ").Append(" c ");
-
-            var b = model.Leasing;
-            if (b.MonthCount < 2)
-                sb.Append(b.DateStart.Day.ToString()).Append(" по ").Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty);
-            else
-                sb.Append(b.DateStart.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty).Append(" по ")
-                    .Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateEnd.GetMonthName() ?? string.Empty);
-
-            return sb.ToString();
+            m_children.Remove(visual);
         }
     }
 }
