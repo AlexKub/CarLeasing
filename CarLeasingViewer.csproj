@@ -191,6 +191,7 @@
     <Compile Include="Views\MainWindow2.xaml.cs">
       <DependentUpon>MainWindow2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VisibleArea.cs" />
     <Compile Include="XamlExtensions\StickyScrollHeader.cs" />
     <Page Include="Controls\BusinessTextBlock.xaml">
       <SubType>Designer</SubType>

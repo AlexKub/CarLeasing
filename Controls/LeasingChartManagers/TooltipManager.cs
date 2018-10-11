@@ -13,10 +13,20 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     public class TooltipManager : IDisposable
     {
         LeasingChart m_chart;
-        DrawingVisual m_tooltip;
+        DrawingVisual m_tooltipVisual;
+        Grid m_tooltip;
         CanvasBarDrawManager.BarData m_TooltipedRect;
 
-        public TooltipManager(LeasingChart chart) { m_chart = chart; }
+        /// <summary>
+        /// Видимая область для рисования
+        /// </summary>
+        public VisibleArea VisibleArea { get; set; }
+
+        public TooltipManager(LeasingChart chart)
+        {
+            m_chart = chart;
+            VisibleArea = new VisibleArea();
+        }
 
         /// <summary>
         /// Обработка Tooltip'a
@@ -29,7 +39,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 //если мышь всё ещё над тем же элементом - ничего не делаем
                 if (m_TooltipedRect.Border.Contains(point))
+                {
+                    //двигаем tooltip вместе с мышкой, чтобы не закрывал полоску
+                    MoveTooltip(point);
                     return;
+                }
                 else //если мышь ушла с элемента
                 {
                     //скрываем подсказку
@@ -49,10 +63,24 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         HideTooltip();
 
                         ShowTooltip(bar, point);
-                        m_TooltipedRect = bar; //сохраняем найденный элемент
                         return;
                     }
                 }
+            }
+        }
+
+        void MoveTooltip(Point p)
+        {
+            //двигаем tooltip при движении мыши
+            if (m_tooltip == null)
+                return;
+
+            var oldTooltip = m_tooltip;
+            var oldRect = m_TooltipedRect;
+            if (p.X + oldTooltip.ActualWidth < VisibleArea.Width)
+            {
+                HideTooltip();
+                DrawTooltip(oldTooltip, p, oldRect);
             }
         }
 
@@ -90,40 +118,47 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 }
             }
 
-            var dv = new DrawingVisual();
-            using (var dc = dv.RenderOpen())
+            //force render для получения ActualHeight & ActualWidth
+            grid.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+            grid.Arrange(new Rect(grid.DesiredSize));
+
+            DrawTooltip(grid, p, bar);
+        }
+
+        void DrawTooltip(Grid tooltip, Point p, CanvasBarDrawManager.BarData bar)
+        {
+            //расчёт выхода tooltip за правую границу контрола
+            var x = p.X;
+            var leftPoint = x + tooltip.ActualWidth + 2d;
+            var va = VisibleArea;
+            if (leftPoint > va.Width)
             {
-                var vb = new VisualBrush(grid);
-                //force render
-                grid.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-                grid.Arrange(new Rect(grid.DesiredSize));
+                var diff = leftPoint - va.Width;
 
-                //расчёт выхода tooltip за правую границу контрола
-                var x = p.X;
-                var leftPoint = x + grid.ActualWidth + 2d;
-                if (leftPoint > m_chart.ActualWidth)
-                {
-                    var diff = leftPoint - m_chart.ActualWidth;
-
-                    x -= diff;
-                }
-
-                //расчёт выхода tooltip за нижнюю границу контрола
-                var y = bar.VerticalOffset + bar.Border.Height + 3d;
-
-                var botPoint = y + grid.ActualHeight + 20d;
-
-                if (botPoint > m_chart.ActualHeight)
-                {
-                    var diff = botPoint - grid.ActualHeight - m_chart.RowHeight - 20d; //20 - основной скролл чуть больше видимого
-                    y -= diff;
-                }
-
-                dc.DrawRectangle(vb, null, new Rect(x, y, grid.ActualWidth, grid.ActualHeight));
-                m_TooltipedRect = bar;
+                x -= diff;
             }
 
-            m_tooltip = dv;
+            //расчёт выхода tooltip за нижнюю границу контрола
+            var y = bar.VerticalOffset + bar.Border.Height + 3d;
+
+            var botPoint = y + tooltip.ActualHeight;
+
+            if (botPoint > va.Height)
+            {
+                y = va.Height - tooltip.ActualHeight - 20d; //20 - основной скролл
+            }
+
+            var dv = new DrawingVisual();
+            var vb = new VisualBrush(tooltip);
+
+            using (var dc = dv.RenderOpen())
+            {
+                dc.DrawRectangle(vb, null, new Rect(x, y, tooltip.ActualWidth, tooltip.ActualHeight));
+            }
+
+            m_tooltip = tooltip;
+            m_TooltipedRect = bar;
+            m_tooltipVisual = dv;
             m_chart.AddVisual(dv);
         }
 
@@ -144,13 +179,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public void HideTooltip()
         {
-            if (m_tooltip != null)
+            if (m_tooltipVisual != null)
             {
-                m_chart.Remove(m_tooltip);
-                m_tooltip = null;
+                m_chart.Remove(m_tooltipVisual);
+                m_tooltipVisual = null;
             }
 
             m_TooltipedRect = null;
+            m_tooltip = null;
         }
 
         /// <summary>
@@ -180,6 +216,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             m_TooltipedRect = null;
             m_tooltip = null;
             m_chart = null;
+            m_tooltipVisual = null;
         }
     }
 }

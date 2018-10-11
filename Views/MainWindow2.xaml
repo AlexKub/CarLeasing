@@ -189,7 +189,9 @@
                 </Border>
 
                 <!-- График занятости -->
-                <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CanContentScroll="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" ScrollChanged="LeasingScroll_ScrollChanged">
+                <ScrollViewer Name="LeasingScroll" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" CanContentScroll="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" 
+                              ScrollChanged="LeasingScroll_ScrollChanged"
+                              SizeChanged="LeasingScroll_SizeChanged">
                     <!-- Новая сетка -->
                     <controls:LeasingChart x:Name="LeasingChart"
                             VerticalAlignment="Top"

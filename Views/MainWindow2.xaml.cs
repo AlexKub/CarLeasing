@@ -54,6 +54,9 @@ namespace CarLeasingViewer.Views
         {
             Loaded -= MainWindow2_Loaded;
 
+            LeasingChart.VisibleArea.ChartHeight = LeasingChart.ActualHeight;
+            LeasingChart.VisibleArea.ChartWith = LeasingChart.ActualWidth;
+
             LeasingChart.Draw();
         }
 
@@ -63,17 +66,22 @@ namespace CarLeasingViewer.Views
 
             CarColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
+
+            LeasingChart.VisibleArea.HorisontalScrollOffset = e.HorizontalOffset;
         }
 
         private void CommentsColumnScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
             LeasingScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            LeasingChart.VisibleArea.VerticalScrollOffset = e.VerticalOffset;
+
             CarColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
         }
 
         private void CarColumnScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
             LeasingScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            LeasingChart.VisibleArea.VerticalScrollOffset = e.VerticalOffset;
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
         }
 
@@ -133,6 +141,12 @@ namespace CarLeasingViewer.Views
         {
             //снимаем подсветку при наведении при выходе мыши за границы контрола
             LeasingChart.HightlightManager.UnHightlightAll();
+        }
+
+        private void LeasingScroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
+            LeasingChart.VisibleArea.ChartWith = LeasingScroll.ActualWidth;
         }
     }
 }

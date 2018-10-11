@@ -3,9 +3,7 @@ using CarLeasingViewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -18,6 +16,11 @@ namespace CarLeasingViewer.Controls
     {
         // Create a collection of child visual objects.
         private readonly VisualCollection m_children;
+
+        /// <summary>
+        /// Видимая площадь для рисования
+        /// </summary>
+        public VisibleArea VisibleArea { get { return m_tooltipM == null ? new VisibleArea() : m_tooltipM.VisibleArea; } set { m_tooltipM.VisibleArea = value; } }
 
         #region Managers
 
@@ -405,7 +408,7 @@ namespace CarLeasingViewer.Controls
                 m_rowM = null;
             }
 
-            if(m_tooltipM != null)
+            if (m_tooltipM != null)
             {
                 m_tooltipM.Dispose();
                 m_tooltipM = null;

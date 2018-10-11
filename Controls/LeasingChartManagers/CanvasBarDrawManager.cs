@@ -303,7 +303,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public double HorizontalOffset { get; set; }
 
             /// <summary>
-            /// Отрисованная граница
+            /// Отрисованный прямоугольник на графике
             /// </summary>
             public Rect Border { get; set; }
 
