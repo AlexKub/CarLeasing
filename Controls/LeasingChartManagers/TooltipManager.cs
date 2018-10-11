@@ -1,5 +1,6 @@
 ﻿using CarLeasingViewer.Models;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +43,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                     //двигаем tooltip вместе с мышкой, чтобы не закрывал полоску
                     MoveTooltip(point);
-                    return;
                 }
                 else //если мышь ушла с элемента
                 {
@@ -52,21 +52,45 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
 
             //поиск элемента, над которым сейчас находится мышь
-            CanvasBarDrawManager.BarData bar = null;
-            foreach (var kvp in m_chart.BarManager.Data)
-            {
-                bar = kvp.Value;
-                if (bar.VerticalOffset <= point.Y)
-                {
-                    if (bar.Border.Contains(point))
-                    {
-                        HideTooltip();
+            //получаем строку, к которой принадлежит точка
+            var row = m_chart.RowManager.GetRowByPoint(point);
 
-                        ShowTooltip(bar, point);
-                        return;
-                    }
+            if (row != null)
+            {
+                //для случая, когда несколько полосок друг на другая наслаиваются
+                //ищем ту, что видна пользователю - с наибольшим ZIndex
+                CanvasBarDrawManager.BarData maxZ = null;
+                foreach (var b in row.Bars)
+                {
+                    if (b.Border.Contains(point))
+                        if (maxZ == null)
+                            maxZ = b;
+                        else
+                            maxZ = maxZ.ZIndex > b.ZIndex ? maxZ : b;
+                }
+
+                //если пересечение с точкой найдено
+                if(maxZ != null)
+                {
+                    HideTooltip();
+
+                    ShowTooltip(maxZ, point);
                 }
             }
+            //foreach (var kvp in m_chart.BarManager.Data)
+            //{
+            //    bar = kvp.Value;
+            //    if (bar.VerticalOffset <= point.Y)
+            //    {
+            //        if (bar.Border.Contains(point))
+            //        {
+            //            HideTooltip();
+            //
+            //            ShowTooltip(bar, point);
+            //            return;
+            //        }
+            //    }
+            //}
         }
 
         void MoveTooltip(Point p)
@@ -108,7 +132,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             else
             {
                 NewStyledTooltipRow(grid, bar.BarModel.Leasing.Title, 0);
-                
+
                 NewStyledTooltipRow(grid, bar.BarModel.CarName, 1);
 
                 NewStyledTooltipRow(grid, GetDataSpan(bar.BarModel), 2);

@@ -62,7 +62,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 bd = new BarData(this);
                 bd.Index = barModel.RowIndex;
-                //var lineNumber = barModel.RowIndex + 1;
                 bd.VerticalOffset = barModel.RowIndex * RowHeight;
                 bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
                 bd.BarModel = barModel;
@@ -70,7 +69,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
 
             dv = DrawBorder(bd);
-            //bd.Border = b;
 
             return dv;
         }
@@ -314,6 +312,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public Rect Border { get; set; }
 
             public LeasingElementModel BarModel { get; set; }
+
+            /// <summary>
+            /// Индекс видимости
+            /// </summary>
+            public int ZIndex { get; set; } //для случаев, когда в БД пересекаются даты по непонятным причинам
 
             /// <summary>
             /// Флаг отрисовки линии

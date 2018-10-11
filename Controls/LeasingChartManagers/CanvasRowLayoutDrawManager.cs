@@ -104,24 +104,29 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (m_indexes.Count == 0)
                 return null;
 
-            var rowIndex = (int)(p.Y / RowHeight) - 1;
+            var row = Canvas.RowManager.GetRowByPoint(p);
 
-            if (rowIndex < 0)
-                rowIndex = 0;
+            if (row != null)
+                return row.RowLayout;
 
-            if (rowIndex < m_indexes.Count)
-            {
-                if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-                    return m_bars[m_indexes[rowIndex]];
-            }
-            else
-                return null;
-
-            rowIndex++;
-
-            if (rowIndex < m_indexes.Count)
-                if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-                    return m_bars[m_indexes[rowIndex]];
+            //var rowIndex = (int)(p.Y / RowHeight) - 1;
+            //
+            //if (rowIndex < 0)
+            //    rowIndex = 0;
+            //
+            //if (rowIndex < m_indexes.Count)
+            //{
+            //    if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
+            //        return m_bars[m_indexes[rowIndex]];
+            //}
+            //else
+            //    return null;
+            //
+            //rowIndex++;
+            //
+            //if (rowIndex < m_indexes.Count)
+            //    if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
+            //        return m_bars[m_indexes[rowIndex]];
 
             return null;
         }

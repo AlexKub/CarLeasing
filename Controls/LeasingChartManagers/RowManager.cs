@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
@@ -117,11 +118,41 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        /// <summary>
+        /// Обработка отрисовки нового прямоугольника на графике
+        /// </summary>
+        /// <param name="bar"></param>
         private void Manager_BarAdded(CanvasBarDrawManager.BarData bar)
         {
             Row row = GetRow(bar.Index);
 
+            //проставляем z-index для наслаивающихся друг на друга полосок
+            if(row.Bars.Count > 0)
+            {
+                foreach (var b in row.Bars)
+                {
+                    if (b.Border.IntersectsWith(bar.Border))
+                        bar.ZIndex++;
+                }
+            }
+
+            //добавляем прямоугольник к текущей строке
             row.Add(bar);
+        }
+
+        /// <summary>
+        /// Получение строки по координатам
+        /// </summary>
+        /// <param name="p">Искомая точка</param>
+        /// <returns>Возвращает строку, к которой принадлежт точка или null</returns>
+        public Row GetRowByPoint(Point p)
+        {
+            var rowIndex = (int)(p.Y / (m_chart.RowHeight + 1));
+
+            if (rowIndex < 0)
+                rowIndex = 0;
+
+            return GetRow(rowIndex);
         }
 
         void SubscribeLayoutManager(CanvasRowLayoutDrawManager manager, bool subscribe)
