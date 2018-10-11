@@ -3,9 +3,7 @@ using CarLeasingViewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -18,6 +16,11 @@ namespace CarLeasingViewer.Controls
     {
         // Create a collection of child visual objects.
         private readonly VisualCollection m_children;
+
+        /// <summary>
+        /// Видимая площадь для рисования
+        /// </summary>
+        public VisibleArea VisibleArea { get { return m_tooltipM == null ? new VisibleArea() : m_tooltipM.VisibleArea; } set { m_tooltipM.VisibleArea = value; } }
 
         #region Managers
 
@@ -53,7 +56,7 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Отрисовка прямоугольников на графике
         /// </summary>
-        public CanvasBarDrawManager BorderDrawer { get { return m_barM; } }
+        public CanvasBarDrawManager BarManager { get { return m_barM; } }
 
         /// <summary>
         /// Отрисовка текса на графике
@@ -78,6 +81,10 @@ namespace CarLeasingViewer.Controls
         /// При изменении Набора аренды
         /// </summary>
         public event LeasingSetEvent SetChanged;
+        /// <summary>
+        /// При выборе строки
+        /// </summary>
+        public event RowSelectedEvent RowSelectionChanged;
 
         public static DependencyProperty dp_DayCount = DependencyProperty.Register(nameof(DayCount), typeof(int), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = default(int) });
         /// <summary>
@@ -273,6 +280,8 @@ namespace CarLeasingViewer.Controls
             base.Unloaded += LeasingChart_Unloaded;
 
             m_children = new VisualCollection(this);
+
+            Subscribe(true);
         }
 
         /// <summary>
@@ -365,9 +374,28 @@ namespace CarLeasingViewer.Controls
             m_hightlightM.Clear();
         }
 
+        void Subscribe(bool subscribe)
+        {
+            if(subscribe)
+            {
+                m_rowM.RowSelectionChanged += M_rowM_RowSelectionChanged;
+            }
+            else
+            {
+                m_rowM.RowSelectionChanged -= M_rowM_RowSelectionChanged;
+            }
+        }
+
+        private void M_rowM_RowSelectionChanged(RowManager.Row row)
+        {
+            RowSelectionChanged?.Invoke(row);
+        }
+
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)
         {
             Unloaded -= LeasingChart_Unloaded;
+
+            Subscribe(false);
 
             if (m_gridM != null)
             {
@@ -405,7 +433,7 @@ namespace CarLeasingViewer.Controls
                 m_rowM = null;
             }
 
-            if(m_tooltipM != null)
+            if (m_tooltipM != null)
             {
                 m_tooltipM.Dispose();
                 m_tooltipM = null;
@@ -442,7 +470,8 @@ namespace CarLeasingViewer.Controls
             //получаем Layout, над которым находится мышь
             var rLayout = m_rowLayoutM.Contains(point);
 
-            m_hightlightM.Select(rLayout == null ? -1 : rLayout.RowIndex);
+            var rowIndex = rLayout == null ? -1 : rLayout.RowIndex;
+            m_hightlightM.Select(rowIndex);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

@@ -6,6 +6,8 @@ using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
+    public delegate void RowSelectedEvent(RowManager.Row row);
+
     /// <summary>
     /// Поддержка абстракции строк на графике. Зависит от инициализации прочих менеджеров
     /// </summary>
@@ -27,6 +29,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public int Count { get { return m_rows.Count; } }
 
+        public event RowSelectedEvent RowSelectionChanged;
+
         public RowManager(LeasingChart chart)
         {
             m_chart = chart;
@@ -42,6 +46,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             SubscribeSet(m_chart.LeasingSet, subscribe);
 
             SubscribeLayoutManager(m_chart.RowLayoutDrawer, subscribe);
+
+            SubscribeBarManager(m_chart.BarManager, subscribe);
 
             if (subscribe)
             {
@@ -64,7 +70,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 set.CommentsChanged += LeasingSet_CommentsChanged;
 
                 Row row = null;
-                if(set.CarModels.Count > 0)
+                if (set.CarModels.Count > 0)
                     foreach (var model in set.CarModels)
                     {
                         if (m_rows.ContainsKey(model.RowIndex))
@@ -99,12 +105,58 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        void SubscribeBarManager(CanvasBarDrawManager manager, bool subscribe)
+        {
+            if (manager == null)
+                return;
+
+            if (subscribe)
+            {
+                manager.BarAdded += Manager_BarAdded; ;
+
+                Row row = null;
+                if (manager.Bars.Count() > 0)
+                    foreach (var bar in manager.Bars)
+                    {
+                        if (m_rows.ContainsKey(bar.Index))
+                            row = m_rows[bar.Index];
+                        else
+                        {
+                            row = new Row(bar.Index);
+                            m_rows.Add(bar.Index, row);
+                        }
+
+                        row.Add(bar);
+                    }
+            }
+            else
+            {
+                manager.BarAdded -= Manager_BarAdded;
+            }
+        }
+
+        private void Manager_BarAdded(CanvasBarDrawManager.BarData bar)
+        {
+            Row row = null;
+            if (m_rows.ContainsKey(bar.Index))
+            {
+                row = m_rows[bar.Index];
+            }
+            else
+            {
+                row = new Row(bar.Index);
+                m_rows.Add(bar.Index, row);
+            }
+
+            row.Add(bar);
+        }
+
         void SubscribeLayoutManager(CanvasRowLayoutDrawManager manager, bool subscribe)
         {
             if (manager == null)
                 return;
 
-            if(subscribe)
+            if (subscribe)
             {
                 manager.RowLayoutDrawed += RowLayoutDrawer_RowLayoutDrawed;
 
@@ -189,6 +241,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        /// <summary>
+        /// Очистка набора строк
+        /// </summary>
+        public void Clear()
+        {
+            m_rows.Clear();
+        }
+
         public void Dispose()
         {
             foreach (var row in m_rows)
@@ -205,10 +265,24 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         }
 
         /// <summary>
+        /// вызывается при изменении выбора строки
+        /// </summary>
+        /// <param name="row">Строка</param>
+        public void CallRowSelectionChanged(Row row)
+        {
+            if (row == null)
+                return;
+
+            RowSelectionChanged?.Invoke(row);
+        }
+
+        /// <summary>
         /// Условная строка на графике
         /// </summary>
         public class Row : IDisposable
         {
+            List<CanvasBarDrawManager.BarData> m_Bars = new List<CanvasBarDrawManager.BarData>();
+
             /// <summary>
             /// Индекс строки (начиная с 0)
             /// </summary>
@@ -223,6 +297,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// Layout строки
             /// </summary>
             public CanvasRowLayoutDrawManager.RowLayout RowLayout { get; set; }
+
+            /// <summary>
+            /// Данные полосок, принадлежащих текущей строке графика
+            /// </summary>
+            public IReadOnlyList<CanvasBarDrawManager.BarData> Bars { get { return m_Bars; } }
 
             /// <summary>
             /// Комментарий
@@ -243,9 +322,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 }
             }
 
-            public Row(int i)
+            /// <summary>
+            /// Флаг, что строка была выбрана пользователем
+            /// </summary>
+            public bool Selected { get; set; }
+
+            public Row(int i) { Index = i; }
+
+            public void Add(CanvasBarDrawManager.BarData bar)
             {
-                Index = i;
+                m_Bars.Add(bar);
             }
 
             /// <summary>
@@ -276,11 +362,17 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     Comment.Hightlighted = hightlight;
             }
 
-            public void Dispose()
+            public void Clear()
             {
                 Car = null;
                 RowLayout = null;
                 Comment = null;
+                m_Bars.Clear();
+            }
+
+            public void Dispose()
+            {
+                Clear();
             }
         }
     }

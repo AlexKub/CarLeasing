@@ -139,6 +139,8 @@
     <Compile Include="Models\LeasingSet.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
+    <Compile Include="Models\StatisticItemModel.cs" />
+    <Compile Include="Models\StatisticModel.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />
     <Compile Include="Log\ILogParameter.cs" />
@@ -191,6 +193,7 @@
     <Compile Include="Views\MainWindow2.xaml.cs">
       <DependentUpon>MainWindow2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VisibleArea.cs" />
     <Compile Include="XamlExtensions\StickyScrollHeader.cs" />
     <Page Include="Controls\BusinessTextBlock.xaml">
       <SubType>Designer</SubType>
