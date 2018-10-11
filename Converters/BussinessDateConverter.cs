@@ -13,7 +13,7 @@ namespace CarLeasingViewer.Converters
             if (value == null)
                 return "NULL VALUE";
 
-            var b = value as Business;
+            var b = value as Leasing;
 
             if (b == null)
                 return "NULL BUSINESS";

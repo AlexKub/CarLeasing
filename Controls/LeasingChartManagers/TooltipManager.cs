@@ -95,6 +95,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
 
             var hasComment = !string.IsNullOrEmpty(bar.BarModel?.Leasing.Comment);
             if (hasComment)
@@ -107,7 +108,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             else
             {
                 NewStyledTooltipRow(grid, bar.BarModel.Leasing.Title, 0);
-
+                
                 NewStyledTooltipRow(grid, bar.BarModel.CarName, 1);
 
                 NewStyledTooltipRow(grid, GetDataSpan(bar.BarModel), 2);
@@ -115,6 +116,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (hasComment)
                 {
                     NewStyledTooltipRow(grid, bar.BarModel.Leasing.Comment, 3);
+                }
+
+                if (!string.IsNullOrEmpty(bar.BarModel.Leasing.Saler))
+                {
+                    var tb = NewStyledTooltipRow(grid, bar.BarModel.Leasing.Saler, 4);
+                    tb.HorizontalAlignment = HorizontalAlignment.Right;
                 }
             }
 

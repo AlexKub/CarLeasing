@@ -23,11 +23,11 @@
         /// </summary>
         public MonthHeaderModel[] Monthes { get { return m_Monthes; } set { m_Monthes = value; OnPropertyChanged(); } }
 
-        private Business pv_Leasing;
+        private Leasing pv_Leasing;
         /// <summary>
         /// Возвращает или задаёт информацию о Занятости
         /// </summary>
-        public Business Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
+        public Leasing Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
 
         private int m_DaysCount;
         /// <summary>
@@ -93,7 +93,7 @@
                 DaysCount = 0;
         }
 
-        void CalculateOffset(Business b)
+        void CalculateOffset(Leasing b)
         {
             if (b == null)
                 DayOffset = 0d;
@@ -139,7 +139,7 @@
             DayOffset = dayCount * pv_DayColumnWidth + (dayCount * 1);
         }
 
-        void CalculateWidth(Business b)
+        void CalculateWidth(Leasing b)
         {
             var dayCount = 1; //прибавляем единичку, так как при сложении/вычитании теряем день
 

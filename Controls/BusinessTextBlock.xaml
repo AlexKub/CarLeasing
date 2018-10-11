@@ -19,7 +19,7 @@
         </Style>
     </TextBlock.Resources>
     <TextBlock.ToolTip>
-        <ContentControl Width="Auto" Height="Auto" d:DataContext="{d:DesignInstance Type=models:Business}">
+        <ContentControl Width="Auto" Height="Auto" d:DataContext="{d:DesignInstance Type=models:Leasing}">
             <Grid DataContext="{Binding Leasing}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>

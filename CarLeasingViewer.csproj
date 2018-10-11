@@ -166,7 +166,7 @@
     <Compile Include="Log\LogSettings.cs" />
     <Compile Include="Log\MessageLevel.cs" />
     <Compile Include="Models\ApplicationSearchSettings.cs" />
-    <Compile Include="Models\Business.cs" />
+    <Compile Include="Models\Leasing.cs" />
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\CarBusiness.cs" />
     <Compile Include="Models\Day.cs" />

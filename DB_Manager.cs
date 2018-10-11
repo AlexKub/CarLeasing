@@ -261,7 +261,7 @@ namespace CarLeasingViewer
                                 cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]);
                             else
                             {
-                                var b = new Business();
+                                var b = new Leasing();
                                 b.DateStart = ((DateTime)reader["DateStart"]);
                                 b.DateEnd = ((DateTime)reader["DateEnd"]);
                                 b.Title = buyer;
@@ -419,13 +419,14 @@ namespace CarLeasingViewer
                                 cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]);
                             else
                             {
-                                var b = new Business();
+                                var b = new Leasing();
                                 b.DateStart = ((DateTime)reader["DateStart"]);
                                 b.DateEnd = ((DateTime)reader["DateEnd"]);
                                 b.Title = buyer;
                                 b.Type = BusinessType.Leasing;
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
+                                b.Saler = (string)reader["Saler"];
 
                                 cb.Add(b);
                             }
@@ -532,7 +533,7 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked]
                         , l.[Document No_]
-	                    ,h.[Salesperson Code]
+	                    ,h.[Salesperson Code] as Saler
 	                    ,h.[Bal_ Account No_]
 	                    ,h.[Sell-to Customer Name] as Buyer
 	                    ,h.[Bill-to Name]

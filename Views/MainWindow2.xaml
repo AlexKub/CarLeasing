@@ -97,7 +97,6 @@
         </Grid>
 
         <!-- Основной график лизинга -->
-
         <Grid Grid.Row="1" VerticalAlignment="Stretch" MouseLeave="ScrollViewer_MouseLeave" MinHeight="300" 
                   d:DataContext="{d:DesignInstance Type=models:LeasingSet}"  DataContext="{Binding LeasingSet}" >
             <Grid.Resources>
@@ -122,7 +121,7 @@
                 </Style>
 
                 <!-- индекс строки Grid'a для 3ех контролов графика -->
-                <sys:Int32 x:Key="CharRowIndex">1</sys:Int32>
+                <sys:Int32 x:Key="ChartRowIndex">1</sys:Int32>
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -136,8 +135,7 @@
             </Grid.ColumnDefinitions>
 
             <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
-            
-            <Rectangle Grid.Row="3" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
+            <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
 
             <!-- Шапка с месяцами -->
             <Border Grid.Column="1" BorderBrush="{StaticResource LightBorderBrush}" BorderThickness="1 0 1 0" Margin="-1 0 -1 0">
@@ -163,7 +161,7 @@
             </Border>
 
             <!-- Левая колонка с машинами -->
-            <Border Grid.Column="0" Grid.Row="{StaticResource CharRowIndex}" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
+            <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
                 <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
                     <ItemsControl ItemsSource="{Binding CarModels}">
                         <ItemsControl.Resources>
@@ -195,7 +193,7 @@
 
             
             <!-- График занятости -->
-            <Border Grid.Column="1" Grid.Row="{StaticResource CharRowIndex}" Grid.RowSpan="2">
+            <Border Grid.Column="1" Grid.Row="{StaticResource ChartRowIndex}" Grid.RowSpan="2">
                 <ScrollViewer Name="LeasingScroll" 
                           CanContentScroll="False" 
                           VerticalScrollBarVisibility="Hidden" 
@@ -221,7 +219,7 @@
             </Border>
             
             <!-- Комментарии -->
-            <Border Grid.Row="{StaticResource CharRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
+            <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
                 <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
                     <ItemsControl ItemsSource="{Binding Comments}">
                         <ItemsControl.Resources>
