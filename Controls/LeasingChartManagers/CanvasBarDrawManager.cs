@@ -61,7 +61,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             else
             {
                 bd = new BarData(this);
-
+                bd.Index = barModel.RowIndex;
                 //var lineNumber = barModel.RowIndex + 1;
                 bd.VerticalOffset = barModel.RowIndex * RowHeight;
                 bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
@@ -291,6 +291,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <summary>
         /// Данные для отрисовки полоски
         /// </summary>
+        [System.Diagnostics.DebuggerDisplay("{DebugerDisplay()}")]
         public class BarData
         {
             CanvasBarDrawManager m_manager;
@@ -340,6 +341,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     Drawed = false;
                     BarModel = null;
                 }
+            }
+
+            string DebugerDisplay()
+            {
+                return Index.ToString() + " | " + (BarModel == null ? "NO_MODEL" : BarModel.CarName);
             }
         }
 

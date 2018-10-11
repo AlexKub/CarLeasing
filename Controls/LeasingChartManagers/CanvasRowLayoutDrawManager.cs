@@ -88,7 +88,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             dc.DrawRectangle(DefaultBrush, null, rect);
             dc.Close();
-            
+
             RowLayoutDrawed?.Invoke(rl);
 
             return dv;
@@ -109,13 +109,19 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (rowIndex < 0)
                 rowIndex = 0;
 
-            if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-                return m_bars[m_indexes[rowIndex]];
-            
+            if (rowIndex < m_indexes.Count)
+            {
+                if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
+                    return m_bars[m_indexes[rowIndex]];
+            }
+            else
+                return null;
+
             rowIndex++;
-            
-            if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-                return m_bars[m_indexes[rowIndex]];
+
+            if (rowIndex < m_indexes.Count)
+                if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
+                    return m_bars[m_indexes[rowIndex]];
 
             return null;
         }
@@ -162,7 +168,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             void SetBackground(Brush brush)
             {
-                var dc = Visual.RenderOpen();                
+                var dc = Visual.RenderOpen();
                 dc.DrawRectangle(brush, null, Rectangle);
                 dc.Close();
             }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Windows.Controls;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
-        /// <summary>
-        /// Общая логика при управлении Canvas
-        /// </summary>
-        public abstract class CanvasDrawManager : IDisposable
+    /// <summary>
+    /// Общая логика при управлении Canvas
+    /// </summary>
+    public abstract class CanvasDrawManager : IDisposable
         {
             /// <summary>
             /// ЧСВ-counter элементов
@@ -22,16 +21,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// Canvas для отрисовки
             /// </summary>
             protected LeasingChart Canvas { get; private set; }
-
-            /// <summary>
-            /// Текущая длина Canvas
-            /// </summary>
-            protected double CanvasWidth => Canvas.ActualWidth;
-
-            /// <summary>
-            /// Текущая высота Canvas
-            /// </summary>
-            protected double CanvasHeight => Canvas.ActualHeight;
 
             public CanvasDrawManager(LeasingChart canvas)
             {

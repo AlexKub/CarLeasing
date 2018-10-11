@@ -29,10 +29,11 @@
         /// </summary>
         public Business Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
 
+        private int m_DaysCount;
         /// <summary>
-        /// Общее количество дней в аренде
+        /// Возвращает или задаёт Количество дней в аренде
         /// </summary>
-        public int DaysCount { get { return Leasing == null ? 0 : (Leasing.DateEnd - Leasing.DateEnd).Days + 1; } }
+        public int DaysCount { get { return m_DaysCount; } set { m_DaysCount = value; OnPropertyChanged(); } }
 
         private int pv_RowIndex;
         /// <summary>
@@ -85,6 +86,11 @@
         {
             CalculateOffset(pv_Leasing);
             CalculateWidth(pv_Leasing);
+
+            if (Leasing != null)
+                DaysCount = (Leasing.DateEnd - Leasing.DateStart).Days + 1;
+            else
+                DaysCount = 0;
         }
 
         void CalculateOffset(Business b)

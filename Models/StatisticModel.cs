@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using static CarLeasingViewer.Controls.LeasingChartManagers.RowManager;
@@ -11,7 +12,7 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class StatisticModel : ViewModels.ViewModelBase, IReadOnlyList<StatisticItemModel>
     {
-        private IReadOnlyList<StatisticItemModel> pv_Items;
+        private IReadOnlyList<StatisticItemModel> pv_Items = new List<StatisticItemModel>();
         /// <summary>
         /// Возвращает или задаёт набор позиций статистики
         /// </summary>
@@ -49,9 +50,11 @@ namespace CarLeasingViewer.Models
 
             var items = new List<StatisticItemModel>();
 
-            var leasingCount = row.Bars.Sum(b => b.BarModel.DaysCount);
-            items.Add(new StatisticItemModel("Общее время аренды", leasingCount.ToString()));
-            items.Add(new StatisticItemModel("% загрузки", ((((double)(set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days) / 100d) * leasingCount).ToString()));
+            var leasingCount = row.Bars.Sum(b => b.BarModel == null ? 0 : b.BarModel.DaysCount);
+            var loadPercent = (double)(set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
+            items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
+            items.Add(new StatisticItemModel("Общее время аренды", leasingCount.ToString() + " дн."));
+            items.Add(new StatisticItemModel("% загрузки", Math.Round((leasingCount / loadPercent), 2).ToString() + " %"));
 
             Items = items;
         }
