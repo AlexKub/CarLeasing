@@ -77,20 +77,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     ShowTooltip(maxZ, point);
                 }
             }
-            //foreach (var kvp in m_chart.BarManager.Data)
-            //{
-            //    bar = kvp.Value;
-            //    if (bar.VerticalOffset <= point.Y)
-            //    {
-            //        if (bar.Border.Contains(point))
-            //        {
-            //            HideTooltip();
-            //
-            //            ShowTooltip(bar, point);
-            //            return;
-            //        }
-            //    }
-            //}
         }
 
         void MoveTooltip(Point p)

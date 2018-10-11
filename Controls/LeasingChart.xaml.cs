@@ -309,12 +309,7 @@ namespace CarLeasingViewer.Controls
             }
 
             //отрисовка сетки
-            if (m_gridM != null)
-            {
-                DrawRows();
-
-                DrawColumns();
-            }
+            RedrawGrid();
 
             //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
@@ -363,7 +358,7 @@ namespace CarLeasingViewer.Controls
 
         void Subscribe(bool subscribe)
         {
-            if(subscribe)
+            if (subscribe)
             {
                 m_rowM.RowSelectionChanged += M_rowM_RowSelectionChanged;
             }
@@ -457,7 +452,8 @@ namespace CarLeasingViewer.Controls
             {
                 dv = m_gridM.DrawColumn(i);
                 if (dv != null)
-                    m_children.Add(dv);
+                    if (!m_children.Contains(dv))
+                        m_children.Add(dv);
             }
         }
 
@@ -470,7 +466,8 @@ namespace CarLeasingViewer.Controls
             {
                 dv = m_gridM.DrawRow(i);
                 if (dv != null)
-                    m_children.Add(dv); //строки
+                    if (!m_children.Contains(dv))
+                        m_children.Add(dv); //строки
             }
         }
 

@@ -28,7 +28,7 @@ namespace CarLeasingViewer.Views
                 monthBuisnesses = DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
             }
             else
-                monthBuisnesses = DataManager.GetDataset(rMonth, rMonth.Next(2));
+                monthBuisnesses = DataManager.GetDataset(Month.Current.Previos(), Month.Current.Next());
 
             var set = new LeasingSet();
             set.Data = monthBuisnesses;

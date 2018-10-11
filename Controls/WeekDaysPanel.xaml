@@ -16,7 +16,7 @@
         <sys:Double x:Key="ColumnFontSize">14</sys:Double>
 
         <DataTemplate x:Key="ColumnTemplate">
-            <Border BorderThickness="1" BorderBrush="Black">
+            <Border BorderThickness="1" BorderBrush="Black" SnapsToDevicePixels="True">
                 <TextBlock FontSize="{StaticResource ColumnFontSize}"
                        Text="{Binding}"
                        TextAlignment="Center"
@@ -49,6 +49,7 @@
         <Style x:Key="DayItemBorderStyle" TargetType="Border">
             <Setter Property="BorderThickness" Value="1 0 0 0" />
             <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
         </Style>
 
         <DataTemplate x:Key="DayIndexItemTemplate">
@@ -100,7 +101,7 @@
                     <RowDefinition MinHeight="30"/>
                     <RowDefinition MinHeight="30"/>
                 </Grid.RowDefinitions>
-                <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource LightBorderBrush}">
+                <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource LightBorderBrush}" SnapsToDevicePixels="True">
                     <!--Сокращённые называния дней-->
                     <ItemsControl Style="{StaticResource ItemsControlStyle}" ItemTemplate="{StaticResource DayNameItemTemplate}" ItemsSource="{Binding}" />
                 </Border>

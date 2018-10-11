@@ -175,7 +175,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                 ld.Offset = offset;
 
-                if (offset > 0d && Canvas.ActualHeight > 0d && !ld.Drawed)
+                if (offset > 0d && Canvas.ActualHeight > 0d)
                 {
                     ld.Line = new Line();
                     dv = DrawColumn(offset, ld);
@@ -249,42 +249,39 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         protected override void M_canvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
-            if (e.HeightChanged)
-            {
-                var m_cHeight = e.NewSize.Height;
-
-                if (m_cHeight > 0d)
-                {
-                    foreach (var ld in m_columnsData.Values)
-                    {
-                        if (ld.Drawed)
-                            ld.Line.Y2 = m_cHeight;
-                        //else
-                        //    ld.Line = DrawColumn(ld.Offset); //offset для колонок расчитывается заранее
-                    }
-                }
-            }
-            if (e.WidthChanged)
-            {
-                var m_cWidth = e.NewSize.Width;
-
-                if (m_cWidth > 0d)
-                {
-                    var height = 0d;
-
-                    foreach (var rd in m_rowsData.Values)
-                    {
-                        height += RowHeight;
-                        if (rd.Drawed)
-                            rd.Line.X2 = m_cWidth;
-                        else
-                        {
-                            rd.Offset = height;
-                            //rd.Line = DrawRow(height);
-                        }
-                    }
-                }
-            }
+            //if (e.HeightChanged)
+            //{
+            //    var m_cHeight = e.NewSize.Height;
+            //
+            //    if (m_cHeight > 0d)
+            //    {
+            //        foreach (var ld in m_columnsData.Values)
+            //        {
+            //            if (ld.Drawed)
+            //                ld.Line.Y2 = m_cHeight;
+            //        }
+            //    }
+            //}
+            //if (e.WidthChanged)
+            //{
+            //    var m_cWidth = e.NewSize.Width;
+            //
+            //    if (m_cWidth > 0d)
+            //    {
+            //        var height = 0d;
+            //
+            //        foreach (var rd in m_rowsData.Values)
+            //        {
+            //            height += RowHeight;
+            //            if (rd.Drawed)
+            //                rd.Line.X2 = m_cWidth;
+            //            else
+            //            {
+            //                rd.Offset = height;
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         #region RowData
