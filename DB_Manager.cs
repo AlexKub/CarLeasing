@@ -372,7 +372,7 @@ namespace CarLeasingViewer
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
                                 b.Saler = (string)reader["Saler"];
-                                b.Blocked = (bool)reader["Blocked"];
+                                b.Blocked = ((byte)reader["Blocked"]) > 0;
 
                                 cb.Add(b);
                             }
