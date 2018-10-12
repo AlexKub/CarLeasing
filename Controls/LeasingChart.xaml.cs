@@ -161,6 +161,27 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public Brush BarBrush { get { return (Brush)GetValue(dp_BarBrush); } set { SetValue(dp_BarBrush, value); } }
 
+        public static readonly DependencyProperty dp_BlockeBarBrushProperty = DependencyProperty.Register(nameof(BlockeBarBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
+        {
+            DefaultValue = default(Brush),
+            PropertyChangedCallback = (s, e) =>
+            {
+                var _this = s as LeasingChart;
+
+                if (_this == null)
+                    return;
+
+                if (_this.m_barM == null)
+                    return;
+
+                _this.m_barM.BlockedBarBrush = e.NewValue as Brush;
+            }
+        });
+        /// <summary>
+        /// Кисть для заблокированных
+        /// </summary>
+        public Brush BlockeBarBrush { get { return (Brush)GetValue(dp_BlockeBarBrushProperty); } set { SetValue(dp_BlockeBarBrushProperty, value); } }
+
         public static DependencyProperty dp_BarBorderBrush = DependencyProperty.Register(nameof(BarBorderBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
             DefaultValue = default(Brush),
