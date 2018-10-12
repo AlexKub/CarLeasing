@@ -9,7 +9,7 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class CarBusiness : ViewModelBase
     {
-        List<Business> m_businesses = new List<Business>();
+        List<Leasing> m_businesses = new List<Leasing>();
 
         /// <summary>
         /// ID позиции (колонка No_ в Items)
@@ -22,7 +22,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Позиции Аренды авто
         /// </summary>
-        public IList<Business> Business { get { return m_businesses; } }
+        public IList<Leasing> Business { get { return m_businesses; } }
         /// <summary>
         /// Месяц, в контексте которого рассаматриваем текущий жкземпляр
         /// </summary>
@@ -69,7 +69,7 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        public void Add(Business b)
+        public void Add(Leasing b)
         {
             m_businesses.Add(b);
         }

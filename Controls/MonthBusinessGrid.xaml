@@ -79,7 +79,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="CarBusinessTemplate">
-            <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Business}" Business="{Binding}" ColumnWidth="20"/>
+            <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Leasing}" Business="{Binding}" ColumnWidth="20"/>
         </DataTemplate>
 
         <DataTemplate x:Key="ItemTemplate">

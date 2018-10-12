@@ -287,7 +287,11 @@ namespace CarLeasingViewer.Models
             return (string.IsNullOrEmpty(Name) ? "UN KNOWN" : Name) + " | " + Year.ToString();
         }
 
-        public DayOfWeek GetFirstDay()
+        /// <summary>
+        /// Получение первого дня недели в месяце
+        /// </summary>
+        /// <returns>Возвращает первый день недели в текущем месяце</returns>
+        public DayOfWeek GetFirstDayOfWeek()
         {
             if (IsEmpty)
                 return DayOfWeek.Sunday;
@@ -307,7 +311,7 @@ namespace CarLeasingViewer.Models
         {
             List<Day> days = new List<Day>();
 
-            var weekDay = GetFirstDay();
+            var weekDay = GetFirstDayOfWeek();
             for (int i = 1; i <= DayCount; i++)
             {
                 var day = new Day(i, weekDay);
@@ -346,7 +350,7 @@ namespace CarLeasingViewer.Models
         /// Cледующий n-месяц от текущего
         /// </summary>
         /// <param name="offset">Смещения (месяцеа)</param>
-        /// <returns>ВОзвращает месяц через n-месяце после текущего</returns>
+        /// <returns>Возвращает месяц через n-месяце после текущего</returns>
         public Month Next(int offset)
         {
             var year = Year;
@@ -382,6 +386,10 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        /// <summary>
+        /// Предидущий месяц от текущего
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр предыдущего месяца</returns>
         public Month Previos()
         {
             if (Value == Monthes.January)
@@ -393,12 +401,17 @@ namespace CarLeasingViewer.Models
             return new Month(Year, Value - 1);
         }
 
+        /// <summary>
+        /// Сравнение значений месяцев
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         public bool Equals(Month m)
         {
             if (m == null)
                 return false;
 
-            return m.Value == Value;
+            return m.Year == Year && m.Value == Value;
         }
 
         /// <summary>
@@ -413,6 +426,11 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        /// <summary>
+        /// Получение всех месяцев указанного года
+        /// </summary>
+        /// <param name="year">Год</param>
+        /// <returns>ВОзвращает все месяцы указанного года</returns>
         public static IEnumerable<Month> GetMonthes(int year = 0)
         {
             if (year < 2000 || year > 2100)
@@ -428,6 +446,13 @@ namespace CarLeasingViewer.Models
             return list;
         }
 
+        /// <summary>
+        /// Получение всех месяцев (включительно) между указанными в рамках одного года
+        /// </summary>
+        /// <param name="start">Начальный месяц</param>
+        /// <param name="end">Конечный месяц</param>
+        /// <param name="year">Год</param>
+        /// <returns></returns>
         public static IEnumerable<Month> GetMonthes(int start, int end, int year = 0)
         {
             if (year == 0)

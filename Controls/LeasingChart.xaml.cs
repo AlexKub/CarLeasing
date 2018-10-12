@@ -309,25 +309,7 @@ namespace CarLeasingViewer.Controls
             }
 
             //отрисовка сетки
-            if (m_gridM != null)
-            {
-                foreach (var i in rowsI)
-                {
-                    dv = m_gridM.DrawRow(i);
-                    if (dv != null)
-                        m_children.Add(dv); //строки
-                }
-
-                //колонки
-                var colCount = DayCount + 1;
-                for (int i = 1; i < colCount; i++)
-                {
-                    dv = m_gridM.DrawColumn(i);
-                    if (dv != null)
-                        m_children.Add(dv);
-                }
-
-            }
+            RedrawGrid();
 
             //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
@@ -376,7 +358,7 @@ namespace CarLeasingViewer.Controls
 
         void Subscribe(bool subscribe)
         {
-            if(subscribe)
+            if (subscribe)
             {
                 m_rowM.RowSelectionChanged += M_rowM_RowSelectionChanged;
             }
@@ -437,6 +419,55 @@ namespace CarLeasingViewer.Controls
             {
                 m_tooltipM.Dispose();
                 m_tooltipM = null;
+            }
+        }
+
+        public void OnSizeChanged()
+        {
+
+        }
+
+        /// <summary>
+        /// Перерисовка сетки
+        /// </summary>
+        public void RedrawGrid()
+        {
+            //для случаев, когда меняется размер контрола, а сетка остаётся прежней
+            if (m_gridM != null)
+            {
+                DrawColumns();
+
+                DrawRows();
+            }
+        }
+
+        /// <summary>
+        /// Отрисовка колонок
+        /// </summary>
+        void DrawColumns()
+        {
+            DrawingVisual dv = null;
+            var colCount = DayCount + 1;
+            for (int i = 1; i < colCount; i++)
+            {
+                dv = m_gridM.DrawColumn(i);
+                if (dv != null)
+                    if (!m_children.Contains(dv))
+                        m_children.Add(dv);
+            }
+        }
+
+        void DrawRows()
+        {
+            DrawingVisual dv = null;
+            var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+
+            foreach (var i in rowsI)
+            {
+                dv = m_gridM.DrawRow(i);
+                if (dv != null)
+                    if (!m_children.Contains(dv))
+                        m_children.Add(dv); //строки
             }
         }
 

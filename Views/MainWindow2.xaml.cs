@@ -28,7 +28,7 @@ namespace CarLeasingViewer.Views
                 monthBuisnesses = DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
             }
             else
-                monthBuisnesses = DataManager.GetDataset(rMonth, rMonth.Next(2));
+                monthBuisnesses = DataManager.GetDataset(Month.Current.Previos(), Month.Current.Next());
 
             var set = new LeasingSet();
             set.Data = monthBuisnesses;
@@ -121,7 +121,7 @@ namespace CarLeasingViewer.Views
 
         private void ScrollViewer_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            LeasingChart.HightlightManager.Clear();
+            LeasingChart.HightlightManager.UnHightlightAll();
         }
 
         private void TextBlock_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -152,6 +152,7 @@ namespace CarLeasingViewer.Views
         {
             LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
             LeasingChart.VisibleArea.ChartWith = LeasingScroll.ActualWidth;
+            LeasingChart.RedrawGrid();
         }
 
         void Subscribe(bool subscribe)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
@@ -73,13 +74,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (set.CarModels.Count > 0)
                     foreach (var model in set.CarModels)
                     {
-                        if (m_rows.ContainsKey(model.RowIndex))
-                            row = m_rows[model.RowIndex];
-                        else
-                        {
-                            row = new Row(model.RowIndex);
-                            m_rows.Add(model.RowIndex, row);
-                        }
+                        row = GetRow(model.RowIndex);
 
                         row.Car = model;
                     }
@@ -87,13 +82,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (set.Comments.Count > 0)
                     foreach (var model in set.Comments)
                     {
-                        if (m_rows.ContainsKey(model.RowIndex))
-                            row = m_rows[model.RowIndex];
-                        else
-                        {
-                            row = new Row(model.RowIndex);
-                            m_rows.Add(model.RowIndex, row);
-                        }
+                        row = GetRow(model.RowIndex);
 
                         row.Comment = model;
                     }
@@ -118,13 +107,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (manager.Bars.Count() > 0)
                     foreach (var bar in manager.Bars)
                     {
-                        if (m_rows.ContainsKey(bar.Index))
-                            row = m_rows[bar.Index];
-                        else
-                        {
-                            row = new Row(bar.Index);
-                            m_rows.Add(bar.Index, row);
-                        }
+                        row = GetRow(bar.Index);
 
                         row.Add(bar);
                     }
@@ -135,20 +118,41 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        /// <summary>
+        /// Обработка отрисовки нового прямоугольника на графике
+        /// </summary>
+        /// <param name="bar"></param>
         private void Manager_BarAdded(CanvasBarDrawManager.BarData bar)
         {
-            Row row = null;
-            if (m_rows.ContainsKey(bar.Index))
+            Row row = GetRow(bar.Index);
+
+            //проставляем z-index для наслаивающихся друг на друга полосок
+            if(row.Bars.Count > 0)
             {
-                row = m_rows[bar.Index];
-            }
-            else
-            {
-                row = new Row(bar.Index);
-                m_rows.Add(bar.Index, row);
+                foreach (var b in row.Bars)
+                {
+                    if (b.Bar.IntersectsWith(bar.Bar))
+                        bar.ZIndex++;
+                }
             }
 
+            //добавляем прямоугольник к текущей строке
             row.Add(bar);
+        }
+
+        /// <summary>
+        /// Получение строки по координатам
+        /// </summary>
+        /// <param name="p">Искомая точка</param>
+        /// <returns>Возвращает строку, к которой принадлежт точка или null</returns>
+        public Row GetRowByPoint(Point p)
+        {
+            var rowIndex = (int)(p.Y / (m_chart.RowHeight + 1));
+
+            if (rowIndex < 0)
+                rowIndex = 0;
+
+            return GetRow(rowIndex);
         }
 
         void SubscribeLayoutManager(CanvasRowLayoutDrawManager manager, bool subscribe)
@@ -164,13 +168,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (manager.Rows.Count() > 0)
                     foreach (var rLayout in manager.Rows)
                     {
-                        if (m_rows.ContainsKey(rLayout.RowIndex))
-                            row = m_rows[rLayout.RowIndex];
-                        else
-                        {
-                            row = new Row(rLayout.RowIndex);
-                            m_rows.Add(rLayout.RowIndex, row);
-                        }
+                        row = GetRow(rLayout.RowIndex);
 
                         row.RowLayout = rLayout;
                     }
@@ -190,15 +188,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         private void RowLayoutDrawer_RowLayoutDrawed(CanvasRowLayoutDrawManager.RowLayout layout)
         {
-            Row row = null;
-
-            if (m_rows.ContainsKey(layout.RowIndex))
-                row = m_rows[layout.RowIndex];
-            else
-            {
-                row = new Row(layout.RowIndex);
-                m_rows.Add(layout.RowIndex, row);
-            }
+            Row row = row = GetRow(layout.RowIndex);
 
             row.RowLayout = layout;
         }
@@ -210,13 +200,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             for (int i = 0; i < set.Comments.Count; i++)
             {
-                if (m_rows.ContainsKey(i))
-                    row = m_rows[i];
-                else
-                {
-                    row = new Row(i);
-                    m_rows.Add(i, row);
-                }
+                row = GetRow(i);
 
                 row.Comment = set.Comments[i];
             }
@@ -229,13 +213,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             for (int i = 0; i < set.CarModels.Count; i++)
             {
-                if (m_rows.ContainsKey(i))
-                    row = m_rows[i];
-                else
-                {
-                    row = new Row(i);
-                    m_rows.Add(i, row);
-                }
+                row = GetRow(i);
 
                 row.Car = set.CarModels[i];
             }
@@ -247,6 +225,20 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         public void Clear()
         {
             m_rows.Clear();
+        }
+
+        Row GetRow(int index)
+        {
+            Row row = null;
+            if (m_rows.ContainsKey(index))
+                row = m_rows[index];
+            else
+            {
+                row = new Row(index);
+                m_rows.Add(index, row);
+            }
+
+            return row;
         }
 
         public void Dispose()
@@ -279,6 +271,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <summary>
         /// Условная строка на графике
         /// </summary>
+        [System.Diagnostics.DebuggerDisplay("{DebugerDisplay()}")]
         public class Row : IDisposable
         {
             List<CanvasBarDrawManager.BarData> m_Bars = new List<CanvasBarDrawManager.BarData>();
@@ -373,6 +366,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public void Dispose()
             {
                 Clear();
+            }
+
+            string DebugerDisplay()
+            {
+                return Index.ToString() + " | " + (Car == null ? "NULL" : string.IsNullOrEmpty(Car.Text) ? "EMPTY" : Car.Text);
             }
         }
     }

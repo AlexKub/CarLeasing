@@ -164,7 +164,7 @@ namespace CarLeasingViewer
 
             for (int i = 0; i < count && end < dayCount; i++)
             {
-                var b = new Business();
+                var b = new Leasing();
                 b.Title = "bussy_" + i.ToString();
                 start = m_rand.Next(end, dayCount);
                 b.DateStart = new DateTime(m_month.Year, m_month.Index, start);

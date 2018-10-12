@@ -42,7 +42,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 m_rowsData.Add(index, rData);
             }
 
-            if (height > 0d && CanvasWidth > 0) //если высота нулевая - нет смысла рисовать. Она всёравно сольётся с другой
+            if (height > 0d && Canvas.ActualWidth > 0) //если высота нулевая - нет смысла рисовать. Она всёравно сольётся с другой
             {
                 if (rData.Drawed)
                 {
@@ -126,16 +126,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             GuidelineSet guideSet = new GuidelineSet();
             guideSet.GuidelinesX.Add(0d + halfPenWidth);
-            guideSet.GuidelinesX.Add(CanvasWidth + halfPenWidth);
+            guideSet.GuidelinesX.Add(Canvas.ActualWidth + halfPenWidth);
             guideSet.GuidelinesY.Add(offset + halfPenWidth);
             guideSet.GuidelinesY.Add(offset + halfPenWidth);
 
 
-            var dv = new DrawingVisual();
+            var dv = data.Visual == null ? new DrawingVisual() : data.Visual;
             var dc = dv.RenderOpen();
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(pen, new System.Windows.Point(0d, offset), new System.Windows.Point(CanvasWidth, offset));
+            dc.DrawLine(pen, new System.Windows.Point(0d, offset), new System.Windows.Point(Canvas.ActualWidth, offset));
             dc.Pop();
             dc.Close();
 
@@ -175,31 +175,19 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                 ld.Offset = offset;
 
-                if (offset > 0d && CanvasHeight > 0d && !ld.Drawed)
+                if (offset > 0d && Canvas.ActualHeight > 0d)
                 {
                     ld.Line = new Line();
-                    dv = DrawColumn(offset);
+                    dv = DrawColumn(offset, ld);
+                    ld.Visual = dv;
                 }
             }
 
             return dv;
         }
 
-        DrawingVisual DrawColumn(double offset)
+        DrawingVisual DrawColumn(double offset, LineData ld)
         {
-            //var l = new Line();
-            //l.X1 = offset;
-            //l.Y1 = 0;
-            //l.X2 = offset;
-            //l.Y2 = CanvasHeight;
-            //l.Stroke = LineBrush;
-            //l.StrokeThickness = LineWidth;
-            //l.SnapsToDevicePixels = true;
-            //
-            //Panel.SetZIndex(l, Z_Indexes.ColumnIndex);
-            //
-            //Canvas.Children.Add(l);
-
             var pen = new Pen();
             pen.Brush = LineBrush;
             pen.Thickness = LineWidth;
@@ -211,13 +199,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guideSet.GuidelinesX.Add(offset + halfPenWidth);
             guideSet.GuidelinesX.Add(offset + halfPenWidth);
             guideSet.GuidelinesY.Add(0d + halfPenWidth);
-            guideSet.GuidelinesY.Add(CanvasHeight + halfPenWidth);
+            guideSet.GuidelinesY.Add(Canvas.ActualHeight + halfPenWidth);
 
-            var dv = new DrawingVisual();
+            var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
             var dc = dv.RenderOpen();
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, CanvasHeight));
+            dc.DrawLine(pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
             dc.Pop();
             dc.Close();
 
@@ -241,7 +229,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             foreach (var data in collection)
             {
                 if (data.Value != null)
+                {
+                    if (data.Value.Visual != null)
+                        Canvas.Remove(data.Value.Visual);
+
                     data.Value.Clear();
+                }
             }
 
             collection.Clear();
@@ -256,42 +249,39 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         protected override void M_canvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
-            if (e.HeightChanged)
-            {
-                var m_cHeight = e.NewSize.Height;
-
-                if (m_cHeight > 0d)
-                {
-                    foreach (var ld in m_columnsData.Values)
-                    {
-                        if (ld.Drawed)
-                            ld.Line.Y2 = m_cHeight;
-                        //else
-                        //    ld.Line = DrawColumn(ld.Offset); //offset для колонок расчитывается заранее
-                    }
-                }
-            }
-            if (e.WidthChanged)
-            {
-                var m_cWidth = e.NewSize.Width;
-
-                if (m_cWidth > 0d)
-                {
-                    var height = 0d;
-
-                    foreach (var rd in m_rowsData.Values)
-                    {
-                        height += RowHeight;
-                        if (rd.Drawed)
-                            rd.Line.X2 = m_cWidth;
-                        else
-                        {
-                            rd.Offset = height;
-                            //rd.Line = DrawRow(height);
-                        }
-                    }
-                }
-            }
+            //if (e.HeightChanged)
+            //{
+            //    var m_cHeight = e.NewSize.Height;
+            //
+            //    if (m_cHeight > 0d)
+            //    {
+            //        foreach (var ld in m_columnsData.Values)
+            //        {
+            //            if (ld.Drawed)
+            //                ld.Line.Y2 = m_cHeight;
+            //        }
+            //    }
+            //}
+            //if (e.WidthChanged)
+            //{
+            //    var m_cWidth = e.NewSize.Width;
+            //
+            //    if (m_cWidth > 0d)
+            //    {
+            //        var height = 0d;
+            //
+            //        foreach (var rd in m_rowsData.Values)
+            //        {
+            //            height += RowHeight;
+            //            if (rd.Drawed)
+            //                rd.Line.X2 = m_cWidth;
+            //            else
+            //            {
+            //                rd.Offset = height;
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         #region RowData
@@ -321,6 +311,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public bool Drawed { get { return Line != null; } }
 
             /// <summary>
+            /// Обёртка рисования для элемента
+            /// </summary>
+            public DrawingVisual Visual { get; set; }
+
+            /// <summary>
             /// Сравнение высот строк
             /// </summary>
             /// <param name="height"></param>
@@ -346,6 +341,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     Line = null;
                 }
                 Offset = 0d;
+
+                Visual = null;
             }
         }
 
