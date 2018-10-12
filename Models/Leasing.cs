@@ -2,7 +2,11 @@
 
 namespace CarLeasingViewer.Models
 {
-    public class Business
+    /// <summary>
+    /// Единица аренды авто
+    /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
+    public class Leasing
     {
         public string Title { get; set; }
 
@@ -21,6 +25,8 @@ namespace CarLeasingViewer.Models
         public string Width { get; set; }
 
         public string CarName { get; set; }
+
+        public string Saler { get; set; }
 
         public bool Include(DateTime date)
         {
@@ -58,6 +64,11 @@ namespace CarLeasingViewer.Models
                 else
                     return (DateEnd.Month - DateStart.Month) + 1;
             }
+        }
+
+        string DebugDisplay()
+        {
+            return string.IsNullOrEmpty(Title) ? "EMPTY TITLE" : Title;
         }
     }
 

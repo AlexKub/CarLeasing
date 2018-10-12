@@ -20,13 +20,13 @@ namespace CarLeasingViewer.Controls
             });
         public double ColumnWidth { get { return (double)GetValue(dp_ColumnWidthProperty); } set { SetValue(dp_ColumnWidthProperty, value); } }
 
-        public static readonly DependencyProperty dp_BusinessProperty = DependencyProperty.Register(nameof(Business), typeof(Business), typeof(BusinessTextBlock)
+        public static readonly DependencyProperty dp_BusinessProperty = DependencyProperty.Register(nameof(Business), typeof(Leasing), typeof(BusinessTextBlock)
             , new FrameworkPropertyMetadata()
             {
-                DefaultValue = default(Business),
-                PropertyChangedCallback = (s, e) => (s as BusinessTextBlock).OnBuisenessSetted((Business)e.NewValue)
+                DefaultValue = default(Leasing),
+                PropertyChangedCallback = (s, e) => (s as BusinessTextBlock).OnBuisenessSetted((Leasing)e.NewValue)
             });
-        public Business Business { get { return (Business)GetValue(dp_BusinessProperty); } set { SetValue(dp_BusinessProperty, value); } }
+        public Leasing Business { get { return (Leasing)GetValue(dp_BusinessProperty); } set { SetValue(dp_BusinessProperty, value); } }
 
         public BusinessTextBlock()
         {
@@ -40,7 +40,7 @@ namespace CarLeasingViewer.Controls
             if (newWidth <= 0d)
                 return;
 
-            Business b = Business;
+            Leasing b = Business;
 
             if (b == null)
                 return;
@@ -124,7 +124,7 @@ namespace CarLeasingViewer.Controls
             #endregion
         }
 
-        void OnBuisenessSetted(Business business)
+        void OnBuisenessSetted(Leasing business)
         {
             if (business == null)
                 return;

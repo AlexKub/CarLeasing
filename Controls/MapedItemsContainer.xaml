@@ -47,7 +47,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Business}" 
+                            <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Leasing}" 
                                                         Business="{Binding}" 
                                                         ColumnWidth="{StaticResource DayColumnWidth}" 
                                                         HorizontalAlignment="Left" 

@@ -261,7 +261,7 @@ namespace CarLeasingViewer
                                 cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]);
                             else
                             {
-                                var b = new Business();
+                                var b = new Leasing();
                                 b.DateStart = ((DateTime)reader["DateStart"]);
                                 b.DateEnd = ((DateTime)reader["DateEnd"]);
                                 b.Title = buyer;
@@ -293,85 +293,30 @@ namespace CarLeasingViewer
 
             var carBusinesses = new List<CarBusiness>();
 
-            #region Old
-
-            /*
-            var sql = $@"SELECT DISTINCT
-	                                  l.[Document No_]
-	                                ,h.[Salesperson Code]
-	                                ,h.[Bal_ Account No_]
-	                                ,h.[Sell-to Customer Name] as Buyer
-	                                ,h.[Bill-to Name]
-	                                ,h.[Ship-to Name]
-                                    ,l.[Description] as CarName
-                                    ,l.[Vehicle Reg_ No_] as CarNumber
-	                                ,h.[Venicle Operation Area]
-	                                ,h.[Date Begin] as DateStart
-	                                ,h.[Time Begin]
-	                                ,h.[Date End] as DateEnd
-	                                ,h.[Time End]
-	                                ,h.[Comment Text] as Comment
-                                FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Line] l
-                                INNER JOIN [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Header] h ON h.[Sell-to Customer No_] = l.[Sell-to Customer No_]
-                                WHERE l.[Vehicle Reg_ No_] != ''
-                                AND h.[Date End] > h.[Date Begin]
-                                ORDER BY l.[Document No_], h.[Date Begin]";
-                                */
-            #endregion
-
             var sql = string.Empty;
 
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT (");
+                sb.Append("SELECT DISTINCT ").Append("(");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
 
                 sb.Append(GetBusinessByMonthesQuery(start, end, oldSettings, region));
-                sb.Append("\r\n UNION \r\n"); //объединяем два запроса
+                //sb.Append(")");
+                sb.Append("\r\n UNION \r\n");//.Append("("); //объединяем два запроса
 
                 //настройки с поиском актуальных заказов
                 var curentSettings = new SearchSettings(settings);
                 curentSettings.SelectedDBSearchType = DBSearchType.Curent;
                 sb.Append(GetBusinessByMonthesQuery(start, end, curentSettings, region));
-                sb.Append(")");
+                sb.Append(")");//.Append(" ORDER BY [Document No_]");
 
                 sql = sb.ToString();
             }
             else
                 sql = GetBusinessByMonthesQuery(start, end, settings, region);
-            //sql = $@"SELECT 
-            //             i.[No_]
-            //            , i.[Description] as CarName
-            //            , i.[Vehicle Reg_ No_] as CarNumber
-            //            , i.[Blocked]
-            //            , l.[Document No_]
-            //         ,h.[Salesperson Code]
-            //         ,h.[Bal_ Account No_]
-            //         ,h.[Sell-to Customer Name] as Buyer
-            //         ,h.[Bill-to Name]
-            //         ,h.[Ship-to Name]
-            //         ,h.[Venicle Operation Area]
-            //         ,h.[Date Begin] as DateStart
-            //         ,h.[Time Begin]
-            //         ,h.[Date End] as DateEnd
-            //         ,h.[Time End]
-            //         ,h.[Comment Text] as Comment
-            //             FROM Carlson$Item i
-            //            	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
-            //            	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
-
-            //            WHERE 1 = 1
-            //                {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
-            //            	AND i.IsService = 0
-            //            	AND i.IsFranchise = 0
-            //                AND h.[Date Begin] IS NOT NULL
-            //                {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
-            //                AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
-
-            //            ORDER BY l.[Document No_]";
 
             try
             {
@@ -419,19 +364,25 @@ namespace CarLeasingViewer
                                 cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]);
                             else
                             {
-                                var b = new Business();
+                                var b = new Leasing();
                                 b.DateStart = ((DateTime)reader["DateStart"]);
                                 b.DateEnd = ((DateTime)reader["DateEnd"]);
                                 b.Title = buyer;
                                 b.Type = BusinessType.Leasing;
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
+                                b.Saler = (string)reader["Saler"];
 
                                 cb.Add(b);
                             }
                         }
                     }
                 }
+            }
+            catch(SqlException sqlEx)
+            {
+                m_loger.Log("Возникло исключение при запросе выборки из БД", sqlEx,
+                    new LogParameter("Запрос", sql));
             }
             catch (Exception ex)
             {
@@ -532,7 +483,7 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked]
                         , l.[Document No_]
-	                    ,h.[Salesperson Code]
+	                    ,h.[Salesperson Code] as Saler
 	                    ,h.[Bal_ Account No_]
 	                    ,h.[Sell-to Customer Name] as Buyer
 	                    ,h.[Bill-to Name]
@@ -553,9 +504,7 @@ namespace CarLeasingViewer
                         	AND i.IsFranchise = 0
                             AND h.[Date Begin] IS NOT NULL
                             {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
-                            AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))
-                        
-                        ORDER BY l.[Document No_]";
+                            AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
         }
 
         String GetBusinessByMonthQuery(Month month, SearchSettings settings = null, Region region = null)
@@ -566,7 +515,7 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked]
                         , l.[Document No_]
-	                    ,h.[Salesperson Code]
+	                    ,h.[Salesperson Code] as Saler
 	                    ,h.[Bal_ Account No_]
 	                    ,h.[Sell-to Customer Name] as Buyer
 	                    ,h.[Bill-to Name]

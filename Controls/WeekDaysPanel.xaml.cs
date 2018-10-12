@@ -48,7 +48,7 @@ namespace CarLeasingViewer.Controls
                     if (month == null || month.IsEmpty)
                         return;
 
-                    sender.DayNames = new ObservableCollection<string>(GetDays(month.GetFirstDay(), month.DayCount));
+                    sender.DayNames = new ObservableCollection<string>(GetDays(month.GetFirstDayOfWeek(), month.DayCount));
                     sender.DayIndexes = GetDaysIndexes(month.DayCount);
                 }
             });

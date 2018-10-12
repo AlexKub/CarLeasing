@@ -28,7 +28,7 @@
                 if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Value))
                     return string.Empty;
 
-                return Name + " : " + Value + ";";
+                return Name + ": " + Value + ";";
             }
         }
 

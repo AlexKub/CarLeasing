@@ -1,5 +1,6 @@
 ﻿using CarLeasingViewer.Models;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,11 +39,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (m_TooltipedRect != null)
             {
                 //если мышь всё ещё над тем же элементом - ничего не делаем
-                if (m_TooltipedRect.Border.Contains(point))
+                if (m_TooltipedRect.Bar.Contains(point))
                 {
                     //двигаем tooltip вместе с мышкой, чтобы не закрывал полоску
                     MoveTooltip(point);
-                    return;
                 }
                 else //если мышь ушла с элемента
                 {
@@ -52,19 +52,29 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
 
             //поиск элемента, над которым сейчас находится мышь
-            CanvasBarDrawManager.BarData bar = null;
-            foreach (var kvp in m_chart.BarManager.Data)
-            {
-                bar = kvp.Value;
-                if (bar.VerticalOffset <= point.Y)
-                {
-                    if (bar.Border.Contains(point))
-                    {
-                        HideTooltip();
+            //получаем строку, к которой принадлежит точка
+            var row = m_chart.RowManager.GetRowByPoint(point);
 
-                        ShowTooltip(bar, point);
-                        return;
-                    }
+            if (row != null)
+            {
+                //для случая, когда несколько полосок друг на другая наслаиваются
+                //ищем ту, что видна пользователю - с наибольшим ZIndex
+                CanvasBarDrawManager.BarData maxZ = null;
+                foreach (var b in row.Bars)
+                {
+                    if (b.Bar.Contains(point))
+                        if (maxZ == null)
+                            maxZ = b;
+                        else
+                            maxZ = maxZ.ZIndex > b.ZIndex ? maxZ : b;
+                }
+
+                //если пересечение с точкой найдено
+                if(maxZ != null)
+                {
+                    HideTooltip();
+
+                    ShowTooltip(maxZ, point);
                 }
             }
         }
@@ -95,26 +105,33 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
 
-            var hasComment = !string.IsNullOrEmpty(bar.BarModel?.Leasing.Comment);
+            var hasComment = !string.IsNullOrEmpty(bar.Model?.Leasing.Comment);
             if (hasComment)
                 grid.RowDefinitions.Add(new RowDefinition());
 
-            if (bar.BarModel == null)
+            if (bar.Model == null)
             {
                 NewStyledTooltipRow(grid, "NO MODEL", 0);
             }
             else
             {
-                NewStyledTooltipRow(grid, bar.BarModel.Leasing.Title, 0);
+                NewStyledTooltipRow(grid, bar.Model.Leasing.Title, 0);
 
-                NewStyledTooltipRow(grid, bar.BarModel.CarName, 1);
+                NewStyledTooltipRow(grid, bar.Model.CarName, 1);
 
-                NewStyledTooltipRow(grid, GetDataSpan(bar.BarModel), 2);
+                NewStyledTooltipRow(grid, GetDataSpan(bar.Model), 2);
 
                 if (hasComment)
                 {
-                    NewStyledTooltipRow(grid, bar.BarModel.Leasing.Comment, 3);
+                    NewStyledTooltipRow(grid, bar.Model.Leasing.Comment, 3);
+                }
+
+                if (!string.IsNullOrEmpty(bar.Model.Leasing.Saler))
+                {
+                    var tb = NewStyledTooltipRow(grid, bar.Model.Leasing.Saler, 4);
+                    tb.HorizontalAlignment = HorizontalAlignment.Right;
                 }
             }
 
@@ -139,7 +156,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
 
             //расчёт выхода tooltip за нижнюю границу контрола
-            var y = bar.VerticalOffset + bar.Border.Height + 3d;
+            var y = bar.VerticalOffset + m_chart.RowHeight + 3d;
 
             var botPoint = y + tooltip.ActualHeight;
 

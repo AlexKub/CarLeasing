@@ -23,16 +23,17 @@
         /// </summary>
         public MonthHeaderModel[] Monthes { get { return m_Monthes; } set { m_Monthes = value; OnPropertyChanged(); } }
 
-        private Business pv_Leasing;
+        private Leasing pv_Leasing;
         /// <summary>
         /// Возвращает или задаёт информацию о Занятости
         /// </summary>
-        public Business Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
+        public Leasing Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
 
+        private int m_DaysCount;
         /// <summary>
-        /// Общее количество дней в аренде
+        /// Возвращает или задаёт Количество дней в аренде
         /// </summary>
-        public int DaysCount { get { return Leasing == null ? 0 : (Leasing.DateEnd - Leasing.DateEnd).Days + 1; } }
+        public int DaysCount { get { return m_DaysCount; } set { m_DaysCount = value; OnPropertyChanged(); } }
 
         private int pv_RowIndex;
         /// <summary>
@@ -85,9 +86,14 @@
         {
             CalculateOffset(pv_Leasing);
             CalculateWidth(pv_Leasing);
+
+            if (Leasing != null)
+                DaysCount = (Leasing.DateEnd - Leasing.DateStart).Days + 1;
+            else
+                DaysCount = 0;
         }
 
-        void CalculateOffset(Business b)
+        void CalculateOffset(Leasing b)
         {
             if (b == null)
                 DayOffset = 0d;
@@ -133,7 +139,7 @@
             DayOffset = dayCount * pv_DayColumnWidth + (dayCount * 1);
         }
 
-        void CalculateWidth(Business b)
+        void CalculateWidth(Leasing b)
         {
             var dayCount = 1; //прибавляем единичку, так как при сложении/вычитании теряем день
 
