@@ -200,21 +200,24 @@
                           HorizontalScrollBarVisibility="Visible" 
                               ScrollChanged="LeasingScroll_ScrollChanged"
                               SizeChanged="LeasingScroll_SizeChanged">
-                    <!-- Новая сетка -->
-                    <controls:LeasingChart x:Name="LeasingChart"
-                            VerticalAlignment="Top"
-                            RowHeight="{StaticResource RowHeight}" 
-                                                   Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
-                                                   Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
-                                               LineBrush="{StaticResource LightBorderBrush}" 
-                                               DayCount="{Binding DaysCount}"
-                                               Leasings="{Binding Leasings}"
-                                               DayColumnWidth="{StaticResource DayColumnWidth}"
-                                                   BarBorderBrush="{StaticResource LightBorderBrush}"
-                                                   BarBrush="{StaticResource BusinessBlockBrush}"
-                                                   FontFamily="Times New Roman"
-                                                   FontSize="10"
-                                               MinHeight="200"/>
+                    <!-- График занятости -->
+                    <controls:LeasingChart x:Name="LeasingChart" 
+                                           VerticalAlignment="Top"
+                                           RowHeight="{StaticResource RowHeight}" 
+                                           Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
+                                           Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
+                                           LineBrush="{StaticResource LightBorderBrush}" 
+                                           DayCount="{Binding DaysCount}"
+                                           Leasings="{Binding Leasings}"
+                                           DayColumnWidth="{StaticResource DayColumnWidth}"
+                                           BarBorderBrush="{StaticResource LightBorderBrush}"
+                                           FontFamily="Times New Roman"
+                                           FontSize="10"
+                                           BarBrush="{StaticResource StandartBarBrush}"
+                                           BlockeBarBrush="{StaticResource BlockedBarBrush}"
+                                           MinHeight="200">
+                        
+                    </controls:LeasingChart>
                 </ScrollViewer>
             </Border>
             

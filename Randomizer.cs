@@ -36,12 +36,32 @@ namespace CarLeasingViewer
             return mb;
         }
 
+        //public static MonthBusiness GetRandomBusiness(Month start, Month end)
+        //{
+        //    var mb = new MonthBusiness(Generate(month));
+        //
+        //    mb.Month = month;
+        //
+        //    return mb;
+        //}
+
         static IEnumerable<CarBusiness> Generate(Month month)
         {
             List<CarBusiness> values = new List<CarBusiness>();
             for (int i = 0; i < 100; i++)
             {
                 values.Add(GenerateBusiness(i, month));
+            }
+
+            return values;
+        }
+
+        static IEnumerable<CarBusiness> Generate(Month start, Month end)
+        {
+            List<CarBusiness> values = new List<CarBusiness>();
+            for (int i = 0; i < 100; i++)
+            {
+                values.Add(GenerateBusiness(i, start, end));
             }
 
             return values;
@@ -60,8 +80,10 @@ namespace CarLeasingViewer
 
             var dayCount = month.DayCount + 1;
 
+            var blockedFlag = m_rand.Next(1, 25);
             for (int i = 0; i < count && end < dayCount; i++)
             {
+                blockedFlag = m_rand.Next(1, 25);
                 var b = new Leasing();
                 b.Title = "bussy_" + i.ToString();
                 start = m_rand.Next(end, dayCount);
@@ -71,6 +93,7 @@ namespace CarLeasingViewer
                 b.CurrentMonth = month;
                 b.CarName = cb.Name;
                 b.Saler = "Saler_" + i.ToString();
+                b.Blocked = blockedFlag == 23; //магическое число 23
                 cb.Add(b);
                 end++;
             }
@@ -78,6 +101,36 @@ namespace CarLeasingViewer
             return cb;
         }
 
-        
+        static CarBusiness GenerateBusiness(int index, Month start, Month end)
+        {
+            var cb = new CarBusiness();
+            cb.Name = "Car_" + index.ToString();
+            cb.Monthes = Month.GetMonthes(start, end);
+
+            var count = m_rand.Next(1, 10);
+
+            int startI = 1;
+            var dayCount = Month.GetDaysCount(start, end);
+            int endI = dayCount;
+
+            for (int i = 0; i < count && endI < dayCount; i++)
+            {
+                var b = new Leasing();
+                b.Title = "bussy_" + i.ToString();
+                startI = m_rand.Next(startI, endI);
+                b.DateStart = new DateTime(start.Year, start.Index, startI);
+                endI = m_rand.Next(startI, dayCount);
+                b.DateEnd = new DateTime(end.Year, end.Index, endI);
+                //b.Monthes = cb.Monthes;
+                b.CarName = cb.Name;
+                b.Saler = "Saler_" + i.ToString();
+                cb.Add(b);
+                endI++;
+            }
+
+            return cb;
+        }
+
+
     }
 }

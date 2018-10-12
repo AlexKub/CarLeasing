@@ -36,12 +36,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public Pen Pen { get; private set; }
 
-
-
         /// <summary>
         /// Кисть для заливки фона полосок
         /// </summary>
         public Brush BackgroundBrush { get; set; }
+
+        /// <summary>
+        /// Кисть для заливки заблокированных полосок
+        /// </summary>
+        public Brush BlockedBarBrush { get; set; }
 
         public double RowHeight { get; set; }
 
@@ -108,13 +111,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     }
             }
 
+            var brush = bd.Model.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
                 if (drawGeo)
-                    DrawGeometry(dc, bd);
+                    DrawGeometry(dc, bd, brush);
                 else
-                    DrawRect(dc, bd);
+                    DrawRect(dc, bd, brush);
 
                 dc.Close();
             }
@@ -126,7 +130,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
-        void DrawRect(DrawingContext dc, BarData bd)
+        void DrawRect(DrawingContext dc, BarData bd, Brush brush)
         {
             Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model), RowHeight);
             bd.Bar = rect;
@@ -139,11 +143,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
 
             dc.PushGuidelineSet(guidelines);
-            dc.DrawRectangle(BackgroundBrush, Pen, rect);
+            dc.DrawRectangle(brush, Pen, rect);
             dc.Pop();
         }
 
-        void DrawGeometry(DrawingContext dc, BarData bd)
+        void DrawGeometry(DrawingContext dc, BarData bd, Brush brush)
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
@@ -169,7 +173,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             g.Freeze();
 
             bd.Bar = g;
-            dc.DrawGeometry(BackgroundBrush, Pen, g);
+            dc.DrawGeometry(brush, Pen, g);
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
