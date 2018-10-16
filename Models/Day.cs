@@ -7,10 +7,8 @@ namespace CarLeasingViewer.Models
     /// День недели
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{Name}")]
-    public class Day : ViewModels.ViewModelBase
+    public class Day : ViewModels.ViewModelBase, IComparable<Day>
     {
-        public static Brush DefaultBackground { get { return Brushes.White; } }
-
         /// <summary>
         /// Короткое имя
         /// </summary>
@@ -31,17 +29,16 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int Index { get; private set; }
 
-        private Brush pv_Background;
+        private bool pv_Selected;
         /// <summary>
-        /// Возвращает или задаёт подсветку для Дней
+        /// Возвращает или задаёт флаг, что день был выбран мышью
         /// </summary>
-        public Brush Background { get { return pv_Background; } set { if (pv_Background != value) { pv_Background = value; OnPropertyChanged(); } } }
+        public bool Selected { get { return pv_Selected; } set { if (pv_Selected != value) { pv_Selected = value; OnPropertyChanged(); } } }
 
         public Day(int index, DayOfWeek type)
         {
             Index = index;
             Type = type;
-            Background = DefaultBackground;
         }
 
 
@@ -89,6 +86,14 @@ namespace CarLeasingViewer.Models
                 default:
                     return string.Empty;
             }
+        }
+
+        public int CompareTo(Day other)
+        {
+            if (other == null)
+                return 1;
+
+            return other.Index > Index ? -1 : other.Index == Index ? 0 : 1;
         }
     }
 }

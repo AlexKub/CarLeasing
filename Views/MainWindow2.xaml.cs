@@ -34,6 +34,7 @@ namespace CarLeasingViewer.Views
             set.Data = monthBuisnesses;
 
             InitializeComponent();
+            set.Chart = LeasingChart;
 
             Subscribe(true);
 
@@ -49,6 +50,9 @@ namespace CarLeasingViewer.Views
             vm.Window = this;
             DataContext = vm;
             InitializeComponent();
+
+            if (vm != null && vm.LeasingSet != null && vm.LeasingSet.Chart != null)
+                vm.LeasingSet.Chart = LeasingChart;
 
             Loaded += MainWindow2_Loaded;
         }

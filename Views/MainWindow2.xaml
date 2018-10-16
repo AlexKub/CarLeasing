@@ -153,7 +153,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:WeekDaysPanel Margin="-1 0 0 0" DataContext="{Binding Month}" Grid.Column="{Binding ColumnIndex}"/>
+                                <controls:WeekDaysPanel Margin="-1 0 0 0" Grid.Column="{Binding ColumnIndex}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -163,7 +163,7 @@
             <!-- Левая колонка с машинами -->
             <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
                 <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
-                    <ItemsControl ItemsSource="{Binding CarModels}">
+                    <ItemsControl ItemsSource="{Binding CarModels, UpdateSourceTrigger=PropertyChanged}">
                         <ItemsControl.Resources>
                             <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
                             <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="0"/>
@@ -224,7 +224,7 @@
             <!-- Комментарии -->
             <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
                 <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
-                    <ItemsControl ItemsSource="{Binding Comments}">
+                    <ItemsControl ItemsSource="{Binding Comments, UpdateSourceTrigger=PropertyChanged}">
                         <ItemsControl.Resources>
                             <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
                             <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="2"/>

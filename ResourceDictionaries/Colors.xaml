@@ -13,7 +13,13 @@
 
     <!-- Кисть заливки элементов в статусе blocked -->
     <SolidColorBrush x:Key="StandartBarBrush" Color="Yellow" PresentationOptions:Freeze="True" />
-    
+
+    <!-- Кисть заливки дней в шапке с месяцами -->
+    <SolidColorBrush x:Key="DefaultDayBrush" Color="White" PresentationOptions:Freeze="True" />
+
+    <!-- Кисть заливки дней при выборе в месяце -->
+    <SolidColorBrush x:Key="SelectedDayBrush" Color="LightGray" PresentationOptions:Freeze="True" />
+
     <!-- Заливка для полосок Занятости -->
     <RadialGradientBrush x:Key="OldGradientBarBrush" Center="0.5,0.5" RadiusX="1.8" RadiusY="2" PresentationOptions:Freeze="True">
         <RadialGradientBrush.GradientStops>

@@ -17,11 +17,11 @@
         /// </summary>
         public MonthHeaderModel Month { get { return pv_Month; } set { if (pv_Month != value) { pv_Month = value; OnPropertyChanged(); } } }
 
-        private MonthHeaderModel[] m_Monthes;
+        private MonthHeaderModel[] pv_Monthes;
         /// <summary>
         /// Возвращает или задаёт Месяца, к которым принадлежит текущая аренда
         /// </summary>
-        public MonthHeaderModel[] Monthes { get { return m_Monthes; } set { m_Monthes = value; OnPropertyChanged(); } }
+        public MonthHeaderModel[] Monthes { get { return pv_Monthes; } set { pv_Monthes = value; OnPropertyChanged(); } }
 
         private Leasing pv_Leasing;
         /// <summary>
@@ -29,11 +29,11 @@
         /// </summary>
         public Leasing Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
 
-        private int m_DaysCount;
+        private int pv_DaysCount;
         /// <summary>
         /// Возвращает или задаёт Количество дней в аренде
         /// </summary>
-        public int DaysCount { get { return m_DaysCount; } set { m_DaysCount = value; OnPropertyChanged(); } }
+        public int DaysCount { get { return pv_DaysCount; } set { pv_DaysCount = value; OnPropertyChanged(); } }
 
         private int pv_RowIndex;
         /// <summary>
@@ -201,6 +201,25 @@
         {
             return (Month == null || Month.Month == null ? "NO MONTH" : (Month.Month.Name + " " + Month.Month.Year.ToString()))
                 + " | " + CarName == null ? "NO CAR" : CarName;
+        }
+
+        /// <summary>
+        /// Получение нового экземпляра с теми же значениями свойств, кроме RowIndex
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
+        public LeasingElementModel Clone()
+        {
+            var newInstance = new LeasingElementModel();
+            newInstance.pv_CarName = pv_CarName;
+            newInstance.pv_Width = pv_Width;
+            newInstance.pv_Month = pv_Month;
+            newInstance.pv_DayColumnWidth = pv_DayColumnWidth;
+            newInstance.pv_DayOffset = pv_DayOffset;
+            newInstance.pv_Leasing = pv_Leasing;
+            newInstance.pv_DaysCount = pv_DaysCount;
+            newInstance.pv_Monthes = pv_Monthes;
+
+            return newInstance;
         }
     }
 }

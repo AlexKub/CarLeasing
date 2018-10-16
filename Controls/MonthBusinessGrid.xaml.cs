@@ -23,8 +23,6 @@ namespace CarLeasingViewer.Controls
 
         IEnumerable<CarBusiness> m_baseCollection;
         Task<IEnumerable<CarBusiness>> m_pausedSearchTask;
-
-        Brush m_highlightDayBrush = Brushes.Pink;
         List<int> m_selectingDays = new List<int>();
         int m_selectingStartDay = 0;
         Dictionary<string, CancellationTokenSource> m_searchTasks = new Dictionary<string, CancellationTokenSource>();
@@ -149,6 +147,11 @@ namespace CarLeasingViewer.Controls
             if (day == null)
                 return;
 
+            var set = GetSet();
+
+            if (set == null)
+                return;
+
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
@@ -167,11 +170,9 @@ namespace CarLeasingViewer.Controls
                         {
                             var m = GetMonth();
                             if (IsMultiselecting())
-                                Sort(SortManager.SelectByDays(m_baseCollection
-                                    , new DateTime(m.Year, m.Index, m_selectingDays.Min())
-                                    , new DateTime(m.Year, m.Index, m_selectingDays.Max())));
+                                set.Sort(new DateTime(m.Year, m.Index, m_selectingDays.Min()), new DateTime(m.Year, m.Index, m_selectingDays.Max()));
                             else
-                                Sort(SortManager.SelectByDay(m_baseCollection, new DateTime(m.Year, m.Index, day.Index)));
+                                set.Sort(new DateTime(m.Year, m.Index, day.Index));
                         }
                     }
                     break;
@@ -219,15 +220,13 @@ namespace CarLeasingViewer.Controls
 
         void SelectDay(Day day, bool select = true)
         {
-            var context = DataContext as MonthBusiness;
-            var month = context?.Month;
-
-            if (context != null)
+            var set = GetSet();
+            if (set != null)
             {
                 if (select)
                 {
                     var m = GetMonth();
-                    Sort(SortManager.SelectByDay(context.CarBusiness, new DateTime(m.Year, m.Index, day.Index)));
+                    set.Sort(new DateTime(m.Year, m.Index, day.Index));
                 }
                 else
                     ResetSorting();
@@ -264,6 +263,11 @@ namespace CarLeasingViewer.Controls
             return tb.DataContext as Day;
         }
 
+        LeasingSet GetSet()
+        {
+            return (DataContext as MonthHeaderModel)?.OwnerSet;
+        }
+
         Month GetMonth()
         {
             var context = DataContext as MonthBusiness;
@@ -272,7 +276,7 @@ namespace CarLeasingViewer.Controls
 
         void HighLightDay(Day day, bool hightlight, bool multiselect = false)
         {
-            day.Background = hightlight ? m_highlightDayBrush : Day.DefaultBackground;
+            day.Selected = hightlight;
 
             if (!multiselect)
                 m_selectingDays.Clear();
@@ -307,9 +311,9 @@ namespace CarLeasingViewer.Controls
                             continue;
                         else
                         {
-                            if (otherDay.Background != Day.DefaultBackground)
+                            if (otherDay.Selected)
                             {
-                                otherDay.Background = Day.DefaultBackground;
+                                otherDay.Selected = false;
                                 m_selectingDays.Remove(otherDay.Index);
                             }
                         }
@@ -323,9 +327,9 @@ namespace CarLeasingViewer.Controls
                             continue;
                         else
                         {
-                            if (otherDay.Background != Day.DefaultBackground)
+                            if (otherDay.Selected)
                             {
-                                otherDay.Background = Day.DefaultBackground;
+                                otherDay.Selected = false;
                                 m_selectingDays.Remove(otherDay.Index);
                             }
                         }
@@ -339,7 +343,7 @@ namespace CarLeasingViewer.Controls
             if (day == null)
                 return false;
 
-            return day.Background == m_highlightDayBrush;
+            return day.Selected;
         }
 
         bool IsMultiselecting() { return m_selectingDays.Count > 1; }
@@ -461,13 +465,16 @@ namespace CarLeasingViewer.Controls
                     ResetSorting();
                     break;
                 case 1:
-                    Sort(SortManager.SelectByDay(m_baseCollection, new DateTime(m.Year, m.Index, days.First().Index)));
+                    var set = GetSet();
+                    if(set != null)
+                        set.Sort(new DateTime(m.Year, m.Index, days.First().Index));
                     break;
                 default:
+                    set = GetSet();
                     var dayIndexes = days.Select(d => d.Index);
-                    Sort(SortManager.SelectByDays(m_baseCollection
-                        , new DateTime(m.Year, m.Index, dayIndexes.Min())
-                        , new DateTime(m.Year, m.Index, dayIndexes.Max())));
+                    if (set != null)
+                        set.Sort(new DateTime(m.Year, m.Index, dayIndexes.Min())
+                        , new DateTime(m.Year, m.Index, dayIndexes.Max()));
                     break;
             }
         }
@@ -559,7 +566,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         void ResetSorting()
         {
-            Sort(new Task<IEnumerable<CarBusiness>>(() => m_baseCollection));
+            var set = GetSet();
+
+            if (set != null)
+                set.ResetSorting();
+            //Sort(new Task<IEnumerable<CarBusiness>>(() => m_baseCollection));
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

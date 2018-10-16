@@ -405,6 +405,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 m_manager = manager;
             }
+            public BarData(LeasingElementModel model)
+            {
+                Model = model;
+            }
 
             /// <summary>
             /// Удаление линии
