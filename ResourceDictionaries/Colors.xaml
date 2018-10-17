@@ -12,7 +12,7 @@
     <SolidColorBrush x:Key="BlockedBarBrush" Color="LightSalmon" PresentationOptions:Freeze="True" />
 
     <!-- Кисть заливки элементов в статусе blocked -->
-    <SolidColorBrush x:Key="StandartBarBrush" Color="Yellow" PresentationOptions:Freeze="True" />
+    <SolidColorBrush x:Key="StandartBarBrush" Color="Gold" PresentationOptions:Freeze="True" />
 
     <!-- Кисть заливки дней в шапке с месяцами -->
     <SolidColorBrush x:Key="DefaultDayBrush" Color="White" PresentationOptions:Freeze="True" />
