@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="DaysTitlePanel"
-             d:DataContext="{d:DesignInstance Type=models:Month}"
+             d:DataContext="{d:DesignInstance Type=models:MonthHeaderModel}"
              >
     <UserControl.Resources>
         <sys:Double x:Key="ColumnFontSize">14</sys:Double>
@@ -29,7 +29,7 @@
         <!-- Стиль Дней -->
         <Style x:Key="DayItemStyle" TargetType="TextBlock" >
             <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="Background" Value="{Binding Background}"/>
+            <!--<Setter Property="Background" Value="{Binding Background}"/>-->
             <!--<Setter Property="VerticalAlignment" Value="Center"/>-->
             <Setter Property="Width" Value="{StaticResource DayColumnWidth}"/>
             <Setter Property="Padding" Value="0 6 0 0"/>
@@ -37,6 +37,14 @@
             <EventSetter Event="MouseEnter" Handler="Day_MouseEnter"/>
             <!--<EventSetter Event="MouseLeave" Handler="Day_MouseLeave"/>-->
             <EventSetter Event="MouseUp" Handler="Day_MouseUp"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Selected}" Value="true">
+                    <Setter Property="Background" Value="{StaticResource SelectedDayBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Selected}" Value="false">
+                    <Setter Property="Background" Value="{StaticResource DefaultDayBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Стиль контейнера Дней -->
@@ -54,19 +62,19 @@
 
         <DataTemplate x:Key="DayIndexItemTemplate">
             <Border Style="{StaticResource DayItemBorderStyle}">
-                <TextBlock Style="{StaticResource DayItemStyle}" Background="{Binding Background}" Text="{Binding Index}" ToolTip="{Binding RelativeSource={RelativeSource Self},Path=ActualWidth}" />
+                <TextBlock Style="{StaticResource DayItemStyle}" Text="{Binding Index}" ToolTip="{Binding RelativeSource={RelativeSource Self},Path=ActualWidth}" />
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="DayNameItemTemplate">
             <Border Style="{StaticResource DayItemBorderStyle}">
-                <TextBlock Style="{StaticResource DayItemStyle}" Background="{Binding Background}" Text="{Binding ShortName}" />
+                <TextBlock Style="{StaticResource DayItemStyle}" Text="{Binding ShortName}" />
             </Border>
         </DataTemplate>
 
     </UserControl.Resources>
-    
-    <Grid Grid.Row="0" MinHeight="60" >
+
+    <Grid Grid.Row="0" MinHeight="60" DataContext="{Binding Month}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
@@ -79,7 +87,7 @@
         <Rectangle Grid.ColumnSpan="1" Grid.RowSpan="2" Fill="{StaticResource LightBorderBrush}"/>
         
         <!-- данные месяца -->
-        <Grid VerticalAlignment="Center">
+        <Grid VerticalAlignment="Center" >
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <!--<RowDefinition/>-->

@@ -1,5 +1,4 @@
-﻿using CarLeasingViewer.Controls.LeasingChartManagers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,8 +25,17 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public LeasingSet New { get; private set; }
 
+        /// <summary>
+        /// Изменения в Наборе
+        /// </summary>
+        /// <param name="n">Ссылка на изменившийся набор</param>
         public LeasingSetEventArgs(LeasingSet n) : this(n, n) { }
 
+        /// <summary>
+        /// Изменения в наборе
+        /// </summary>
+        /// <param name="n">Новый набор</param>
+        /// <param name="o">Старый набор</param>
         public LeasingSetEventArgs(LeasingSet n, LeasingSet o)
         {
             New = n;
@@ -41,7 +49,15 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class LeasingSet : ViewModels.ViewModelBase, IDisposable
     {
-        
+        /// <summary>
+        /// Базовый набор (без сортировок)
+        /// </summary>
+        BaseSet m_baseSet;
+
+        /// <summary>
+        /// Флаг использования базового набора в текущий момент
+        /// </summary>
+        bool m_baseSetted = true;
 
         private int m_RowsCount;
         /// <summary>
@@ -72,6 +88,12 @@ namespace CarLeasingViewer.Models
                 }
             }
         }
+
+        private Controls.LeasingChart pv_Chart;
+        /// <summary>
+        /// Возвращает или задаёт График, к которому принадлежит текущий набор
+        /// </summary>
+        public Controls.LeasingChart Chart { get { return pv_Chart; } set { if (pv_Chart != value) { pv_Chart = value; OnPropertyChanged(); } } }
 
         private IReadOnlyList<MonthHeaderModel> m_Monthes = new List<MonthHeaderModel>();
         /// <summary>
@@ -137,7 +159,7 @@ namespace CarLeasingViewer.Models
 
                     if (value != null)
                     {
-                        var distinctRowIndexes = new List<int>(100);
+                        var distinctRowIndexes = new List<int>(500);
                         foreach (var leasing in value)
                         {
                             if (!distinctRowIndexes.Contains(leasing.RowIndex))
@@ -175,6 +197,16 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public event LeasingSetEvent CommentsChanged;
 
+        public LeasingSet()
+        {
+
+        }
+
+        public LeasingSet(Controls.LeasingChart chart)
+        {
+            Chart = chart;
+        }
+
         #region Перевод из одной модели данных в текущую
 
         /// <summary>
@@ -183,17 +215,23 @@ namespace CarLeasingViewer.Models
         /// <param name="businesses">Набор занятости авто из БД или тестовый</param>
         public void ReMapBussinesses(IEnumerable<MonthBusiness> businesses)
         {
-            CarModels = GetCarModels(businesses);
-            Comments = GetComments(CarModels);
+            var cars = GetCarModels(businesses);
+            CarModels = cars;
+            var comments = GetComments(CarModels);
+            Comments = comments;
 
             Monthes = GetMonthes(businesses);
             //!!зависит от заполнения CarModels
-            Leasings = GetLeasingModels(businesses);
+            var leasings = GetLeasingModels(businesses);
+            Leasings = leasings;
 
             DaysCount = Monthes.Sum(m => m.Month.DayCount);
+
+            m_baseSet = new BaseSet(cars, comments, leasings);
+            m_baseSetted = true;
         }
 
-        IReadOnlyList<CarModel> GetCarModels(IEnumerable<MonthBusiness> data)
+        List<CarModel> GetCarModels(IEnumerable<MonthBusiness> data)
         {
             var rowIndex = 0;
             return data
@@ -203,12 +241,12 @@ namespace CarLeasingViewer.Models
             .Select(name => new CarModel() { Text = name, RowIndex = rowIndex++ }).ToList();
         }
 
-        IReadOnlyList<CarCommentModel> GetComments(IReadOnlyList<CarModel> cars)
+        List<CarCommentModel> GetComments(IReadOnlyList<CarModel> cars)
         {
             return cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
         }
 
-        IReadOnlyList<LeasingElementModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
+        List<LeasingElementModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
         {
             var leasingBarModels = new List<LeasingElementModel>();
 
@@ -246,7 +284,7 @@ namespace CarLeasingViewer.Models
             return leasingBarModels;
         }
 
-        IReadOnlyList<MonthHeaderModel> GetMonthes(IEnumerable<MonthBusiness> businesses)
+        List<MonthHeaderModel> GetMonthes(IEnumerable<MonthBusiness> businesses)
         {
             var monthes = new List<MonthHeaderModel>();
 
@@ -269,13 +307,159 @@ namespace CarLeasingViewer.Models
             return monthes;
         }
 
+        /// <summary>
+        /// Сортировка моделей по дате
+        /// </summary>
+        /// <param name="date">Выбранная дата</param>
+        public void Sort(DateTime date)
+        {
+            var rows = m_baseSet.Rows;
+
+            if (rows != null && rows.Count() > 0)
+            {
+                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                foreach (var row in rows)
+                {
+                    if (row.Bars.Count > 0)
+                    {
+                        foreach (var bar in row.Bars)
+                        {
+                            if (bar.Model == null || bar.Model.Leasing == null)
+                                continue;
+
+                            if (bar.Model.Leasing.Include(date))
+                            {
+                                sorted.Add(row);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (sorted.Count() == 0)
+                    SetEmpty();
+                else
+                {
+                    SetSorted(sorted);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сортировка моделей по дате
+        /// </summary>
+        /// <param name="date">Выбранная дата</param>
+        public void Sort(DateTime dateStart, DateTime dateEnd)
+        {
+            var rows = m_baseSet.Rows;
+
+            if (rows != null && rows.Count() > 0)
+            {
+                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                foreach (var row in rows)
+                {
+                    if (row.Bars.Count > 0)
+                    {
+                        foreach (var bar in row.Bars)
+                        {
+                            if (bar.Model == null || bar.Model.Leasing == null)
+                                continue;
+
+                            if (bar.Model.Leasing.DateStart > dateEnd)
+                                break;
+
+                            if (bar.Model.Leasing.Cross(dateStart, dateEnd))
+                            {
+                                sorted.Add(row);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (sorted.Count() == 0)
+                    SetEmpty();
+                else
+                    SetSorted(sorted);
+            }
+        }
+
+        /// <summary>
+        /// Простановка пустых коллекций
+        /// </summary>
+        void SetEmpty()
+        {
+            SetSorted(null);
+        }
+
+        void SetSorted(IEnumerable<Controls.LeasingChartManagers.RowManager.Row> rows)
+        {
+            var cars = new List<CarModel>();
+            var leasings = new List<LeasingElementModel>();
+            var comments = new List<CarCommentModel>();
+
+            //ставим флаг, что используются сортированные данные
+            // (базовый набор НЕ используется)
+            m_baseSetted = false;
+
+            CarModel car = null;
+            CarCommentModel comment = null;
+            LeasingElementModel leasing = null;
+            if (rows != null && rows.Count() > 0)
+            {
+                var rowIndex = 0;
+                foreach (var row in rows)
+                {
+                    if (row.Car != null)
+                    {
+                        car = row.Car.Clone();
+                        car.RowIndex = rowIndex;
+                        cars.Add(car);
+                    }
+
+                    if (row.Comment != null)
+                    {
+                        comment = row.Comment.Clone();
+                        comment.RowIndex = rowIndex;
+                        comments.Add(comment);
+                    }
+
+                    if (row.Bars.Count > 0)
+                    {
+                        foreach (var bar in row.Bars)
+                        {
+                            if (bar.Model != null)
+                            {
+                                leasing = bar.Model.Clone();
+                                leasing.RowIndex = rowIndex;
+                                leasings.Add(leasing);
+                            }
+                        }
+                    }
+
+                    rowIndex++;
+                }
+            }
+
+            Chart.ClearManagers();
+
+            CarModels = cars;
+            Comments = comments;
+            Leasings = leasings;
+
+            Chart.Draw();
+        }
+
         public void Dispose()
         {
-            if(Monthes != null)
+            if (Monthes != null)
                 foreach (var monthHeader in Monthes)
                 {
                     monthHeader.Dispose();
                 }
+
+            if (Chart != null)
+                Chart = null;
         }
 
         #endregion
@@ -318,6 +502,75 @@ namespace CarLeasingViewer.Models
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Сброс сортировки
+        /// </summary>
+        public void ResetSorting()
+        {
+            if (m_baseSet != null && !m_baseSetted)
+            {
+                Chart.ClearManagers();
+
+                CarModels = m_baseSet.Cars;
+                Comments = m_baseSet.Comments;
+                Leasings = m_baseSet.Leasings;
+
+                if (Chart != null)
+                    Chart.Draw();
+
+                m_baseSetted = true;
+            }
+        }
+
+        /// <summary>
+        /// Базовый, не отсортированный набор
+        /// </summary>
+        [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
+        class BaseSet
+        {
+            public List<CarModel> Cars { get; private set; }
+
+            public List<CarCommentModel> Comments { get; private set; }
+
+            public List<LeasingElementModel> Leasings { get; private set; }
+
+            public List<Controls.LeasingChartManagers.RowManager.Row> Rows { get; private set; }
+
+            public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<LeasingElementModel> leasings)
+            {
+                Cars = cars;
+                Comments = comments;
+                Leasings = leasings;
+
+                var rowIndex = 0;
+                var rows = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                var rowLeasings = new List<LeasingElementModel>();
+                foreach (var car in Cars)
+                {
+                    var newRow = new Controls.LeasingChartManagers.RowManager.Row(rowIndex)
+                    {
+                        Car = car,
+                        Comment = comments[rowIndex]
+                    };
+                    newRow.AddRange(leasings.Where(l => l.RowIndex == rowIndex).Select(l => new Controls.LeasingChartManagers.CanvasBarDrawManager.BarData(l)));
+
+                    rows.Add(newRow);
+                    rowIndex++;
+                }
+                Rows = rows;
+            }
+
+            string DebugDisplay()
+            {
+                return "Cars: " + GetStringCount(Cars) + " | Comments: " + GetStringCount(Comments) + " | Leasings: " + GetStringCount(Leasings);
+            }
+
+            string GetStringCount<T>(List<T> list)
+            {
+                return list == null ? "NULL" : list.Count.ToString();
+            }
         }
     }
 }

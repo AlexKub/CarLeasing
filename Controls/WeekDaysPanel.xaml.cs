@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +15,6 @@ namespace CarLeasingViewer.Controls
     /// </summary>
     public partial class WeekDaysPanel : UserControl
     {
-        Brush m_highlightDayBrush = Brushes.Pink;
         List<Day> m_selectingDays = new List<Day>();
         int m_selectingStartDay = 0;
 
@@ -34,7 +32,7 @@ namespace CarLeasingViewer.Controls
         public static DependencyProperty dp_Month = DependencyProperty.Register(nameof(Month), typeof(Month), typeof(WeekDaysPanel)
             , new FrameworkPropertyMetadata()
             {
-                DefaultValue = default(Models.Month)
+                DefaultValue = default(Month)
                 ,
                 PropertyChangedCallback = (o, e) =>
                 {
@@ -153,7 +151,16 @@ namespace CarLeasingViewer.Controls
             return days;
         }
 
-        void SetEmptySelection() { SelectedDaysOut = Enumerable.Empty<Day>(); }
+        void SetEmptySelection()
+        {
+            var set = GetSet();
+            if (set == null)
+                return;
+
+            set.ResetSorting();
+
+            //SelectedDaysOut = Enumerable.Empty<Day>();
+        }
 
         private void Day_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -183,10 +190,15 @@ namespace CarLeasingViewer.Controls
                             //if (m_selectingDays.Count > 0)
                             SelectedDaysOut = m_selectingDays.ToList();
 
-                            //if (IsMultiselecting())
-                            //    Sort(SortManager.SelectByDays(m_baseCollection, m_selectingDays.Min(), m_selectingDays.Max()));
-                            //else
-                            //    Sort(SortManager.SelectByDay(m_baseCollection, day.Index));
+                            var set = GetSet();
+                            if (set == null)
+                                return;
+
+                            if (IsMultiselecting())
+                                set.Sort(new DateTime(Month.Year, Month.Index, m_selectingDays.Min().Index), new DateTime(Month.Year, Month.Index, m_selectingDays.Max().Index));
+                            else
+                                set.Sort(new DateTime(Month.Year, Month.Index, day.Index));
+                            //Sort(SortManager.SelectByDay(m_baseCollection, day.Index));
                         }
                     }
                     break;
@@ -255,7 +267,7 @@ namespace CarLeasingViewer.Controls
 
         void HighLightDay(Day day, bool hightlight, bool multiselect = false)
         {
-            day.Background = hightlight ? m_highlightDayBrush : Day.DefaultBackground;
+            day.Selected = hightlight;
 
             if (!multiselect)
                 m_selectingDays.Clear();
@@ -276,6 +288,11 @@ namespace CarLeasingViewer.Controls
                 return null;
 
             return tb.DataContext as Day;
+        }
+
+        LeasingSet GetSet()
+        {
+            return (DataContext as MonthHeaderModel)?.OwnerSet;
         }
 
         void DownlightDays(Day day = null, bool multiselect = false)
@@ -304,10 +321,10 @@ namespace CarLeasingViewer.Controls
                     else
                     {
                         //если день был выбран ранее
-                        if (otherDay.Background != Day.DefaultBackground)
+                        if (otherDay.Selected)
                         {
                             //снимаем подсветку
-                            otherDay.Background = Day.DefaultBackground;
+                            otherDay.Selected = false;
                             m_selectingDays.Remove(otherDay);
                         }
                     }
@@ -321,7 +338,7 @@ namespace CarLeasingViewer.Controls
             if (day == null)
                 return false;
 
-            return day.Background == m_highlightDayBrush;
+            return day.Selected;
         }
 
         bool IsMultiselecting() { return m_selectingDays.Count > 1; }
@@ -351,10 +368,10 @@ namespace CarLeasingViewer.Controls
 
             if (e.Property == DataContextProperty)
             {
-                var context = DataContext as Month;
+                var context = DataContext as MonthHeaderModel;
 
                 if (context != null)
-                    Month = context;
+                    Month = context.Month;
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using CarLeasingViewer.Interfaces;
 
 namespace CarLeasingViewer.Models
@@ -36,11 +35,11 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string Text { get { return pv_Text; } set { if (pv_Text != value) { pv_Text = value; OnPropertyChanged(); } } }
 
-        private int _MonthOffset;
+        private int pv_MonthOffset;
         /// <summary>
         /// Возвращает или задаёт Смещение текущего месяца
         /// </summary>
-        public int MonthOffset { get { return _MonthOffset; } set { _MonthOffset = value; OnPropertyChanged(); } }
+        public int MonthOffset { get { return pv_MonthOffset; } set { pv_MonthOffset = value; OnPropertyChanged(); } }
 
         /// <summary>
         /// Индекс строки
@@ -71,6 +70,22 @@ namespace CarLeasingViewer.Models
         string DebugDisplay()
         {
             return RowIndex.ToString() + " | " + (string.IsNullOrEmpty(Text) ? "NO TEXT" : Text);
+        }
+
+        /// <summary>
+        /// Новый экземпляр с теми же значениями свойств, кроме RowIndex
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
+
+        public CarModel Clone()
+        {
+            var newInstance = new CarModel();
+            newInstance.pv_Text = pv_Text;
+            newInstance.pv_Car = pv_Car;
+            newInstance.pv_HightlightBrush = pv_HightlightBrush;
+            newInstance.pv_MonthOffset = pv_MonthOffset;
+
+            return newInstance;
         }
     }
 }

@@ -143,6 +143,7 @@ namespace CarLeasingViewer.Models
             DayCount = GetDayCount(month);
             m_days = GetDays().ToList();
         }
+        public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
 
         public Month(DateTime date) : this(date.Year, (Monthes)date.Month) { }
 
