@@ -251,7 +251,7 @@ namespace CarLeasingViewer.Models
             }
             else
             {
-                var startTail = start.Month; //количество месяцев в первом году
+                var startTail = 13 - start.Month; //количество месяцев в первом году
                 var endTail = end.Month; //количество месяцев в последнем году
 
                 var years = (end.Year - start.Year - 2); //количество полных лет между датами

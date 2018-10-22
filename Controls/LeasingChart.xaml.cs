@@ -336,6 +336,9 @@ namespace CarLeasingViewer.Controls
             {
                 foreach (var bm in Leasings)
                 {
+                    if (!Valid(bm))
+                        continue;
+
                     dv = m_barM.DrawBar(bm);
 
                     if (dv != null)
@@ -441,6 +444,16 @@ namespace CarLeasingViewer.Controls
                 m_tooltipM.Dispose();
                 m_tooltipM = null;
             }
+        }
+
+        bool Valid(LeasingElementModel model)
+        {
+            if (model == null
+                || model.Leasing == null
+                || (model.Month == null && (model.Monthes == null || model.Monthes.Length == 0)))
+                return false;
+
+            return true;
         }
 
         /// <summary>

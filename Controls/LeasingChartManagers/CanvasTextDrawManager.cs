@@ -113,6 +113,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //    m_glyphType = GetGlyphTypeface();
             //
 
+            
+
             BarData bd = null;
             DrawingVisual dv = null;
 
@@ -129,8 +131,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (bd.Border == null)
                 SetOffset(bd);
 
-            dv = DrawText(bd);
-            bd.TextDrawed = true;
+            //нет смысла в отрисовке текста без отрисованного прямоугольника
+            if (bd.BorderDrawed)
+            {
+                dv = DrawText(bd);
+                bd.TextDrawed = true;
+            }
 
             return dv;
         }
@@ -276,6 +282,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// Флаг отрисовки текста для данной полоски
             /// </summary>
             public bool TextDrawed { get; set; }
+
+            /// <summary>
+            /// Проверка наличия отрисовканного прямоугольника
+            /// </summary>
+            public bool BorderDrawed { get { return Border != null; } }
 
             public BarData(CanvasTextDrawManager manager)
             {

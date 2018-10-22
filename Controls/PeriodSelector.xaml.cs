@@ -88,7 +88,15 @@ namespace CarLeasingViewer.Controls
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as PeriodSelector;
-                _this.RefreshSelectedIndex(Period.From);
+
+                var newYear = (int)e.NewValue;
+                var mIndex = (_this.FromMonthIndex < 0 ? 0 : _this.FromMonthIndex) + 1;
+                if (mIndex > 12)
+                    mIndex = 1;
+                _this.FromMonthes = _this.AvailableMonthes.Where(m => m.Year == newYear);
+                _this.FromMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Index == mIndex && m.Year == newYear);
+
+                //_this.RefreshSelectedIndex(Period.From);
             }
         });
         public int FromYear { get { return (int)GetValue(dp_FromYearProperty); } set { SetValue(dp_FromYearProperty, value); } }
@@ -99,7 +107,15 @@ namespace CarLeasingViewer.Controls
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as PeriodSelector;
-                _this.RefreshSelectedIndex(Period.To);
+
+                var newYear = (int)e.NewValue;
+                var mIndex = (_this.ToMonthIndex < 0 ? 0 : _this.ToMonthIndex) + 1;
+                if (mIndex > 12)
+                    mIndex = 1;
+                _this.ToMonthes = _this.AvailableMonthes.Where(m => m.Year == newYear);
+                _this.ToMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Index == mIndex && m.Year == newYear);
+
+                //_this.RefreshSelectedIndex(Period.To);
             }
         });
         public int ToYear { get { return (int)GetValue(dp_ToYearProperty); } set { SetValue(dp_ToYearProperty, value); } }
@@ -116,7 +132,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (_this.FromYear != month.Year)
                     {
-                        _this.FromMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
+                        //_this.FromMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
 
                         _this.RefreshSelectedIndex(Period.From);
 
@@ -141,7 +157,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (_this.ToYear != month.Year)
                     {
-                        _this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
+                        //_this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
 
                         _this.RefreshSelectedIndex(Period.To);
 
@@ -153,6 +169,12 @@ namespace CarLeasingViewer.Controls
             }
         });
         public Month ToMonth { get { return (Month)GetValue(dp_ToMonthProperty); } set { SetValue(dp_ToMonthProperty, value); } }
+
+        public static DependencyProperty dp_AvailableMonthes = DependencyProperty.Register(nameof(AvailableMonthes), typeof(IEnumerable<Month>), typeof(PeriodSelector), new FrameworkPropertyMetadata()
+        {
+            DefaultValue = default(IEnumerable<Month>)
+        });
+        public IEnumerable<Month> AvailableMonthes { get { return (IEnumerable<Month>)GetValue(dp_AvailableMonthes); } set { SetValue(dp_AvailableMonthes, value); } }
 
         #endregion
 
@@ -183,33 +205,45 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         void RefreshSelectedIndex(Period p)
         {
-            if (FromMonth == null|| ToMonth == null) //если месяц не проставлен по каким-то причинам
+            if (FromMonth == null || ToMonth == null) //если месяц не проставлен по каким-то причинам
             {
                 if (FromMonthIndex >= 0)
                     FromMonthIndex = -1; //ставим отрицательное значение
             }
             else
             {
+                //если общий набор месяцев не задан ранее отдельно, то берём из имеющихся
+                IEnumerable<Month> monthes = null;
+                Month month = null;
+                DependencyProperty mProp = null;
+                if (p == Period.From)
+                {
+                    monthes = FromMonthes;
+                    month = FromMonth;
+                    mProp = dp_FromMonthIndexProperty;
+                }
+                else
+                {
+                    monthes = ToMonthes;
+                    month = ToMonth;
+                    mProp = dp_ToMonthIndexProperty;
+                }
+
+                if (AvailableMonthes == null || AvailableMonthes.Count() == 0)
+                    AvailableMonthes = monthes;
+
+                //дальнейшая логика не имеет смысла без набора месяцев
+                if (AvailableMonthes == null)
+                    return;
+
                 //проверка, что индекс не равен текущему 
                 //(предотвращение рекурсии, т.к. при изменении индекса вызывается соответствующее изменение месяца)
                 //и простановка индекса ткеущего выбранного месяца
-                if (p == Period.From)
-                {
-                    var fromMonthIndex = FromMonth.Index;
-                    var newIndex = FromMonthes.IndexOf(FromMonth, (m) => m.Index == fromMonthIndex);
+                var newIndex = monthes.IndexOf(month, (m) => m.Index == month.Index && m.Year == month.Year);
 
-                    if (newIndex != FromMonthIndex)
-                        FromMonthIndex = newIndex;
-                }
-                else if (p == Period.To)
-                {
-
-                    var toMonthIndex = ToMonth.Index;
-                    var newIndex = ToMonthes.IndexOf(ToMonth, (m) => m.Index == toMonthIndex);
-
-                    if (newIndex != ToMonthIndex)
-                        ToMonthIndex = newIndex;
-                }
+                var val = (int)GetValue(mProp);
+                if (newIndex != val)
+                    SetValue(mProp, val);
             }
         }
 

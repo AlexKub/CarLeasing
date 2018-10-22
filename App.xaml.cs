@@ -65,7 +65,7 @@ namespace CarLeasingViewer
         }
 
         /// <summary>
-        /// Простановка списка доступных методов из БД
+        /// Простановка списка доступных месяцев из БД
         /// </summary>
         /// <param name="monthes">Месяцы из БД</param>
         public static void SetAvailable(IEnumerable<Month> monthes)

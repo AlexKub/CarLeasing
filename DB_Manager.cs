@@ -80,19 +80,21 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT (");
+                sb.Append("(");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
 
                 sb.Append(GetAvailableMonthesQuery(oldSettings, year));
-                sb.Append("\r\n UNION \r\n"); //объединяем два запроса
+                sb.Append(")").Append("\r\n UNION \r\n").Append("("); //объединяем два запроса
 
                 //настройки с поиском актуальных заказов
                 var curentSettings = new SearchSettings(settings);
                 curentSettings.SelectedDBSearchType = DBSearchType.Curent;
                 sb.Append(GetAvailableMonthesQuery(curentSettings, year));
                 sb.Append(")");
+                sb.Replace("ORDER BY Year", string.Empty);
+                sb.Append("ORDER BY Year");
 
                 sql = sb.ToString();
             }
@@ -122,7 +124,8 @@ namespace CarLeasingViewer
             }
             catch (Exception ex)
             {
-                m_loger.Log("Возникло исключение при запросе доступных месяцев из БД", ex);
+                m_loger.Log("Возникло исключение при запросе доступных месяцев из БД", ex,
+                    new LogParameter("Запрос", sql));
             }
 
             return monthes;
@@ -166,13 +169,13 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT (");
+                sb.Append("(");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
 
                 sb.Append(GetBusinessByMonthQuery(month, oldSettings, region));
-                sb.Append("\r\n UNION \r\n"); //объединяем два запроса
+                sb.Append(")\r\n UNION \r\n("); //объединяем два запроса
 
                 //настройки с поиском актуальных заказов
                 var curentSettings = new SearchSettings(settings);
@@ -298,14 +301,14 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT ").Append("(");
+                sb.Append("(");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
 
                 sb.Append(GetBusinessByMonthesQuery(start, end, oldSettings, region));
-                //sb.Append(")");
-                sb.Append("\r\n UNION \r\n");//.Append("("); //объединяем два запроса
+                sb.Append(")");
+                sb.Append("\r\n UNION \r\n").Append("("); //объединяем два запроса
 
                 //настройки с поиском актуальных заказов
                 var curentSettings = new SearchSettings(settings);
@@ -345,7 +348,7 @@ namespace CarLeasingViewer
                                 previosCar = curentCar;
 
                                 cb = new CarBusiness();
-                                cb.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+                                cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ItemNo = (string)reader["No_"];
                                 carBusinesses.Add(cb);
 

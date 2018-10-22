@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
@@ -90,7 +89,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 bd = new BarData(this);
                 bd.Index = barModel.RowIndex;
                 bd.VerticalOffset = barModel.RowIndex * RowHeight;
-                bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel) + 1;
+                bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
                 bd.Model = barModel;
                 m_bars.Add(barModel, bd);
             }
@@ -136,19 +135,19 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         void DrawRect(DrawingContext dc, BarData bd, Brush brush)
         {
-            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model) - 1, RowHeight - 1);
+            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model), RowHeight);
             bd.Bar = rect;
 
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
-            //GuidelineSet guidelines = new GuidelineSet();
-            //guidelines.GuidelinesX.Add(rect.Left + m_halfPenWidth);
-            //guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
-            //guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
-            //guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
-            //
-            //dc.PushGuidelineSet(guidelines);
-            dc.DrawRectangle(brush, null, rect);
-            //dc.Pop();
+            GuidelineSet guidelines = new GuidelineSet();
+            guidelines.GuidelinesX.Add(rect.Left + m_halfPenWidth);
+            guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
+            
+            dc.PushGuidelineSet(guidelines);
+            dc.DrawRectangle(brush, Pen, rect);
+            dc.Pop();
         }
 
         void DrawGeometry(DrawingContext dc, BarData bd, Brush brush)
@@ -362,6 +361,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             return offset;
         }
+
+        
 
         /// <summary>
         /// Данные для отрисовки полоски

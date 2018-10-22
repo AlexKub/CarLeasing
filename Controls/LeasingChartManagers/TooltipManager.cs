@@ -221,12 +221,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var b = model.Leasing;
             if (b.MonthCount < 2)
                 sb.Append(b.DateStart.Day.ToString())
+                    .Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty)
                     .Append(" ")
                     .Append(b.DateStart.Month == b.DateEnd.Month ? "" : b.DateStart.GetMonthName() + " ")
-                    .Append("по ").Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty);
+                    .Append("по ").Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty)
+                    .Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateEnd.Year.ToString() + " ") : string.Empty);
             else
-                sb.Append(b.DateStart.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty).Append(" по ")
-                    .Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateEnd.GetMonthName() ?? string.Empty);
+                sb.Append(b.DateStart.Day.ToString()).Append(" ").Append(b.DateStart.GetMonthName() ?? string.Empty)
+                    .Append(b.DateStart.Year < b.DateEnd.Year ? (" " + b.DateStart.Year.ToString()) : string.Empty) //год для съёма, начавшегося ещё в прошлом году
+                    .Append(" по ").Append(b.DateEnd.Day.ToString()).Append(" ").Append(b.DateEnd.GetMonthName() ?? string.Empty);
 
             return sb.ToString();
         }
