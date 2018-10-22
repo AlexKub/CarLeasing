@@ -372,6 +372,7 @@ namespace CarLeasingViewer
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
                                 b.Saler = (string)reader["Saler"];
+                                b.Blocked = (bool)reader["Blocked"];
 
                                 cb.Add(b);
                             }
@@ -481,7 +482,7 @@ namespace CarLeasingViewer
                          i.[No_]
                         , i.[Description] as CarName
                         , i.[Vehicle Reg_ No_] as CarNumber
-                        , i.[Blocked]
+                        , i.[Blocked] as Blocked
                         , l.[Document No_]
 	                    ,h.[Salesperson Code] as Saler
 	                    ,h.[Bal_ Account No_]
@@ -513,7 +514,7 @@ namespace CarLeasingViewer
                          i.[No_]
                         , i.[Description] as CarName
                         , i.[Vehicle Reg_ No_] as CarNumber
-                        , i.[Blocked]
+                        , i.[Blocked] as Blocked
                         , l.[Document No_]
 	                    ,h.[Salesperson Code] as Saler
 	                    ,h.[Bal_ Account No_]

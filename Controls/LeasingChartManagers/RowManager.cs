@@ -26,6 +26,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         public Row this[int index] { get { return m_rows.ContainsKey(index) ? m_rows[index] : null; } }
 
         /// <summary>
+        /// Строки
+        /// </summary>
+        public IEnumerable<Row> Rows { get { return m_rows.Values; } }
+
+        /// <summary>
         /// Количество строк
         /// </summary>
         public int Count { get { return m_rows.Count; } }
@@ -325,6 +330,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public void Add(CanvasBarDrawManager.BarData bar)
             {
                 m_Bars.Add(bar);
+            }
+            public void AddRange(IEnumerable<CanvasBarDrawManager.BarData> bars)
+            {
+                m_Bars.AddRange(bars);
             }
 
             /// <summary>

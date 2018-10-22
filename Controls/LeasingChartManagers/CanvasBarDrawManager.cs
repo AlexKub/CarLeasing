@@ -26,7 +26,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 m_brush = value;
                 Pen = new Pen(value, 1);
-                m_halfPenWidth = 1 / 2;
+                m_halfPenWidth = Pen.Thickness / 2;
                 Pen.Freeze();
             }
         }
@@ -36,14 +36,21 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public Pen Pen { get; private set; }
 
-
-
         /// <summary>
         /// Кисть для заливки фона полосок
         /// </summary>
         public Brush BackgroundBrush { get; set; }
 
-        public double RowHeight { get; set; }
+        /// <summary>
+        /// Кисть для заливки заблокированных полосок
+        /// </summary>
+        public Brush BlockedBarBrush { get; set; }
+
+        double m_rowHeight;
+        /// <summary>
+        /// Высота строки
+        /// </summary>
+        public double RowHeight { get { return m_rowHeight; } set { m_rowHeight = value; } }
 
         /// <summary>
         /// Ширина колонки дня
@@ -83,7 +90,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 bd = new BarData(this);
                 bd.Index = barModel.RowIndex;
                 bd.VerticalOffset = barModel.RowIndex * RowHeight;
-                bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
+                bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel) + 1;
                 bd.Model = barModel;
                 m_bars.Add(barModel, bd);
             }
@@ -108,13 +115,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     }
             }
 
+            var brush = bd.Model.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
                 if (drawGeo)
-                    DrawGeometry(dc, bd);
+                    DrawGeometry(dc, bd, brush);
                 else
-                    DrawRect(dc, bd);
+                    DrawRect(dc, bd, brush);
 
                 dc.Close();
             }
@@ -126,24 +134,24 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
-        void DrawRect(DrawingContext dc, BarData bd)
+        void DrawRect(DrawingContext dc, BarData bd, Brush brush)
         {
-            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model), RowHeight);
+            Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model) - 1, RowHeight - 1);
             bd.Bar = rect;
 
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
-            GuidelineSet guidelines = new GuidelineSet();
-            guidelines.GuidelinesX.Add(rect.Left + m_halfPenWidth);
-            guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
-            guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
-            guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
-
-            dc.PushGuidelineSet(guidelines);
-            dc.DrawRectangle(BackgroundBrush, Pen, rect);
-            dc.Pop();
+            //GuidelineSet guidelines = new GuidelineSet();
+            //guidelines.GuidelinesX.Add(rect.Left + m_halfPenWidth);
+            //guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
+            //guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
+            //guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
+            //
+            //dc.PushGuidelineSet(guidelines);
+            dc.DrawRectangle(brush, null, rect);
+            //dc.Pop();
         }
 
-        void DrawGeometry(DrawingContext dc, BarData bd)
+        void DrawGeometry(DrawingContext dc, BarData bd, Brush brush)
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
@@ -169,7 +177,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             g.Freeze();
 
             bd.Bar = g;
-            dc.DrawGeometry(BackgroundBrush, Pen, g);
+            dc.DrawGeometry(brush, Pen, g);
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
@@ -400,6 +408,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             public BarData(CanvasBarDrawManager manager)
             {
                 m_manager = manager;
+            }
+            public BarData(LeasingElementModel model)
+            {
+                Model = model;
             }
 
             /// <summary>

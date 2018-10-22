@@ -24,11 +24,13 @@ namespace CarLeasingViewer
             {
                 var rMonth = Randomizer.GetRandomMonth(2018);
                 List<MonthBusiness> businesses = new List<MonthBusiness>();
-
+                
                 foreach (var month in Month.GetMonthes(first, last))
                 {
                     businesses.Add(Randomizer.GetRandomBusiness(month));
                 }
+
+                //return new MonthBusiness[] { Randomizer.GetRandomBusiness(first, last) };
 
                 return businesses.ToArray();
             }

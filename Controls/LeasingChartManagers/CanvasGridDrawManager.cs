@@ -1,7 +1,6 @@
-﻿using System.Windows.Media;
-using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Collections.Generic;
 
 namespace CarLeasingViewer.Controls.LeasingChartManagers
 {
@@ -11,19 +10,36 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     public class CanvasGridDrawManager : CanvasDrawManager
     {
         const double LineWidth = 1d;
+        double m_HalfPenWidth;
 
         SortedDictionary<int, LineData> m_rowsData = new SortedDictionary<int, LineData>();
         SortedDictionary<int, LineData> m_columnsData = new SortedDictionary<int, LineData>();
 
+        Brush m_lineBrush;
         /// <summary>
         /// Кисть для линий
         /// </summary>
-        public Brush LineBrush { get; set; }
+        public Brush LineBrush
+        {
+            get { return m_lineBrush; }
+            set
+            {
+                m_lineBrush = value;
+
+                m_pen = new Pen();
+                m_pen.Brush = LineBrush;
+                m_pen.Thickness = LineWidth;
+                m_pen.Freeze();
+
+                m_HalfPenWidth = m_pen.Thickness / 2;
+            }
+        }
 
         public double RowHeight { get; set; }
 
         public double ColumnWidth { get; set; }
 
+        Pen m_pen;
         /// <summary>
         /// Отрисовка строки
         /// </summary>
@@ -106,36 +122,19 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         DrawingVisual DrawRow(double offset, LineData data)
         {
             data.Line = new Line();
-            //var l = new Line();
-            //l.X1 = 0;
-            //l.Y1 = offset;
-            //l.X2 = CanvasWidth;
-            //l.Y2 = offset;
-            //l.Stroke = LineBrush;
-            //l.StrokeThickness = LineWidth;
-            //l.SnapsToDevicePixels = true;
-            //Panel.SetZIndex(l, Z_Indexes.RowIndex);
-            //
-            //Canvas.Children.Add(l);
-            var pen = new Pen();
-            pen.Brush = LineBrush;
-            pen.Thickness = LineWidth;
-            pen.Freeze();
-
-            double halfPenWidth = pen.Thickness / 2;
 
             GuidelineSet guideSet = new GuidelineSet();
-            guideSet.GuidelinesX.Add(0d + halfPenWidth);
-            guideSet.GuidelinesX.Add(Canvas.ActualWidth + halfPenWidth);
-            guideSet.GuidelinesY.Add(offset + halfPenWidth);
-            guideSet.GuidelinesY.Add(offset + halfPenWidth);
+            guideSet.GuidelinesX.Add(0d + m_HalfPenWidth);
+            guideSet.GuidelinesX.Add(Canvas.ActualWidth + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(offset + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(offset + m_HalfPenWidth);
 
 
             var dv = data.Visual == null ? new DrawingVisual() : data.Visual;
             var dc = dv.RenderOpen();
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(pen, new System.Windows.Point(0d, offset), new System.Windows.Point(Canvas.ActualWidth, offset));
+            dc.DrawLine(m_pen, new System.Windows.Point(0d, offset), new System.Windows.Point(Canvas.ActualWidth, offset));
             dc.Pop();
             dc.Close();
 
@@ -188,24 +187,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawColumn(double offset, LineData ld)
         {
-            var pen = new Pen();
-            pen.Brush = LineBrush;
-            pen.Thickness = LineWidth;
-            pen.Freeze();
-
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
-            double halfPenWidth = pen.Thickness / 2;
             GuidelineSet guideSet = new GuidelineSet();
-            guideSet.GuidelinesX.Add(offset + halfPenWidth);
-            guideSet.GuidelinesX.Add(offset + halfPenWidth);
-            guideSet.GuidelinesY.Add(0d + halfPenWidth);
-            guideSet.GuidelinesY.Add(Canvas.ActualHeight + halfPenWidth);
+            guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
+            guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(0d + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(Canvas.ActualHeight + m_HalfPenWidth);
 
             var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
             var dc = dv.RenderOpen();
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
+            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
             dc.Pop();
             dc.Close();
 

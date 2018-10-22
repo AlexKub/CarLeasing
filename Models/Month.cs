@@ -143,9 +143,15 @@ namespace CarLeasingViewer.Models
             DayCount = GetDayCount(month);
             m_days = GetDays().ToList();
         }
+        public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
 
         public Month(DateTime date) : this(date.Year, (Monthes)date.Month) { }
 
+        /// <summary>
+        /// ПОлучение количества дней в конкретном месяце
+        /// </summary>
+        /// <param name="month">Месяц</param>
+        /// <returns>Возвращает количество дней в переданном месяце</returns>
         public static int GetDayCount(Monthes month)
         {
             switch (month)
@@ -177,6 +183,17 @@ namespace CarLeasingViewer.Models
                 default:
                     return 0;
             }
+        }
+
+        /// <summary>
+        /// Получение количества дней в указанном периоде
+        /// </summary>
+        /// <param name="start">Начальный месяц</param>
+        /// <param name="end">КОнечный месяц</param>
+        /// <returns></returns>
+        public static int GetDaysCount(Month start, Month end)
+        {
+            return (end.LastDate - start.FirstDate).Days + 1;
         }
 
         /// <summary>

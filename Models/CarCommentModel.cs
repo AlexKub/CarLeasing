@@ -45,5 +45,18 @@ namespace CarLeasingViewer.Models
         {
             return RowIndex.ToString() + " | " + (string.IsNullOrEmpty(Comment) ? "NO COMMENT" : Comment);
         }
+
+        /// <summary>
+        /// Получение нового экземпляра с теми же значениями свойств, кроме RowIndex
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
+        public CarCommentModel Clone()
+        {
+            var newInstance = new CarCommentModel();
+            newInstance.pv_Comment = pv_Comment;
+            newInstance.pv_HightlightBrush = pv_HightlightBrush;
+
+            return newInstance;
+        }
     }
 }

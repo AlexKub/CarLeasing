@@ -36,12 +36,33 @@ namespace CarLeasingViewer
             return mb;
         }
 
+        public static MonthBusiness GetRandomBusiness(Month start, Month end)
+        {
+            var monthes = Month.GetMonthes(start, end);
+
+            var mb = new MonthBusiness(Generate(start, end));
+            mb.Monthes = monthes;
+
+            return mb;
+        }
+
         static IEnumerable<CarBusiness> Generate(Month month)
         {
             List<CarBusiness> values = new List<CarBusiness>();
             for (int i = 0; i < 100; i++)
             {
                 values.Add(GenerateBusiness(i, month));
+            }
+
+            return values;
+        }
+
+        static IEnumerable<CarBusiness> Generate(Month start, Month end)
+        {
+            List<CarBusiness> values = new List<CarBusiness>();
+            for (int i = 0; i < 100; i++)
+            {
+                values.Add(GenerateBusiness(i, start, end));
             }
 
             return values;
@@ -60,8 +81,11 @@ namespace CarLeasingViewer
 
             var dayCount = month.DayCount + 1;
 
+            var blockedFlag = m_rand.Next(1, 25);
+            var addBlocked = App.SearchSettings.IncludeBlocked;
             for (int i = 0; i < count && end < dayCount; i++)
             {
+                blockedFlag = m_rand.Next(1, 25);
                 var b = new Leasing();
                 b.Title = "bussy_" + i.ToString();
                 start = m_rand.Next(end, dayCount);
@@ -71,6 +95,10 @@ namespace CarLeasingViewer
                 b.CurrentMonth = month;
                 b.CarName = cb.Name;
                 b.Saler = "Saler_" + i.ToString();
+
+                if (addBlocked)
+                    b.Blocked = blockedFlag == 23; //магическое число 23 (просто случайное число в пределах диапазона)
+
                 cb.Add(b);
                 end++;
             }
@@ -78,6 +106,49 @@ namespace CarLeasingViewer
             return cb;
         }
 
-        
+        static CarBusiness GenerateBusiness(int index, Month start, Month end)
+        {
+            var cb = new CarBusiness();
+            cb.Name = "Car_" + index.ToString();
+            //start = new Month(start.Year, m_rand.Next(start.Index, end.Index + 1));
+            //end = new Month(end.Year, m_rand.Next(start.Index, end.Index + 1));
+            cb.Monthes = Month.GetMonthes(start, end);
+
+            var count = m_rand.Next(1, 10);
+
+            int startDayI = 1;
+            var dayCount = Month.GetDaysCount(start, end);
+            int endDayI = end.DayCount;
+            int monthIndex = 0;
+
+            var blockedFlag = m_rand.Next(1, 25);
+            var addBlocked = App.SearchSettings.IncludeBlocked;
+            for (int mi = start.Index; mi <= end.Index; mi++)
+            {
+                monthIndex = mi;
+
+                for (int i = 0; i < count && endDayI <= end.DayCount; i++)
+                {
+                    var b = new Leasing();
+                    b.Title = "bussy_" + i.ToString();
+                    startDayI = m_rand.Next(startDayI, endDayI);
+                    b.DateStart = new DateTime(start.Year, monthIndex, startDayI);
+                    endDayI = m_rand.Next(startDayI, dayCount);
+                    //b.DateEnd = new DateTime(end.Year, end.Index, end.DayCount <= endI ? endI : end);
+                    b.Monthes = cb.Monthes;
+                    b.CarName = cb.Name;
+                    b.Saler = "Saler_" + i.ToString();
+
+                    if (addBlocked)
+                        b.Blocked = blockedFlag == 23; //магическое число 23 (просто случайное число в пределах диапазона)
+                    cb.Add(b);
+                    endDayI++;
+                }
+            }
+
+            return cb;
+        }
+
+
     }
 }

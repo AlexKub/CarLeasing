@@ -161,6 +161,27 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public Brush BarBrush { get { return (Brush)GetValue(dp_BarBrush); } set { SetValue(dp_BarBrush, value); } }
 
+        public static readonly DependencyProperty dp_BlockeBarBrushProperty = DependencyProperty.Register(nameof(BlockeBarBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
+        {
+            DefaultValue = default(Brush),
+            PropertyChangedCallback = (s, e) =>
+            {
+                var _this = s as LeasingChart;
+
+                if (_this == null)
+                    return;
+
+                if (_this.m_barM == null)
+                    return;
+
+                _this.m_barM.BlockedBarBrush = e.NewValue as Brush;
+            }
+        });
+        /// <summary>
+        /// Кисть для заблокированных
+        /// </summary>
+        public Brush BlockeBarBrush { get { return (Brush)GetValue(dp_BlockeBarBrushProperty); } set { SetValue(dp_BlockeBarBrushProperty, value); } }
+
         public static DependencyProperty dp_BarBorderBrush = DependencyProperty.Register(nameof(BarBorderBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
             DefaultValue = default(Brush),
@@ -294,7 +315,7 @@ namespace CarLeasingViewer.Controls
             ClearManagers();
             DrawingVisual dv = null;
 
-            var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
+            var rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
 
             //отрисовка Layout'ов для строк графика
             if (m_rowLayoutM != null)
@@ -308,8 +329,7 @@ namespace CarLeasingViewer.Controls
                 }
             }
 
-            //отрисовка сетки
-            RedrawGrid();
+            RedrawGrid(rowsI);
 
             //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
@@ -346,7 +366,7 @@ namespace CarLeasingViewer.Controls
 
         #endregion
 
-        void ClearManagers()
+        public void ClearManagers()
         {
             m_tooltipM.HideTooltip();
             m_gridM.Clear();
@@ -354,6 +374,7 @@ namespace CarLeasingViewer.Controls
             m_barM.Clear();
             m_rowLayoutM.Clear();
             m_hightlightM.Clear();
+            m_rowM.Clear();
         }
 
         void Subscribe(bool subscribe)
@@ -422,52 +443,36 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        public void OnSizeChanged()
-        {
-
-        }
-
         /// <summary>
         /// Перерисовка сетки
         /// </summary>
-        public void RedrawGrid()
+        public void RedrawGrid(IEnumerable<int> rowsI = null)
         {
+            if(rowsI == null)
+                rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
+
             //для случаев, когда меняется размер контрола, а сетка остаётся прежней
             if (m_gridM != null)
             {
-                DrawColumns();
+                DrawingVisual dv = null;
 
-                DrawRows();
-            }
-        }
-
-        /// <summary>
-        /// Отрисовка колонок
-        /// </summary>
-        void DrawColumns()
-        {
-            DrawingVisual dv = null;
-            var colCount = DayCount + 1;
-            for (int i = 1; i < colCount; i++)
-            {
-                dv = m_gridM.DrawColumn(i);
-                if (dv != null)
-                    if (!m_children.Contains(dv))
-                        m_children.Add(dv);
-            }
-        }
-
-        void DrawRows()
-        {
-            DrawingVisual dv = null;
-            var rowsI = Leasings.Select(l => l.RowIndex).Distinct();
-
-            foreach (var i in rowsI)
-            {
-                dv = m_gridM.DrawRow(i);
-                if (dv != null)
-                    if (!m_children.Contains(dv))
-                        m_children.Add(dv); //строки
+                //отрисовка строк сетки
+                foreach (var i in rowsI)
+                {
+                    dv = m_gridM.DrawRow(i);
+                    if (dv != null)
+                        if (!m_children.Contains(dv))
+                            m_children.Add(dv); //строки
+                }
+                //отрисовка колонок сетки
+                var colCount = DayCount + 1;
+                for (int i = 1; i < colCount; i++)
+                {
+                    dv = m_gridM.DrawColumn(i);
+                    if (dv != null)
+                        if (!m_children.Contains(dv))
+                            m_children.Add(dv);
+                }
             }
         }
 
