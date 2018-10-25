@@ -364,12 +364,12 @@ namespace CarLeasingViewer
                             buyer = (string)reader["Buyer"];
 
                             if (cb.Count > 0 && cb.Business.Last().Title.Equals(buyer))
-                                cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]);
+                                cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
                             else
                             {
                                 var b = new Leasing();
-                                b.DateStart = ((DateTime)reader["DateStart"]);
-                                b.DateEnd = ((DateTime)reader["DateEnd"]);
+                                b.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
+                                b.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
                                 b.Title = buyer;
                                 b.Type = BusinessType.Leasing;
                                 b.Comment = (string)reader["Comment"];
@@ -487,17 +487,17 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked] as Blocked
                         , l.[Document No_]
-	                    ,h.[Salesperson Code] as Saler
-	                    ,h.[Bal_ Account No_]
-	                    ,h.[Sell-to Customer Name] as Buyer
-	                    ,h.[Bill-to Name]
-	                    ,h.[Ship-to Name]
-	                    ,h.[Venicle Operation Area]
-	                    ,h.[Date Begin] as DateStart
-	                    ,h.[Time Begin]
-	                    ,h.[Date End] as DateEnd
-	                    ,h.[Time End]
-	                    ,h.[Comment Text] as Comment
+	                    , h.[Salesperson Code] as Saler
+	                    , h.[Bal_ Account No_]
+	                    , h.[Sell-to Customer Name] as Buyer
+	                    , h.[Bill-to Name]
+	                    , h.[Ship-to Name]
+	                    , h.[Venicle Operation Area]
+	                    , h.[Date Begin] as DateStart
+	                    , h.[Time Begin] as TimeStart
+	                    , h.[Date End] as DateEnd
+	                    , h.[Time End] as TimeEnd
+	                    , h.[Comment Text] as Comment
                          FROM Carlson$Item i
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
@@ -506,7 +506,7 @@ namespace CarLeasingViewer
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
-                            AND h.[Date Begin] IS NOT NULL
+                            --AND h.[Date Begin] IS NOT NULL
                             {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
         }
