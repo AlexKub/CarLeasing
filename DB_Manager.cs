@@ -506,7 +506,7 @@ namespace CarLeasingViewer
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
-                            --AND h.[Date Begin] IS NOT NULL
+                            AND h.[Date Begin] IS NOT NULL
                             {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
         }

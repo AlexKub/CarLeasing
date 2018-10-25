@@ -1,4 +1,6 @@
-﻿namespace CarLeasingViewer.Models
+﻿using System.Linq;
+
+namespace CarLeasingViewer.Models
 {
     /// <summary>
     /// Модель для плашки занятости авто
@@ -21,7 +23,7 @@
         /// <summary>
         /// Возвращает или задаёт Месяца, к которым принадлежит текущая аренда
         /// </summary>
-        public MonthHeaderModel[] Monthes { get { return pv_Monthes; } set { pv_Monthes = value; OnPropertyChanged(); } }
+        public MonthHeaderModel[] Monthes { get { return pv_Monthes; } set { pv_Monthes = value; SetVisibleCount(); OnPropertyChanged(); } }
 
         private Leasing pv_Leasing;
         /// <summary>
@@ -76,6 +78,11 @@
         /// </summary>
         public string CarName { get { return pv_CarName; } set { if (pv_CarName != value) { pv_CarName = value; OnPropertyChanged(); } } }
 
+        /// <summary>
+        /// Вовзращает видимое количество дней
+        /// </summary>
+        public int VisibleDaysCount { get; private set; }
+
         #region IIndexable
 
         int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
@@ -91,6 +98,35 @@
                 DaysCount = (Leasing.DateEnd - Leasing.DateStart).Days + 1;
             else
                 DaysCount = 0;
+
+            if (DaysCount < 0)
+                DaysCount = 0;
+        }
+
+        void SetVisibleCount()
+        {
+            if (DaysCount != 0)
+            {
+                if (Monthes != null && Monthes.Length > 0)
+                {
+                    if (Monthes.Length > 1)
+                    {
+                        var firstVisibleMonth = Monthes[0]?.OwnerSet?.Monthes?.FirstOrDefault()?.Month;
+
+                        if (firstVisibleMonth != null)
+                            if (Leasing.DateStart.GetMonth() < firstVisibleMonth)
+                            {
+                                VisibleDaysCount = (Leasing.DateEnd - firstVisibleMonth.FirstDate).Days + 1;
+                            }
+                            else
+                                VisibleDaysCount = DaysCount;
+                    }
+                    else
+                        VisibleDaysCount = DaysCount;
+                }
+            }
+            else
+                VisibleDaysCount = 0;
         }
 
         void CalculateOffset(Leasing b)
@@ -103,7 +139,7 @@
 
             //если начало в текущем месяце
             if (b.Monthes != null)
-            {    
+            {
                 if (b.Monthes[0] > startMonth) //если съем начался ранее
                 {
                     DayOffset = 0d;
@@ -127,7 +163,7 @@
                 }
             }
             //по каким-то причинам не заданы месяцы или дата начала ранее начального месяца
-            else if(b.CurrentMonth == null || b.CurrentMonth != startMonth)
+            else if (b.CurrentMonth == null || b.CurrentMonth != startMonth)
             {
                 DayOffset = 0d;
                 return;

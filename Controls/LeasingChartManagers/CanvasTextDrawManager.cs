@@ -176,7 +176,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //получаем размеры пустой области для текста на полоске
             var emptySpace = bd.Border.Type == Figure.FigureType.Rect ? bd.Border.Width - 4 : bd.Border.Width - 4 - (Canvas.DayColumnWidth * 2);
             if (emptySpace < ft.Width)
-                ft = new FormattedText("...", culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
+            {
+                var cutChars = 3 * bd.Model.VisibleDaysCount;
+                var cuttedText = string.Empty;
+                if (text.Length <= cutChars)
+                    cuttedText = text;
+                else
+                    cuttedText = text.Substring(0, cutChars);
+
+                ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
+            }
 
             var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
             var x = bd.HorizontalOffset //отступ по горизонтали (дни)
