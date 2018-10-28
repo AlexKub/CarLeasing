@@ -111,6 +111,10 @@ namespace CarLeasingViewer.Controls
                 {
                     _this.m_barM.DayColumnWidth = newVal;
                 }
+                if(_this.m_textM != null)
+                {
+                    _this.m_textM.DayColumnWidth = newVal;
+                }
             }
         });
         /// <summary>

@@ -17,6 +17,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         Typeface m_Typeface;
 
         /// <summary>
+        /// Половина ширины колонки для расчёта
+        /// </summary>
+        double m_halfColumnWidth;
+
+        /// <summary>
         /// Шрифт для расчёта размеров текста. Кешируем один раз, чтобы не генерировать кучу экземпляров.
         /// </summary>
         System.Drawing.Font m_drawingFont;
@@ -58,6 +63,19 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 SetDrawingFont();
             }
         }
+
+        private double m_DayColumnWidth;
+
+        public double DayColumnWidth
+        {
+            get { return m_DayColumnWidth; }
+            set
+            {
+                m_DayColumnWidth = value;
+                m_halfColumnWidth = value / 2;
+            }
+        }
+
 
         /// <summary>
         /// Загрузка набора для отрисовки
@@ -113,7 +131,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //    m_glyphType = GetGlyphTypeface();
             //
 
-            
+
 
             BarData bd = null;
             DrawingVisual dv = null;
@@ -150,6 +168,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         {
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
             string text = bd?.Model?.Leasing?.Title ?? "NO TITLE";
+            text = text.Replace("ООО ", "");
             double fontSize = FontSize;
 
             ushort[] glyphIndexes = new ushort[text.Length];
@@ -174,22 +193,57 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             FormattedText ft = new FormattedText(text, culture, FlowDirection.LeftToRight, m_Typeface, fontSize, TextBrush);
 
             //получаем размеры пустой области для текста на полоске
-            var emptySpace = bd.Border.Type == Figure.FigureType.Rect ? bd.Border.Width - 4 : bd.Border.Width - 4 - (Canvas.DayColumnWidth * 2);
+            //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
+            var emptySpace = bd.Border.Type == Figure.FigureType.Rect
+                ? bd.Border.Width - 4 //для прямоугольников вычитаем по 2 пикселя с каждой стороны
+                : bd.Border.Width - 4 - DayColumnWidth; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
+
+            //флаг аренды на часть дня. 
+            //Будет использован дважды, поэтому проверяем один раз тут
+            bool halfDayLeasing = bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry;
             if (emptySpace < ft.Width)
             {
-                var cutChars = 3 * bd.Model.VisibleDaysCount;
                 var cuttedText = string.Empty;
-                if (text.Length <= cutChars)
-                    cuttedText = text;
+
+                //если аренда на часть дня - места совсем нет
+                //просто добаявляем точки
+                if (bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
+                    cuttedText = "...";
+
                 else
-                    cuttedText = text.Substring(0, cutChars);
+                {
+                    var cutChars = 3 * bd.Model.VisibleDaysCount;
+
+                    //отрезаем пару букв справа для усечённых
+                    //т.к. для них текст будет немного смещён вправо
+                    if (bd.Border.Type == Figure.FigureType.Geometry)
+                    {
+                        if (cutChars > 3)
+                            cutChars = cutChars - 2;
+                    }
+                    if (text.Length <= cutChars)
+                        cuttedText = text;
+                    else
+                        cuttedText = text.Substring(0, cutChars);
+                }
 
                 ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
             }
 
             var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
-            var x = bd.HorizontalOffset //отступ по горизонтали (дни)
-                + ((bd.Border.Width - textRect.Width) / 2); //центровка на полоске
+
+            //отступ по горизонтали (дни)
+            var x = bd.HorizontalOffset
+                //центровка на полоске
+                + (bd.Border.Type == Figure.FigureType.Rect
+                ? ((bd.Border.Width - textRect.Width) / 2) //для обычных прямоугольников располагаем по центру
+
+                //для усечённых прямоугольников
+                : ((bd.Border.Width - textRect.Width) / 2)
+                    //если аренда на часть дня
+                    + ((bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
+                        ? 3 //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
+                        : m_halfColumnWidth)); //если место есть, смещаем немного правее, чтобы буквы не вылезали
 
             var y = bd.VerticalOffset //отступ по вертикали (строки)
                 + (Canvas.RowHeight > FontSize ? ((Canvas.RowHeight - FontSize) / 2) : 0); //центровка текста по вертикали

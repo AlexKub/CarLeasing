@@ -101,13 +101,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawBorder(BarData bd)
         {
-            var startDay = bd.Model.Leasing.DateStart;
+            var startDay = bd.Model.Leasing.DateStart.Date;
 
             bool drawGeo = false;
             foreach (var item in Canvas.RowManager[bd.Index].Bars)
             {
                 if (item.Model != null)
-                    if (item.Model.Leasing.DateEnd == startDay)
+                    if (item.Model.Leasing.DateEnd.Date == startDay)
                     {
                         drawGeo = true;
                         break;

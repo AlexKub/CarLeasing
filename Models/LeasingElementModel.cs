@@ -105,28 +105,33 @@ namespace CarLeasingViewer.Models
 
         void SetVisibleCount()
         {
+            //определение длины полоски аренды
+            //для расчёта сколько букв поместится
             if (DaysCount != 0)
             {
-                if (Monthes != null && Monthes.Length > 0)
+                var lMonthes = Leasing?.Monthes;
+                if (lMonthes != null && lMonthes.Length > 1)
                 {
-                    if (Monthes.Length > 1)
+                    if (Monthes.Length > 0)
                     {
                         var firstVisibleMonth = Monthes[0]?.OwnerSet?.Monthes?.FirstOrDefault()?.Month;
 
                         if (firstVisibleMonth != null)
                             if (Leasing.DateStart.GetMonth() < firstVisibleMonth)
                             {
+                                //считаем видимую часть арены для случая, когда аренда началась в прошлом
+                                //например, выборка с февраля по март, а текущая машина арендована с января(!) по февраль
+                                //реальный срок аренды: 2 мес. (январь февраль); 
+                                //видимый срок аренды: 1 мес. (февраль) <-- интересует это, т.к. параметр используется при расчёте отрисовки текста на полосках
+                                //видимый срок аренды - длина полоски, которую видит пользователь (сколько букв поместится).
                                 VisibleDaysCount = (Leasing.DateEnd - firstVisibleMonth.FirstDate).Days + 1;
+                                return;
                             }
-                            else
-                                VisibleDaysCount = DaysCount;
                     }
-                    else
-                        VisibleDaysCount = DaysCount;
                 }
             }
-            else
-                VisibleDaysCount = 0;
+            
+            VisibleDaysCount = DaysCount;
         }
 
         void CalculateOffset(Leasing b)
