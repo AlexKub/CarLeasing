@@ -49,7 +49,7 @@
                         <DataTemplate>
                             <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Leasing}" 
                                                         Business="{Binding}" 
-                                                        ColumnWidth="{StaticResource DayColumnWidth}" 
+                                                        ColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}" 
                                                         HorizontalAlignment="Left" 
                                                         VerticalAlignment="Center"
                                                         Padding="{StaticResource ListItemBusinessPadding}"/>

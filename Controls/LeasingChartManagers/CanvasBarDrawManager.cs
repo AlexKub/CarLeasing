@@ -24,8 +24,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             set
             {
                 m_brush = value;
-                Pen = new Pen(value, 1);
-                m_halfPenWidth = Pen.Thickness / 2;
+                Pen = new Pen(value, AppStyles.GridLineWidth);
+                m_halfPenWidth = Pen.Thickness / 2d;
                 Pen.Freeze();
             }
         }

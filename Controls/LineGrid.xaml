@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CarLeasingViewer"
               xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
               xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
               mc:Ignorable="d" 
@@ -11,7 +12,7 @@
     <UserControl.Resources>
         <!-- Конвертеры для координат !!! Имена используется в коде !!! -->
         <converters:LineRowConverter x:Key="RowConverter"   />
-        <converters:LineColumnConverter x:Key="ColumnConverter" FirstColumnOffset="{StaticResource LeftColumnWidth}" ColumnWidth="{StaticResource DayColumnWidth}" />
+        <converters:LineColumnConverter x:Key="ColumnConverter" FirstColumnOffset="{StaticResource LeftColumnWidth}" ColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:LineGrid}}"
           d:DataContext="{d:DesignInstance Type=controls:LineGrid}">

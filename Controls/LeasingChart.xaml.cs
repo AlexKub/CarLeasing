@@ -105,7 +105,7 @@ namespace CarLeasingViewer.Controls
                 var newVal = ((double)e.NewValue);
                 if (_this.m_gridM != null)
                 {
-                    _this.m_gridM.ColumnWidth = newVal + 1; //+ 1: захардкожена ширина границы у колонки
+                    _this.m_gridM.ColumnWidth = newVal + AppStyles.GridLineWidth;
                 }
                 if (_this.m_barM != null)
                 {
@@ -247,7 +247,7 @@ namespace CarLeasingViewer.Controls
             {
                 var _this = s as LeasingChart;
 
-                var newValue = (double)e.NewValue + 1d;
+                var newValue = (double)e.NewValue + AppStyles.GridLineWidth;
                 if (_this.m_gridM != null)
                     _this.m_gridM.RowHeight = newValue;
 

@@ -81,5 +81,7 @@ namespace CarLeasingViewer
             AvailableYears = groupedMonthes.Select(g => g.Key);
             AvailableMonthes = groupedMonthes.Select(g => g.AsEnumerable()).ToDictionary((v) => v.First().Year);
         }
+
+        
     }
 }

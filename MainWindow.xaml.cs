@@ -211,6 +211,7 @@ namespace CarLeasingViewer
             var leasingBarModels = new List<LeasingElementModel>[monthBuisnesses.Length];
 
             var index = 0;
+            var dayColumnWidth = AppStyles.ColumnWidth + AppStyles.GridLineWidth;
             //foreach (var item in tabItem.MonthLeasing.CarBusiness)
             foreach (var business in monthBuisnesses)
             {
@@ -221,7 +222,7 @@ namespace CarLeasingViewer
                     if (leasingBarModels[index] == null)
                         leasingBarModels[index] = new List<LeasingElementModel>();
 
-                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex, DayColumnWidth = 21d }));
+                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex, DayColumnWidth = dayColumnWidth }));
                 }
                 index++;
             }

@@ -9,7 +9,7 @@ namespace CarLeasingViewer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value + 1d;
+            return (double)value + AppStyles.GridLineWidth;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

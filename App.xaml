@@ -42,8 +42,6 @@
             <sys:Double x:Key="ListItemVerticalPadding">3</sys:Double>
             <!-- Ширина левой колонки с именами машин-->
             <sys:Double x:Key="LeftColumnWidth">230</sys:Double>
-            <!-- Ширина колонок с днями -->
-            <sys:Double x:Key="DayColumnWidth">21</sys:Double>
 
             <Style x:Key="StandartBorder" TargetType="Border">
                 <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>

@@ -252,6 +252,7 @@ namespace CarLeasingViewer.Models
 
             var index = 0;
 
+            var columnWidth = AppStyles.TotalColumnWidth;
             foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
@@ -267,7 +268,7 @@ namespace CarLeasingViewer.Models
                                 CarName = m_CarModels.Count > 0 ? m_CarModels[rowIndex].Text : b.CarName,
                                 Leasing = b,
                                 RowIndex = rowIndex,
-                                DayColumnWidth = 21d
+                                DayColumnWidth = columnWidth
                             };
 
                             if (b.CurrentMonth != null)

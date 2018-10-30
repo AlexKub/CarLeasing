@@ -122,7 +122,11 @@
                     <!-- Стили границ у элементов в коллекциях Машин и Комментариев -->
                     <Style x:Key="ItemBorderStyle" TargetType="Border">
                         <Setter Property="SnapsToDevicePixels" Value="True"/>
-                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                        <Setter Property="BorderThickness" >
+                            <Setter.Value>
+                                <Thickness Top="0" Right="0" Left="0" Bottom="{x:Static local:AppStyles.GridLineWidth}"/>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
                         <Setter Property="Height" Value="{Binding Source={StaticResource RowHeight}, Converter={StaticResource HeightConverter}}"/>
                     </Style>
@@ -168,7 +172,13 @@
                 </Border>
 
                 <!-- Левая колонка с машинами -->
-                <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}" >
+                <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderBrush="{StaticResource LightBorderBrush}" >
+                    <Border.BorderThickness>
+                        <Thickness Bottom="{x:Static local:AppStyles.GridLineWidth}" 
+                                   Left="{x:Static local:AppStyles.GridLineWidth}" 
+                                   Right="{x:Static local:AppStyles.GridLineWidth}" 
+                                   Top="{x:Static local:AppStyles.GridLineWidth}"/>
+                    </Border.BorderThickness>
                     <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
                         <ItemsControl ItemsSource="{Binding CarModels, UpdateSourceTrigger=PropertyChanged}">
                             <ItemsControl.Resources>
@@ -215,7 +225,7 @@
                                            LineBrush="{StaticResource LightBorderBrush}" 
                                            DayCount="{Binding DaysCount}"
                                            Leasings="{Binding Leasings}"
-                                           DayColumnWidth="{StaticResource DayColumnWidth}"
+                                           DayColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}"
                                            BarBorderBrush="{StaticResource LightBorderBrush}"
                                            FontFamily="Times New Roman"
                                            FontSize="10"

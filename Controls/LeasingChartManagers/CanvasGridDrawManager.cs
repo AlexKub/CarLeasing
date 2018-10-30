@@ -9,7 +9,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     /// </summary>
     public class CanvasGridDrawManager : CanvasDrawManager
     {
-        const double LineWidth = 1d;
         double m_HalfPenWidth;
 
         SortedDictionary<int, LineData> m_rowsData = new SortedDictionary<int, LineData>();
@@ -28,7 +27,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                 m_pen = new Pen();
                 m_pen.Brush = LineBrush;
-                m_pen.Thickness = LineWidth;
+                m_pen.Thickness = AppStyles.GridLineWidth;
                 m_pen.Freeze();
 
                 m_HalfPenWidth = m_pen.Thickness / 2;

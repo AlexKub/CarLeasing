@@ -152,7 +152,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <returns>Возвращает строку, к которой принадлежт точка или null</returns>
         public Row GetRowByPoint(Point p)
         {
-            var rowIndex = (int)(p.Y / (m_chart.RowHeight + 1));
+            var rowIndex = (int)(p.Y / (m_chart.RowHeight + AppStyles.GridLineWidth));
 
             if (rowIndex < 0)
                 rowIndex = 0;
