@@ -91,14 +91,21 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
                 <DockPanel Grid.Column="0" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
+                    <TextBlock Text="Регион" VerticalAlignment="Center" />
+                    <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{x:Static local:App.Regions}" VerticalAlignment="Center" SelectedItem="{Binding SelectedRegion}"
+                              DisplayMemberPath="DisplayName"/>
+                </DockPanel>
+                
+                <DockPanel Grid.Column="1" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
                     <TextBlock Text="Поиск по" VerticalAlignment="Center" />
                     <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{Binding DBSearchTypes}" VerticalAlignment="Center" SelectedItem="{Binding SelectedDBSearchType}"/>
                 </DockPanel>
-                <CheckBox Grid.Column="1" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
-                <CheckBox Grid.Column="2" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="2" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="3" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
             </Grid>
         </Grid>
 

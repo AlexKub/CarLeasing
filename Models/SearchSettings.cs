@@ -32,6 +32,11 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public bool TestData { get { return _TestData; } set { _TestData = value; OnPropertyChanged(); } }
 
+        private Region m_SelectedRegion;
+        /// <summary>
+        /// Возвращает или задаёт выбранный Регион
+        /// </summary>
+        public Region SelectedRegion { get { return m_SelectedRegion; } set { m_SelectedRegion = value; OnPropertyChanged(); } }
 
         public SearchSettings() { }
 
@@ -40,6 +45,7 @@ namespace CarLeasingViewer.Models
             _SelectedDBSearchType = settings.SelectedDBSearchType;
             _IncludeBlocked = settings.IncludeBlocked;
             _TestData = settings.TestData;
+            m_SelectedRegion = settings.SelectedRegion;
         }
     }
 }

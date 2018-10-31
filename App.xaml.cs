@@ -33,6 +33,8 @@ namespace CarLeasingViewer
 
         public static IEnumerable<int> AvailableYears { get; private set; } = Enumerable.Empty<int>();
 
+        public static IEnumerable<Region> Regions { get; private set; } = Enumerable.Empty<Region>();
+
         public App()
         {
             //AvailableYears = new int[] { 2017, 2018 };
@@ -94,6 +96,18 @@ namespace CarLeasingViewer
                 return;
 
             Cars = cars.ToList();
+        }
+
+        /// <summary>
+        /// Простановка общего набора регионов
+        /// </summary>
+        /// <param name="regions">Набор регионов из БД</param>
+        public static void SetRegions(IEnumerable<Region> regions)
+        {
+            if (regions == null || regions.Count() == 0)
+                return;
+
+            Regions = regions.ToList();
         }
     }
 }

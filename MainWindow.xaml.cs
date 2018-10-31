@@ -74,6 +74,8 @@ namespace CarLeasingViewer
 
             var cars = db.GetAllCars();
             App.SetCars(cars);
+            var regions = db.GetRegions();
+            App.SetRegions(regions);
 
             foreach (var month in App.AvailableMonthesAll)
                 vm.TotalBusiness.Add(db.GetBusinessByMonth(month));

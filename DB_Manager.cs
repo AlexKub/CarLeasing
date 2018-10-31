@@ -345,6 +345,9 @@ namespace CarLeasingViewer
             if (settings == null)
                 settings = App.SearchSettings;
 
+            if (region == null)
+                region = settings.SelectedRegion;
+
             List<Car> cars = new List<Car>();
             try
             {
@@ -359,7 +362,7 @@ namespace CarLeasingViewer
                            {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
-                            {(region == null ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}";
+                            {((region == null || region.IsTotal) ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}";
 
                 using (var con = new SqlConnection(m_connectionString))
                 {
@@ -404,6 +407,7 @@ namespace CarLeasingViewer
         public IEnumerable<Region> GetRegions()
         {
             List<Region> regions = new List<Region>();
+            
 
             if (App.SearchSettings.TestData)
             {
@@ -451,6 +455,7 @@ namespace CarLeasingViewer
                     m_loger.Log("Возникло исключение при получении списка регионов из БД", ex);
                 }
             }
+            regions.Insert(0, Region.Total);
 
             return regions;
         }
@@ -482,6 +487,9 @@ namespace CarLeasingViewer
             if (settings == null)
                 settings = App.SearchSettings;
 
+            if (region == null)
+                region = settings.SelectedRegion;
+
             return $@"SELECT 
                          i.[No_]
                         , i.[Description] as CarName
@@ -508,7 +516,7 @@ namespace CarLeasingViewer
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
                             AND h.[Date Begin] IS NOT NULL
-                            {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
+                            {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
         }
 
@@ -540,7 +548,7 @@ namespace CarLeasingViewer
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
                             AND h.[Date Begin] IS NOT NULL
-                            {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
+                            {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
                         
                         ORDER BY l.[Document No_]";

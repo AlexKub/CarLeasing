@@ -31,6 +31,7 @@ namespace CarLeasingViewer.Views
             {
                 App.SetAvailable(DB_Manager.Default.GetAvailableMonthes());
                 App.SetCars(DB_Manager.Default.GetAllCars());
+                App.SetRegions(DB_Manager.Default.GetRegions());
 
                 var first = Month.Current.Previos();
                 var last = Month.Current.Next();
