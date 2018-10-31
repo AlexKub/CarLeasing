@@ -22,12 +22,27 @@ namespace CarLeasingViewer.Models
                 {
                     pv_Car = value;
 
-                    Text = Car == null ? "NULL" : Car.ToString();
+
+                    if (Car == null)
+                    {
+                        Text = "NULL";
+                    }
+                    else
+                    {
+                        Text = Car.ToString();
+                        Blocked = Car.Blocked;
+                    }
 
                     OnPropertyChanged();
                 }
             }
         }
+
+        private bool m_Blocked;
+        /// <summary>
+        /// Возвращает или задаёт Флаг, что авто снято с учёта
+        /// </summary>
+        public bool Blocked { get { return m_Blocked; } set { m_Blocked = value; OnPropertyChanged(); } }
 
         private string pv_Text;
         /// <summary>

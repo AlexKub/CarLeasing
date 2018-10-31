@@ -99,7 +99,7 @@
                     <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{x:Static local:App.Regions}" VerticalAlignment="Center" SelectedItem="{Binding SelectedRegion}"
                               DisplayMemberPath="DisplayName"/>
                 </DockPanel>
-                
+
                 <DockPanel Grid.Column="1" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
                     <TextBlock Text="Поиск по" VerticalAlignment="Center" />
                     <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{Binding DBSearchTypes}" VerticalAlignment="Center" SelectedItem="{Binding SelectedDBSearchType}"/>
@@ -207,7 +207,11 @@
                                     <Border d:DataContext="{d:DesignInstance models:CarModel}"
                                             Style="{StaticResource ItemBorderStyle}" 
                                             Background="{Binding HightlightBrush}" >
-                                        <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
+                                        <Grid>
+                                            <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
+                                            <Rectangle Fill="Coral" Height="13" Width="13" VerticalAlignment="Top" HorizontalAlignment="Right" ToolTip="Снята с учёта" 
+                                                       Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

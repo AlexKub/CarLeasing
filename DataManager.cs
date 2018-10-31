@@ -36,7 +36,12 @@ namespace CarLeasingViewer
             }
             else
             {
-                monthBuisnesses = new MonthBusiness[] { DB_Manager.Default.GetBusinessByMonthes(first, last) };
+                var db = DB_Manager.Default;
+                App.SetAvailable(DB_Manager.Default.GetAvailableMonthes());
+                App.SetCars(DB_Manager.Default.GetAllCars());
+                App.SetRegions(DB_Manager.Default.GetRegions());
+
+                monthBuisnesses = new MonthBusiness[] { db.GetBusinessByMonthes(first, last) };
             }
 
             return monthBuisnesses;

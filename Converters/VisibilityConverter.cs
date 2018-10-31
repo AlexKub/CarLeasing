@@ -19,7 +19,9 @@ namespace CarLeasingViewer.Converters
             if (!(value is bool))
                 return OnFalse;
 
-            return ((bool)value) ? OnTrue : OnFalse;
+            var val = ((bool)value) ? OnTrue : OnFalse;
+
+            return val;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

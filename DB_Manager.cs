@@ -328,7 +328,7 @@ namespace CarLeasingViewer
             //добавляем не занятые авто
             AddFreeCars(carBusinesses);
 
-            var monthBusiness = new MonthBusiness(carBusinesses);
+            var monthBusiness = new MonthBusiness(carBusinesses.OrderBy(cb => cb.Name));
             monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
 
             return monthBusiness;
@@ -551,7 +551,7 @@ namespace CarLeasingViewer
                             {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
                         
-                        ORDER BY l.[Document No_]";
+                        ORDER BY CarName";
         }
 
         void AddFreeCars(List<CarBusiness> carBusinesses)
