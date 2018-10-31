@@ -29,6 +29,8 @@ namespace CarLeasingViewer
             }
         }
 
+        public static IEnumerable<Car> Cars { get; private set; } = Enumerable.Empty<Car>();
+
         public static IEnumerable<int> AvailableYears { get; private set; } = Enumerable.Empty<int>();
 
         public App()
@@ -82,6 +84,16 @@ namespace CarLeasingViewer
             AvailableMonthes = groupedMonthes.Select(g => g.AsEnumerable()).ToDictionary((v) => v.First().Year);
         }
 
-        
+        /// <summary>
+        /// Простановка общего набора машин
+        /// </summary>
+        /// <param name="cars">Набор машин из БД</param>
+        public static void SetCars(IEnumerable<Car> cars)
+        {
+            if (cars == null || cars.Count() == 0)
+                return;
+
+            Cars = cars.ToList();
+        }
     }
 }

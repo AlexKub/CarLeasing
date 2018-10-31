@@ -66,7 +66,7 @@
 
         <DataTemplate x:Key="DayIndexItemTemplate">
             <Border Style="{StaticResource DayItemBorderStyle}">
-                <TextBlock Style="{StaticResource DayItemStyle}" Text="{Binding Index}" ToolTip="{Binding RelativeSource={RelativeSource Self},Path=ActualWidth}" />
+                <TextBlock Style="{StaticResource DayItemStyle}" Text="{Binding Index}" />
             </Border>
         </DataTemplate>
 
@@ -89,7 +89,7 @@
             <ColumnDefinition MinWidth="0"/>
         </Grid.ColumnDefinitions>
         <Rectangle Grid.ColumnSpan="1" Grid.RowSpan="2" Fill="{StaticResource LightBorderBrush}"/>
-        
+
         <!-- данные месяца -->
         <Grid VerticalAlignment="Center" >
             <Grid.RowDefinitions>
@@ -105,9 +105,12 @@
         </Grid>
 
         <Rectangle Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Fill="{StaticResource LightBorderBrush}"/>
-        
+
         <!-- Дни -->
-        <Border Grid.Column="0" Grid.Row="1" BorderThickness="1 1 0 1" BorderBrush="{StaticResource LightBorderBrush}" Width="Auto" x:Name="DaysBorder">
+        <Border Grid.Column="0" Grid.Row="1" BorderBrush="{StaticResource LightBorderBrush}" Width="Auto" x:Name="DaysBorder">
+            <Border.BorderThickness>
+                <Thickness Left="0" Right="0" Top="{x:Static local:AppStyles.GridLineWidth}" Bottom="{x:Static local:AppStyles.GridLineWidth}" />
+            </Border.BorderThickness>
             <Grid HorizontalAlignment="Left" DataContext="{Binding Days}" Width="auto" >
                 <Grid.RowDefinitions>
                     <RowDefinition MinHeight="30"/>
@@ -115,7 +118,7 @@
                 </Grid.RowDefinitions>
                 <Border BorderBrush="{StaticResource LightBorderBrush}" SnapsToDevicePixels="True">
                     <Border.BorderThickness>
-                        <Thickness Left="0" Top="0" Bottom="0" Right="{x:Static local:AppStyles.GridLineWidth}"/>
+                        <Thickness Left="0" Top="0" Bottom="{x:Static local:AppStyles.GridLineWidth}" Right="0"/>
                     </Border.BorderThickness>
                     <!--Сокращённые называния дней-->
                     <ItemsControl Style="{StaticResource ItemsControlStyle}" ItemTemplate="{StaticResource DayNameItemTemplate}" ItemsSource="{Binding}" />

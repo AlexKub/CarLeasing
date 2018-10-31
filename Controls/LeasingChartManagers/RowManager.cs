@@ -75,28 +75,36 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 set.CarsChanged += LeasingSet_CarsChanged;
                 set.CommentsChanged += LeasingSet_CommentsChanged;
 
-                Row row = null;
-                if (set.CarModels.Count > 0)
-                    foreach (var model in set.CarModels)
-                    {
-                        row = GetRow(model.RowIndex);
-
-                        row.Car = model;
-                    }
-
-                if (set.Comments.Count > 0)
-                    foreach (var model in set.Comments)
-                    {
-                        row = GetRow(model.RowIndex);
-
-                        row.Comment = model;
-                    }
+                DrawLeasingSetRows(set);
             }
             else
             {
                 set.CarsChanged -= LeasingSet_CarsChanged;
                 set.CommentsChanged -= LeasingSet_CommentsChanged;
             }
+        }
+
+        void DrawLeasingSetRows(LeasingSet set)
+        {
+            if (set == null)
+                return;
+
+            Row row = null;
+            if (set.CarModels.Count > 0)
+                foreach (var model in set.CarModels)
+                {
+                    row = GetRow(model.RowIndex);
+
+                    row.Car = model;
+                }
+
+            if (set.Comments.Count > 0)
+                foreach (var model in set.Comments)
+                {
+                    row = GetRow(model.RowIndex);
+
+                    row.Comment = model;
+                }
         }
 
         void SubscribeBarManager(CanvasBarDrawManager manager, bool subscribe)
@@ -230,6 +238,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         public void Clear()
         {
             m_rows.Clear();
+
+            DrawLeasingSetRows(m_chart.LeasingSet);
         }
 
         Row GetRow(int index)

@@ -154,7 +154,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
-            var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + Canvas.RowHeight);
+            var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
             var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
             pf.StartPoint = start;
             var s = new LineSegment(new Point(end.X, start.Y), true);
@@ -264,7 +264,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             #endregion
 
-            return (DayColumnWidth * dayCount) + dayCount; //прибавляем количество дней, т.к. ширина границ - 1
+            return DayColumnWidth * dayCount;
         }
 
         double GetDayOffset(LeasingElementModel model)
@@ -312,7 +312,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dayCount += b.DateStart.Day - 1;
 
             //смещение слева в точках
-            return dayCount * DayColumnWidth + (dayCount * 1);
+            return dayCount * DayColumnWidth;
         }
 
         /// <summary>
@@ -351,7 +351,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         while (prev != null)
                         {
                             if (prev.Month != null)
-                                offset += ((prev.Month.DayCount * DayColumnWidth) + prev.Month.DayCount);
+                                offset += (prev.Month.DayCount * DayColumnWidth);
 
                             prev = prev.Previous;
                         }

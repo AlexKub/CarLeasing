@@ -233,8 +233,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     .Append(b.DateEnd.TimeOfDay.ToString(@"hh\:mm")).Append(" ");
             else //для нескольких месяцев 
                 sb.Append(b.DateStart.Day.ToString()).Append(" ")
-                    .Append(b.DateStart.GetMonthName() + " ")
-                    .Append(b.DateStart.Year < b.DateEnd.Year ? (" " + b.DateStart.Year.ToString()) : string.Empty) //добавляем год к начальному числу, если начало за графиком
+                    .Append(b.DateStart.GetMonthName()).Append(" ")
+                    .Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty) //добавляем год к начальному числу, если начало за графиком
                     .Append(b.DateStart.TimeOfDay.ToString(@"hh\:mm")).Append(" ")
                     .Append(" по ")
                     .Append(b.DateEnd.Day.ToString()).Append(" ")

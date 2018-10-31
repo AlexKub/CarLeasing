@@ -102,10 +102,10 @@ namespace CarLeasingViewer.Controls
                 if (_this == null)
                     return;
 
-                var newVal = ((double)e.NewValue);
+                var newVal = ((double)e.NewValue) + AppStyles.GridLineWidth; //учитываем ширину линий сетки
                 if (_this.m_gridM != null)
                 {
-                    _this.m_gridM.ColumnWidth = newVal + AppStyles.GridLineWidth;
+                    _this.m_gridM.ColumnWidth = newVal;
                 }
                 if (_this.m_barM != null)
                 {
@@ -263,11 +263,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public double RowHeight { get { return (double)GetValue(dp_RowHeight); } set { SetValue(dp_RowHeight, value); } }
 
-        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<Models.LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingElementModel>() });
+        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingElementModel>() });
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<Models.LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
         LeasingSet m_set;
         /// <summary>
@@ -319,7 +319,7 @@ namespace CarLeasingViewer.Controls
             ClearManagers();
             DrawingVisual dv = null;
 
-            var rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
+            var rowsI = LeasingSet.CarModels.Select(cm => cm.RowIndex).Distinct().OrderBy(i => i);//Leasings.Select(l => l.RowIndex).Distinct().ToList();
 
             //отрисовка Layout'ов для строк графика
             if (m_rowLayoutM != null)

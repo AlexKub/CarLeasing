@@ -63,19 +63,7 @@ namespace CarLeasingViewer
             if (settings == null)
                 settings = App.SearchSettings;
 
-
-            #region Old
-
-
-            var sql = string.Empty; //$@"SELECT DISTINCT
-                                    //    h.[Date Begin]
-                                    //    FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Line] l
-                                    //    inner join [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Header] h on h.[Sell-to Customer No_] = l.[Sell-to Customer No_]
-                                    //    WHERE l.[Vehicle Reg_ No_] != ''
-                                    //    AND h.[Date End] > h.[Date Begin]
-                                    //    order by h.[Date Begin]";
-
-            #endregion
+            var sql = string.Empty; 
 
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
@@ -138,32 +126,6 @@ namespace CarLeasingViewer
 
             var carBusinesses = new List<CarBusiness>();
 
-            #region Old
-
-            /*
-            var sql = $@"SELECT DISTINCT
-	                                  l.[Document No_]
-	                                ,h.[Salesperson Code]
-	                                ,h.[Bal_ Account No_]
-	                                ,h.[Sell-to Customer Name] as Buyer
-	                                ,h.[Bill-to Name]
-	                                ,h.[Ship-to Name]
-                                    ,l.[Description] as CarName
-                                    ,l.[Vehicle Reg_ No_] as CarNumber
-	                                ,h.[Venicle Operation Area]
-	                                ,h.[Date Begin] as DateStart
-	                                ,h.[Time Begin]
-	                                ,h.[Date End] as DateEnd
-	                                ,h.[Time End]
-	                                ,h.[Comment Text] as Comment
-                                FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Line] l
-                                INNER JOIN [CARLSON_Test_10052018].[dbo].[Carlson$Sales{(invoice ? " Invoice" : "")} Header] h ON h.[Sell-to Customer No_] = l.[Sell-to Customer No_]
-                                WHERE l.[Vehicle Reg_ No_] != ''
-                                AND h.[Date End] > h.[Date Begin]
-                                ORDER BY l.[Document No_], h.[Date Begin]";
-                                */
-            #endregion
-
             var sql = string.Empty;
 
             if (settings.SelectedDBSearchType == DBSearchType.All)
@@ -187,36 +149,6 @@ namespace CarLeasingViewer
             }
             else
                 sql = GetBusinessByMonthQuery(month, settings, region);
-            //sql = $@"SELECT 
-            //             i.[No_]
-            //            , i.[Description] as CarName
-            //            , i.[Vehicle Reg_ No_] as CarNumber
-            //            , i.[Blocked]
-            //            , l.[Document No_]
-            //         ,h.[Salesperson Code]
-            //         ,h.[Bal_ Account No_]
-            //         ,h.[Sell-to Customer Name] as Buyer
-            //         ,h.[Bill-to Name]
-            //         ,h.[Ship-to Name]
-            //         ,h.[Venicle Operation Area]
-            //         ,h.[Date Begin] as DateStart
-            //         ,h.[Time Begin]
-            //         ,h.[Date End] as DateEnd
-            //         ,h.[Time End]
-            //         ,h.[Comment Text] as Comment
-            //             FROM Carlson$Item i
-            //            	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
-            //            	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
-
-            //            WHERE 1 = 1
-            //                {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
-            //            	AND i.IsService = 0
-            //            	AND i.IsFranchise = 0
-            //                AND h.[Date Begin] IS NOT NULL
-            //                {(region == null || string.IsNullOrWhiteSpace(region.DBKey) ? "" : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
-            //                AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
-
-            //            ORDER BY l.[Document No_]";
 
             try
             {
@@ -383,7 +315,7 @@ namespace CarLeasingViewer
                     }
                 }
             }
-            catch(SqlException sqlEx)
+            catch (SqlException sqlEx)
             {
                 m_loger.Log("Возникло исключение при запросе выборки из БД", sqlEx,
                     new LogParameter("Запрос", sql));
@@ -393,12 +325,81 @@ namespace CarLeasingViewer
                 m_loger.Log("Возникло исключение при запросе выборки из БД", ex);
             }
 
+            //добавляем не занятые авто
+            AddFreeCars(carBusinesses);
+
             var monthBusiness = new MonthBusiness(carBusinesses);
             monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
 
             return monthBusiness;
         }
 
+        /// <summary>
+        /// Получение списка всех авто
+        /// </summary>
+        /// <param name="settings">Текущие настройки</param>
+        /// <param name="region">Регион</param>
+        /// <returns>Возвращает выбранный набор машин или пустой список</returns>
+        public IEnumerable<Car> GetAllCars(SearchSettings settings = null, Region region = null)
+        {
+            if (settings == null)
+                settings = App.SearchSettings;
+
+            List<Car> cars = new List<Car>();
+            try
+            {
+                var sql = $@"SELECT DISTINCT
+                          i.[No_] as ID
+                        , i.[Description] as CarName
+                        , i.[Vehicle Reg_ No_] as CarNumber
+                        , i.[Blocked] as Blocked
+
+                         FROM Carlson$Item i
+                    WHERE 1 = 1
+                           {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
+                        	AND i.IsService = 0
+                        	AND i.IsFranchise = 0
+                            {(region == null ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}";
+
+                using (var con = new SqlConnection(m_connectionString))
+                {
+                    var com = new SqlCommand(sql);
+                    com.Connection = con;
+
+                    con.Open();
+
+                    using (var reader = com.ExecuteReader())
+                    {
+                        var carName = string.Empty;
+                        var carNumber = string.Empty;
+                        var id = string.Empty;
+                        Car car = null;
+                        var includeBlocked = settings.IncludeBlocked;
+                        while (reader.Read())
+                        {
+
+                            carName = (string)reader["CarName"];
+                            carNumber = (string)reader["CarNumber"];
+                            id = (string)reader["ID"];
+
+                            car = new Car(carName, carNumber);
+                            car.No = id;
+
+                            if (includeBlocked)
+                                car.Blocked = ((byte)reader["Blocked"]) > 0;
+
+                            cars.Add(car);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                m_loger.Log("Возникло исключение при запросе полного набора машин из БД", ex);
+            }
+
+            return cars;
+        }
 
         public IEnumerable<Region> GetRegions()
         {
@@ -417,7 +418,7 @@ namespace CarLeasingViewer
             {
                 try
                 {
-                        var sql = $@"SELECT [Code]
+                    var sql = $@"SELECT [Code]
                                 	    , [Name]
                                 	    , [Address]
                                 	    , [Post Code]
@@ -543,6 +544,24 @@ namespace CarLeasingViewer
                             AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
                         
                         ORDER BY l.[Document No_]";
+        }
+
+        void AddFreeCars(List<CarBusiness> carBusinesses)
+        {
+            foreach (var car in App.Cars)
+            {
+                if (carBusinesses.Any(b => b.ItemNo.Equals(car.No)))
+                    continue;
+                else
+                {
+                    var cb = new CarBusiness();
+                    cb.ItemNo = car.No;
+                    cb.Name = car.FullName;
+                    cb.Monthes = new Month[0];
+                    //cb.Add(new Leasing() { }); //пустой экземпляр - костыль для текущей логики
+                    carBusinesses.Add(cb);
+                }
+            }
         }
     }
 }

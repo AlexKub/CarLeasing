@@ -132,7 +132,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (!namesFilled) //если имена дней ещё не заполнены
                     {
-                        dayNames[j] = Models.Day.GetShortName(day); //сохраняем имя для текущего дня
+                        dayNames[j] = Day.GetShortName(day); //сохраняем имя для текущего дня
 
                         dayI++;
 

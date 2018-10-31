@@ -19,5 +19,10 @@
         /// Возращает ширину горизонтальных полосок на сетке
         /// </summary>
         public static double GridLineWidth { get { return 2d; } }
+
+        /// <summary>
+        /// Возращает отрицательную ширину горизонтальных полосок на сетке (для xaml margin's)
+        /// </summary>
+        public static double GridLineWidthNegative { get { return GridLineWidth * -1d; } }
     }
 }
