@@ -141,9 +141,11 @@ namespace CarLeasingViewer.ViewModels
             var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
             LeasingSet = newSet;
 
-
             if (m_Window != null)
+            {
+                newSet.Chart = m_Window.LeasingChart;
                 m_Window.LeasingChart.Draw();
+            }
         }
 
         public void Dispose()

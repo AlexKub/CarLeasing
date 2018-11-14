@@ -60,7 +60,7 @@
                     <Thickness Bottom="0" Top="0" Right="0" Left="{x:Static local:AppStyles.GridLineWidth}" />
                 </Setter.Value>
             </Setter>
-            <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GridBorderBrush}"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
         </Style>
 
@@ -107,7 +107,7 @@
         <Rectangle Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Fill="{StaticResource LightBorderBrush}"/>
 
         <!-- Дни -->
-        <Border Grid.Column="0" Grid.Row="1" BorderBrush="{StaticResource LightBorderBrush}" Width="Auto" x:Name="DaysBorder">
+        <Border Grid.Column="0" Grid.Row="1" BorderBrush="{StaticResource GridBorderBrush}" Width="Auto" x:Name="DaysBorder">
             <Border.BorderThickness>
                 <Thickness Left="0" Right="0" Top="{x:Static local:AppStyles.GridLineWidth}" Bottom="{x:Static local:AppStyles.GridLineWidth}" />
             </Border.BorderThickness>
@@ -116,7 +116,7 @@
                     <RowDefinition MinHeight="30"/>
                     <RowDefinition MinHeight="30"/>
                 </Grid.RowDefinitions>
-                <Border BorderBrush="{StaticResource LightBorderBrush}" SnapsToDevicePixels="True">
+                <Border BorderBrush="{StaticResource GridBorderBrush}" SnapsToDevicePixels="True">
                     <Border.BorderThickness>
                         <Thickness Left="0" Top="0" Bottom="{x:Static local:AppStyles.GridLineWidth}" Right="0"/>
                     </Border.BorderThickness>

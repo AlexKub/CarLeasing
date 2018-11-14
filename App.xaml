@@ -39,6 +39,8 @@
             <Color x:Key="LightBorderColor">#FFD3D3D3</Color>
             <!-- Заливка у бордеров -->
             <SolidColorBrush x:Key="LightBorderBrush" PresentationOptions:Freeze="True" Color="{StaticResource LightBorderColor}" />
+
+            <SolidColorBrush x:Key="GridBorderBrush" PresentationOptions:Freeze="True" Color="Black" />
             <!-- Вертикальный отступ у элементов списка -->
             <sys:Double x:Key="ListItemVerticalPadding">3</sys:Double>
             <!-- Ширина левой колонки с именами машин-->

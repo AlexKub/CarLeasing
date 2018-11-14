@@ -319,7 +319,9 @@ namespace CarLeasingViewer.Controls
             ClearManagers();
             DrawingVisual dv = null;
 
-            var rowsI = LeasingSet.CarModels.Select(cm => cm.RowIndex).Distinct().OrderBy(i => i);//Leasings.Select(l => l.RowIndex).Distinct().ToList();
+            var rowsI = GetRowIndexes();
+
+            RedrawGrid(rowsI);
 
             //отрисовка Layout'ов для строк графика
             if (m_rowLayoutM != null)
@@ -332,8 +334,6 @@ namespace CarLeasingViewer.Controls
                         m_children.Add(dv);
                 }
             }
-
-            RedrawGrid(rowsI);
 
             //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
@@ -354,6 +354,11 @@ namespace CarLeasingViewer.Controls
                         m_children.Add(dv);
                 }
             }
+        }
+
+        IEnumerable<int> GetRowIndexes()
+        {
+            return LeasingSet.CarModels.Select(cm => cm.RowIndex).Distinct().OrderBy(i => i);//Leasings.Select(l => l.RowIndex).Distinct().ToList();
         }
 
         #region FrameworkElement
@@ -465,8 +470,9 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public void RedrawGrid(IEnumerable<int> rowsI = null)
         {
-            if(rowsI == null)
-                rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
+            if (rowsI == null)
+                return;
+                //rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
 
             //для случаев, когда меняется размер контрола, а сетка остаётся прежней
             if (m_gridM != null)

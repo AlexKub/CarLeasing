@@ -59,36 +59,36 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             if (height > 0d && Canvas.ActualWidth > 0) //если высота нулевая - нет смысла рисовать. Она всёравно сольётся с другой
             {
-                if (rData.Drawed)
-                {
-                    //если изменилась высота уже отрисованной строки
-                    if (!rData.EqualsHeight(height))
-                    {
-                        rData.Offset = height;
-
-                        //проставляем высоты у всех следующих строк
-                        var level = height; //общая высота текущей строки
-                                            //расчитываем отдельно, чтобы в следующем цикле пользоваться константой
-                        for (int i = 0; i < index; i++)
-                        {
-                            level += m_rowsData[i].Offset;
-                        }
-
-                        //проставляем дельту новой высоты для всех последующих отрисованных строк
-                        for (int i = (index + 1); i < m_rowsData.Count; i++)
-                        {
-                            var d = m_rowsData[i];
-                            if (d.Drawed)
-                            {
-                                level += d.Offset;
-                                d.Line.Y1 = level;
-                                d.Line.Y2 = level;
-                            }
-                        }
-                    }
-                }
-                else //отрисовка линий на Canvas
-                {
+                //if (rData.Drawed)
+                //{
+                //    //если изменилась высота уже отрисованной строки
+                //    if (!rData.EqualsHeight(height))
+                //    {
+                //        rData.Offset = height;
+                //
+                //        //проставляем высоты у всех следующих строк
+                //        var level = height; //общая высота текущей строки
+                //                            //расчитываем отдельно, чтобы в следующем цикле пользоваться константой
+                //        for (int i = 0; i < index; i++)
+                //        {
+                //            level += m_rowsData[i].Offset;
+                //        }
+                //
+                //        //проставляем дельту новой высоты для всех последующих отрисованных строк
+                //        for (int i = (index + 1); i < m_rowsData.Count; i++)
+                //        {
+                //            var d = m_rowsData[i];
+                //            if (d.Drawed)
+                //            {
+                //                level += d.Offset;
+                //                d.Line.Y1 = level;
+                //                d.Line.Y2 = level;
+                //            }
+                //        }
+                //    }
+                //}
+                //else //отрисовка линий на Canvas
+                //{
                     if (index == 0)
                     {
                         dv = DrawRow(height, rData); //первую строку просто рисуем
@@ -103,7 +103,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                         dv = DrawRow(height, rData);
                     }
-                }
+                //}
             }
 
             return dv;
@@ -131,6 +131,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             var dv = data.Visual == null ? new DrawingVisual() : data.Visual;
             var dc = dv.RenderOpen();
+            data.Visual = dv;
 
             dc.PushGuidelineSet(guideSet);
             dc.DrawLine(m_pen, new System.Windows.Point(0d, offset), new System.Windows.Point(Canvas.ActualWidth, offset));
@@ -195,6 +196,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
             var dc = dv.RenderOpen();
+            ld.Visual = dv;
 
             dc.PushGuidelineSet(guideSet);
             dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
@@ -241,19 +243,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         protected override void M_canvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
-            //if (e.HeightChanged)
-            //{
-            //    var m_cHeight = e.NewSize.Height;
-            //
-            //    if (m_cHeight > 0d)
-            //    {
-            //        foreach (var ld in m_columnsData.Values)
-            //        {
-            //            if (ld.Drawed)
-            //                ld.Line.Y2 = m_cHeight;
-            //        }
-            //    }
-            //}
+            if (e.HeightChanged)
+            {
+                var m_cHeight = e.NewSize.Height;
+            
+                if (m_cHeight > 0d)
+                {
+                    foreach (var data in m_columnsData)
+                    {
+                        DrawRow(data.Key, m_cHeight);
+                    }
+                }
+            }
             //if (e.WidthChanged)
             //{
             //    var m_cWidth = e.NewSize.Width;

@@ -154,8 +154,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
+
+            //левая нижняя точка
             var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
+            //правая верхняя точка
             var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
+
             pf.StartPoint = start;
             var s = new LineSegment(new Point(end.X, start.Y), true);
             s.Freeze();
@@ -175,7 +179,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             g.Figures.Add(pf);
             g.Freeze();
 
+            //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
+            GuidelineSet guidelines = new GuidelineSet();
+            guidelines.GuidelinesX.Add(start.X + m_halfPenWidth);
+            guidelines.GuidelinesX.Add(end.X + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(start.Y + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(end.Y + m_halfPenWidth);
+
             bd.Bar = g;
+            dc.PushGuidelineSet(guidelines);
             dc.DrawGeometry(brush, Pen, g);
         }
 

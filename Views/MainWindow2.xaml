@@ -134,7 +134,7 @@
                                 <Thickness Top="0" Right="0" Left="0" Bottom="{x:Static local:AppStyles.GridLineWidth}"/>
                             </Setter.Value>
                         </Setter>
-                        <Setter Property="BorderBrush" Value="{StaticResource LightBorderBrush}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource GridBorderBrush}"/>
                         <Setter Property="Height" Value="{Binding Source={StaticResource RowHeight}, Converter={StaticResource HeightConverter}}"/>
                     </Style>
 
@@ -178,8 +178,38 @@
                     </ScrollViewer>
                 </Border>
 
+                <!-- График занятости -->
+                <Border Grid.Column="1" Grid.Row="{StaticResource ChartRowIndex}" Grid.RowSpan="2" Margin="-1 0 0 0">
+                    <ScrollViewer Name="LeasingScroll" 
+                          CanContentScroll="False" 
+                          VerticalScrollBarVisibility="Hidden" 
+                          HorizontalScrollBarVisibility="Visible" 
+                              ScrollChanged="LeasingScroll_ScrollChanged"
+                              SizeChanged="LeasingScroll_SizeChanged">
+                        <!-- График занятости -->
+                        <controls:LeasingChart x:Name="LeasingChart" 
+                                           VerticalAlignment="Top"
+                                           RowHeight="{StaticResource RowHeight}" 
+                                           Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
+                                           Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
+                                           LineBrush="{StaticResource GridBorderBrush}" 
+                                           DayCount="{Binding DaysCount}"
+                                           Leasings="{Binding Leasings}"
+                                           DayColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}"
+                                           BarBorderBrush="{StaticResource GridBorderBrush}"
+                                           FontFamily="Times New Roman"
+                                           FontSize="10"
+                                           BarBrush="{StaticResource StandartBarBrush}"
+                                           BlockeBarBrush="{StaticResource BlockedBarBrush}"
+                                           MinHeight="200"
+                                               HorizontalAlignment="Left">
+
+                        </controls:LeasingChart>
+                    </ScrollViewer>
+                </Border>
+                
                 <!-- Левая колонка с машинами -->
-                <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderBrush="{StaticResource LightBorderBrush}" >
+                <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderBrush="{StaticResource GridBorderBrush}" >
                     <Border.BorderThickness>
                         <Thickness Bottom="{x:Static local:AppStyles.GridLineWidth}" 
                                    Left="{x:Static local:AppStyles.GridLineWidth}" 
@@ -219,37 +249,10 @@
                     </ScrollViewer>
                 </Border>
 
-                <!-- График занятости -->
-                <Border Grid.Column="1" Grid.Row="{StaticResource ChartRowIndex}" Grid.RowSpan="2">
-                    <ScrollViewer Name="LeasingScroll" 
-                          CanContentScroll="False" 
-                          VerticalScrollBarVisibility="Hidden" 
-                          HorizontalScrollBarVisibility="Visible" 
-                              ScrollChanged="LeasingScroll_ScrollChanged"
-                              SizeChanged="LeasingScroll_SizeChanged">
-                        <!-- График занятости -->
-                        <controls:LeasingChart x:Name="LeasingChart" 
-                                           VerticalAlignment="Top"
-                                           RowHeight="{StaticResource RowHeight}" 
-                                           Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
-                                           Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
-                                           LineBrush="{StaticResource LightBorderBrush}" 
-                                           DayCount="{Binding DaysCount}"
-                                           Leasings="{Binding Leasings}"
-                                           DayColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}"
-                                           BarBorderBrush="{StaticResource LightBorderBrush}"
-                                           FontFamily="Times New Roman"
-                                           FontSize="10"
-                                           BarBrush="{StaticResource StandartBarBrush}"
-                                           BlockeBarBrush="{StaticResource BlockedBarBrush}"
-                                           MinHeight="200">
-
-                        </controls:LeasingChart>
-                    </ScrollViewer>
-                </Border>
+                
 
                 <!-- Комментарии -->
-                <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource LightBorderBrush}">
+                <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource GridBorderBrush}">
                     <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
                         <ItemsControl ItemsSource="{Binding Comments, UpdateSourceTrigger=PropertyChanged}">
                             <ItemsControl.Resources>
