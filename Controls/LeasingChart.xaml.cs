@@ -282,6 +282,9 @@ namespace CarLeasingViewer.Controls
                 {
                     var e = new LeasingSetEventArgs(value, m_set);
 
+                    SubscribeSet(m_set, false);
+                    SubscribeSet(value, true);
+
                     m_set = value;
 
                     SetChanged?.Invoke(e);
@@ -315,9 +318,9 @@ namespace CarLeasingViewer.Controls
         public void Draw()
         {
             //расчёт необходимых для отрисовки размеров контрола вручную
-            //var newSize = CalculateSize();
-            //Width = newSize.Width;
-            //Height = newSize.Height;
+            var newSize = CalculateSize();
+            Width = newSize.Width;
+            Height = newSize.Height;
 
             m_children.Clear();
 
@@ -406,9 +409,29 @@ namespace CarLeasingViewer.Controls
             }
         }
 
+        void SubscribeSet(LeasingSet set, bool subscribe)
+        {
+            if (set == null)
+                return;
+
+            if(subscribe)
+            {
+                set.MonthesChanged += OnSetMonthesChanged;
+            }
+            else
+            {
+                set.MonthesChanged -= OnSetMonthesChanged;
+            }
+        }
+
         private void M_rowM_RowSelectionChanged(RowManager.Row row)
         {
             RowSelectionChanged?.Invoke(row);
+        }
+
+        private void OnSetMonthesChanged(LeasingSetEventArgs e)
+        {
+            DayCount = e?.New.DaysCount ?? 0;
         }
 
         private void LeasingChart_Unloaded(object sender, RoutedEventArgs e)
@@ -416,6 +439,7 @@ namespace CarLeasingViewer.Controls
             Unloaded -= LeasingChart_Unloaded;
 
             Subscribe(false);
+            SubscribeSet(LeasingSet, false);
 
             if (m_gridM != null)
             {
@@ -523,7 +547,7 @@ namespace CarLeasingViewer.Controls
             if (m_set == null || m_set.DaysCount == 0)
                 return size;
 
-            size.Width = m_set.DaysCount * DayColumnWidth;
+            size.Width = (m_set.DaysCount * DayColumnWidth) + m_set.DaysCount;
 
             if (m_set.RowsCount == 0)
                 return size;

@@ -120,11 +120,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawRow(double offset, LineData data)
         {
+            var cWidth = Canvas.ActualWidth > Canvas.Width ? Canvas.ActualWidth : Canvas.Width;
             data.Line = new Line();
 
             GuidelineSet guideSet = new GuidelineSet();
             guideSet.GuidelinesX.Add(0d + m_HalfPenWidth);
-            guideSet.GuidelinesX.Add(Canvas.ActualWidth + m_HalfPenWidth);
+            guideSet.GuidelinesX.Add(cWidth + m_HalfPenWidth);
             guideSet.GuidelinesY.Add(offset + m_HalfPenWidth);
             guideSet.GuidelinesY.Add(offset + m_HalfPenWidth);
 
@@ -134,7 +135,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             data.Visual = dv;
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(m_pen, new System.Windows.Point(0d, offset), new System.Windows.Point(Canvas.ActualWidth, offset));
+            dc.DrawLine(m_pen, new System.Windows.Point(0d, offset), new System.Windows.Point(cWidth, offset));
             dc.Pop();
             dc.Close();
 
@@ -187,19 +188,20 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawColumn(double offset, LineData ld)
         {
+            var cHeight = Canvas.Height > Canvas.ActualHeight ? Canvas.Height : Canvas.ActualHeight;
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
             GuidelineSet guideSet = new GuidelineSet();
             guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
             guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
             guideSet.GuidelinesY.Add(0d + m_HalfPenWidth);
-            guideSet.GuidelinesY.Add(Canvas.ActualHeight + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(cHeight + m_HalfPenWidth);
 
             var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
             var dc = dv.RenderOpen();
             ld.Visual = dv;
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
+            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, cHeight));
             dc.Pop();
             dc.Close();
 
@@ -243,18 +245,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         protected override void M_canvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
-            if (e.HeightChanged)
-            {
-                var m_cHeight = e.NewSize.Height;
-            
-                if (m_cHeight > 0d)
-                {
-                    foreach (var data in m_columnsData)
-                    {
-                        DrawRow(data.Key, m_cHeight);
-                    }
-                }
-            }
+            //if (e.HeightChanged)
+            //{
+            //    var m_cHeight = e.NewSize.Height;
+            //
+            //    if (m_cHeight > 0d)
+            //    {
+            //        foreach (var data in m_columnsData)
+            //        {
+            //            DrawRow(data.Key, m_cHeight);
+            //        }
+            //    }
+            //}
             //if (e.WidthChanged)
             //{
             //    var m_cWidth = e.NewSize.Width;

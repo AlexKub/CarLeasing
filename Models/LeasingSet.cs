@@ -111,15 +111,19 @@ namespace CarLeasingViewer.Models
                     if (value != null)
                     {
                         MonthHeaderModel curentML = null;
+                        var daysCount = 0;
                         for (int i = 0; i < value.Count; i++)
                         {
                             curentML = value[i];
                             if (curentML != null)
                             {
+                                daysCount += curentML?.Month.DayCount ?? 0;
                                 curentML.Previous = (i - 1) >= 0 ? value[i - 1] : null;
                                 curentML.Next = (i + 1) < value.Count ? value[i + 1] : null;
                             }
                         }
+
+                        DaysCount = daysCount;
 
                         //простановка индекса колонок для Grid'а
                         GridIndexHelper.SetIndexes(value);
@@ -138,7 +142,20 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Возвращает или задаёт набор моделей авто для View
         /// </summary>
-        public IReadOnlyList<CarModel> CarModels { get { return m_CarModels; } set { m_CarModels = value; CarsChanged?.Invoke(new LeasingSetEventArgs(this)); OnPropertyChanged(); } }
+        public IReadOnlyList<CarModel> CarModels
+        {
+            get { return m_CarModels; }
+            set
+            {
+                m_CarModels = value;
+
+                //проставляем количество строк, на которые будут биндится модели
+                RowsCount = value == null ? 0 : value.Count;
+
+                CarsChanged?.Invoke(new LeasingSetEventArgs(this));
+                OnPropertyChanged();
+            }
+        }
 
         private IReadOnlyList<LeasingElementModel> pv_Leasings = new List<LeasingElementModel>();
         /// <summary>
@@ -151,11 +168,7 @@ namespace CarLeasingViewer.Models
             {
                 if (pv_Leasings != value)
                 {
-                    pv_Leasings = value;
-                    //GridIndexHelper.SetIndexes(value);
-
-                    //проставляем количество строк, на которые будут биндится модели
-                    var rowCount = 0;
+                    pv_Leasings = value;                    
 
                     if (value != null)
                     {
@@ -164,14 +177,8 @@ namespace CarLeasingViewer.Models
                         {
                             if (!distinctRowIndexes.Contains(leasing.RowIndex))
                                 distinctRowIndexes.Add(leasing.RowIndex);
-
-                            //leasing.Month = MonthHeader;
                         }
-
-                        rowCount = distinctRowIndexes.Count;
                     }
-
-                    RowsCount = rowCount;
 
                     OnPropertyChanged();
                 }

@@ -149,7 +149,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="200" MaxWidth="300" />
                     <ColumnDefinition MinWidth="300" />
-                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="{StaticResource ScrollBarWidth}" />
                 </Grid.ColumnDefinitions>
 
                 <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
