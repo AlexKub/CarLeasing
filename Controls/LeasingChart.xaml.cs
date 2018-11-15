@@ -314,6 +314,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public void Draw()
         {
+            //расчёт необходимых для отрисовки размеров контрола вручную
+            //var newSize = CalculateSize();
+            //Width = newSize.Width;
+            //Height = newSize.Height;
+
             m_children.Clear();
 
             ClearManagers();
@@ -497,6 +502,35 @@ namespace CarLeasingViewer.Controls
                             m_children.Add(dv);
                 }
             }
+        }
+
+        /// <summary>
+        /// Расчёт размера контрола
+        /// </summary>
+        /// <returns>Возвращает новый размер</returns>
+        Size CalculateSize()
+        {
+            /*
+             * т.к. отрисовка элементов не всегда происходит после определения размера
+             * 
+             * иногда отрисовка идёт до расчёта нового размера движком
+             * в результате чего, ActualWidth, что используется при расчётах, не корректный
+             * 
+             * решил делать расчёт размеров самостоятельно перед каждой отрисовкой
+             */
+
+            var size = new Size();
+            if (m_set == null || m_set.DaysCount == 0)
+                return size;
+
+            size.Width = m_set.DaysCount * DayColumnWidth;
+
+            if (m_set.RowsCount == 0)
+                return size;
+
+            size.Height = m_set.RowsCount * RowHeight;
+
+            return size;
         }
 
         #region Mouse handlers

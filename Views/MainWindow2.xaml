@@ -11,7 +11,7 @@
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
         mc:Ignorable="d"
-        Title="Загрузка ТС" Height="450" Width="700" MinWidth="900"
+        Title="Загрузка ТС" Height="450" Width="700" MinWidth="1000"
         d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
     <Window.Resources>
         <!-- Ширина(высота) ScrollBar'a -->
@@ -149,7 +149,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="200" MaxWidth="300" />
                     <ColumnDefinition MinWidth="300" />
-                    <ColumnDefinition Width="0" />
+                    <ColumnDefinition Width="20" />
                 </Grid.ColumnDefinitions>
 
                 <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Fill="{StaticResource LightBorderBrush}" MouseEnter="Grid_MouseEnter"/>
@@ -179,10 +179,10 @@
                 </Border>
 
                 <!-- График занятости -->
-                <Border Grid.Column="1" Grid.Row="{StaticResource ChartRowIndex}" Grid.RowSpan="2" Margin="-1 0 0 0">
+                <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="{StaticResource ChartRowIndex}" Grid.RowSpan="2" Margin="-1 0 0 -1">
                     <ScrollViewer Name="LeasingScroll" 
                           CanContentScroll="False" 
-                          VerticalScrollBarVisibility="Hidden" 
+                          VerticalScrollBarVisibility="Visible" 
                           HorizontalScrollBarVisibility="Visible" 
                               ScrollChanged="LeasingScroll_ScrollChanged"
                               SizeChanged="LeasingScroll_SizeChanged">
@@ -252,7 +252,7 @@
                 
 
                 <!-- Комментарии -->
-                <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource GridBorderBrush}">
+                <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource GridBorderBrush}" Visibility="Collapsed">
                     <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
                         <ItemsControl ItemsSource="{Binding Comments, UpdateSourceTrigger=PropertyChanged}">
                             <ItemsControl.Resources>
