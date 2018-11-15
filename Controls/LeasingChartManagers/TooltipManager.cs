@@ -216,29 +216,34 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //копипаста из BussinessDateConverter (старая версия)
             StringBuilder sb = new StringBuilder();
             //<действие> c XX по ХХ <месяц>
-            sb.Append("в прокате ").Append(" c ");
+            string inline = "    ";
+            sb.AppendLine("В аренде:").Append(inline).Append("c ");
 
             var b = model.Leasing;
-            if (b.MonthCount < 2) //для одного месяца
-                sb.Append(b.DateStart.Day.ToString())
-                    //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty)
-                    .Append(" ")
-                    //.Append(b.DateStart.Month == b.DateEnd.Month ? "" : b.DateStart.GetMonthName() + " ")
-                    .Append(b.DateStart.TimeOfDay.Hours > 0 ? b.DateStart.TimeOfDay.ToString(@"hh\:mm") : string.Empty).Append(" ")
-                    .Append("по ")
-                    .Append(b.DateEnd.Day.ToString())
-                    .Append(" ")
-                    .Append(b.DateEnd.GetMonthName() + " ")
-                    //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateEnd.Year.ToString() + " ") : string.Empty)
-                    .Append(b.DateEnd.TimeOfDay.ToString(@"hh\:mm")).Append(" ");
-            else //для нескольких месяцев 
+            //if (b.MonthCount < 2) //для одного месяца
+            //    sb.Append(b.DateStart.Day.ToString())
+            //        //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty)
+            //        .Append(" ")
+            //        .Append(b.DateEnd.Day.ToString()).Append(" ")
+            //        //.Append(b.DateStart.Month == b.DateEnd.Month ? "" : b.DateStart.GetMonthName() + " ")
+            //        .AppendLine(b.DateStart.TimeOfDay.Hours > 0 ? b.DateStart.TimeOfDay.ToString(@"hh\:mm") : string.Empty)
+            //        .Append(inline)
+            //        .Append("по ")
+            //        .Append(b.DateEnd.Day.ToString())
+            //        .Append(" ")
+            //        .Append(b.DateEnd.GetMonthName()).Append(" ")
+            //        //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateEnd.Year.ToString() + " ") : string.Empty)
+            //        .Append(b.DateEnd.TimeOfDay.Hours > 0 ? b.DateEnd.TimeOfDay.ToString(@"hh\:mm") : string.Empty).Append(" ");
+            //else //для нескольких месяцев 
                 sb.Append(b.DateStart.Day.ToString()).Append(" ")
                     .Append(b.DateStart.GetMonthName()).Append(" ")
-                    .Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty) //добавляем год к начальному числу, если начало за графиком
-                    .Append(b.DateStart.TimeOfDay.ToString(@"hh\:mm")).Append(" ")
-                    .Append(" по ")
+                    .Append(b.DateStart.Year.ToString()).Append(" ")
+                    .AppendLine(b.DateStart.TimeOfDay.Hours > 0 ? b.DateStart.TimeOfDay.ToString(@"hh\:mm") : string.Empty)
+                    .Append(inline)
+                    .Append("по ")
                     .Append(b.DateEnd.Day.ToString()).Append(" ")
                     .Append(b.DateEnd.GetMonthName()).Append(" ")
+                    .Append(b.DateEnd.Year.ToString()).Append(" ")
                     .Append(b.DateEnd.TimeOfDay.Hours > 0 ? b.DateEnd.TimeOfDay.ToString(@"hh\:mm") : string.Empty);
 
             return sb.ToString();
