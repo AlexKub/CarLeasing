@@ -81,8 +81,11 @@ namespace CarLeasingViewer.Views
             LeasingChart.VisibleArea.ChartHeight = LeasingChart.ActualHeight;
             LeasingChart.VisibleArea.ChartWith = LeasingChart.ActualWidth;
 
-            LeasingChart.Draw();
+            //перерисовка графика теперь в OnActivated
+            //LeasingChart.Draw();
         }
+
+        #region Общий скролл для каждой из областей
 
         private void LeasingScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
@@ -109,6 +112,8 @@ namespace CarLeasingViewer.Views
             CommentsColumnScroll.ScrollToVerticalOffset(e.VerticalOffset);
         }
 
+        #endregion
+
         protected override void OnClosing(CancelEventArgs e)
         {
             var vm = DataContext as LeasingViewViewModel;
@@ -130,6 +135,8 @@ namespace CarLeasingViewer.Views
 
             vm.Update();
         }
+
+        #region Подсветка строк при наведении мышью
 
         private void TextBlock_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
@@ -169,6 +176,8 @@ namespace CarLeasingViewer.Views
             LeasingChart.HightlightManager.UnHightlightAll();
         }
 
+        #endregion
+
         private void LeasingScroll_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
@@ -194,19 +203,25 @@ namespace CarLeasingViewer.Views
 
             if (vm != null)
             {
+                var s = new StatisticModel();
+
                 if (row.Selected)
-                {
-                    var s = new StatisticModel();
+                    //отображение статистики по выбранной строке
                     s.Load(row, vm.LeasingSet);
-                    vm.Statistic = s;
-                }
                 else
-                {
-                    var s = new StatisticModel();
-                    s.Load(vm.LeasingSet);
-                    vm.Statistic = s;
-                }
+                    //отображение статистики по текущему набору
+                    s.Load(vm.LeasingSet);   
+
+                vm.Statistic = s;
             }
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            //перерисовка статистики при разворачивании
+            LeasingChart.Draw();
         }
     }
 }
