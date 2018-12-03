@@ -198,8 +198,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //получаем размеры пустой области для текста на полоске
             //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
             var emptySpace = bd.Border.Type == Figure.FigureType.Rect
-                ? bd.Border.Width - 4 //для прямоугольников вычитаем по 2 пикселя с каждой стороны
-                : bd.Border.Width - 4 - DayColumnWidth; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
+                ? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
+                : bd.Border.Width - 4d - DayColumnWidth; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
 
             //флаг аренды на часть дня. 
             //Будет использован дважды, поэтому проверяем один раз тут
@@ -233,23 +233,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
             }
 
-            var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
-
             //отступ по горизонтали (дни)
-            var x = bd.HorizontalOffset
-                //центровка на полоске
-                + (bd.Border.Type == Figure.FigureType.Rect
-                ? ((bd.Border.Width - textRect.Width) / 2) //для обычных прямоугольников располагаем по центру
-
-                //для усечённых прямоугольников
-                : ((bd.Border.Width - textRect.Width) / 2)
-                    //если аренда на часть дня
-                    + ((bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
-                        ? 3 //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
-                        : m_halfColumnWidth)); //если место есть, смещаем немного правее, чтобы буквы не вылезали
+            var x = GetHorizontalOffset(bd, ft);
 
             var y = bd.VerticalOffset //отступ по вертикали (строки)
-                + (Canvas.RowHeight > FontSize ? ((Canvas.RowHeight - FontSize) / 2) : 0); //центровка текста по вертикали
+                + (Canvas.RowHeight > FontSize ? ((Canvas.RowHeight - FontSize) / 2d) : 0d); //центровка текста по вертикали
 
             //точные координаты начала текста на Canvas
             Point origin = new Point(x, y);
@@ -262,6 +250,39 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dc.Close();
 
             return dv;
+        }
+
+        double GetHorizontalOffset(BarData bd, FormattedText ft)
+        {
+            var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
+
+            if (bd.Border.Type == Figure.FigureType.Rect)
+                //для обычных прямоугольников располагаем по центру
+                return bd.HorizontalOffset + ((bd.Border.Width - textRect.Width) / 2d);
+
+            //для усечённых прямоугольников
+            else
+            {
+                //для обрезанных слева - двигаем вправо
+                return bd.HorizontalOffset + GetGeometryOffset(bd, textRect);
+            }
+        }
+        /// <summary>
+        /// Получение смещения текста для усеченных прямоугольников
+        /// </summary>
+        /// <param name="bd">Данные отрисованно полоски</param>
+        /// <param name="textRect">Геометрия отрисовываемого текста</param>
+        /// <returns></returns>
+        double GetGeometryOffset(BarData bd, Size textRect)
+        {
+            var midle = ((bd.Border.Width - textRect.Width) / 2d);
+            var offset = ((bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
+                        ? 3d //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
+                        : m_halfColumnWidth); //если место есть, смещаем немного правее, чтобы буквы не вылезали
+
+            return bd.Border.PathType == CanvasBarDrawManager.DrawPathType.Geometry_R
+                ? midle - offset
+                : midle + offset;
         }
 
         GlyphTypeface GetGlyphTypeface()

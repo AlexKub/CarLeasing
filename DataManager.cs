@@ -80,7 +80,7 @@ namespace CarLeasingViewer
                     if (leasingBarModels[index] == null)
                         leasingBarModels[index] = new List<LeasingElementModel>();
 
-                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel() { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex }));
+                    leasingBarModels[index].AddRange(item.Business.Select(b => new LeasingElementModel(null) { Leasing = b, RowIndex = car == null ? 0 : car.RowIndex }));
                 }
                 index++;
             }

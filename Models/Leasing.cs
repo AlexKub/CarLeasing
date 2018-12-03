@@ -37,7 +37,7 @@ namespace CarLeasingViewer.Models
 
         public bool Cross(DateTime start, DateTime end)
         {
-            return (DateStart <= start) && (end <= DateEnd);
+            return !((DateStart > end) || (DateEnd < start));
         }
 
         public int MonthCount

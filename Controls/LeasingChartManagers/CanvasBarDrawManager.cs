@@ -103,26 +103,48 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         {
             var startDay = bd.Model.Leasing.DateStart.Date;
 
-            bool drawGeo = false;
-            foreach (var item in Canvas.RowManager[bd.Index].Bars)
+            DrawPathType pathType = DrawPathType.Rectangle;
+
+            var set = bd?.Model?.Set;
+
+            if (set != null && set.Sorted)
             {
-                if (item.Model != null)
-                    if (item.Model.Leasing.DateEnd.Date == startDay)
-                    {
-                        drawGeo = true;
-                        break;
-                    }
+                //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
+                //в таком случае нужно показать, что машина занята частично и нарисовать скос
+                if (set.DateStart.Date == bd.Model.Leasing.DateEnd.Date)
+                    pathType = DrawPathType.Geometry_R;
             }
+            else
+                foreach (var item in Canvas.RowManager[bd.Index].Bars)
+                {
+                    if (item.Model != null)
+                        if (item.Model.Leasing.DateEnd.Date == startDay)
+                        {
+                            //рисуем скос у накладывающихся друг на друга сроков аренды
+                            //когда машину сдают и берут в тот же день
+                            pathType = DrawPathType.Geometry_L;
+                            break;
+                        }
+                }
 
             var brush = bd.Model.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
-                if (drawGeo)
-                    DrawGeometry(dc, bd, brush);
-                else
-                    DrawRect(dc, bd, brush);
+                switch(pathType)
+                {
+                    case DrawPathType.Rectangle:
+                        DrawRect(dc, bd, brush); //обычный прямоугольник
+                        break;
+                    case DrawPathType.Geometry_L:
+                        DrawGeometry(dc, bd, brush, true); //обрезка слева
+                        break;
+                    case DrawPathType.Geometry_R:
+                        DrawGeometry(dc, bd, brush, false); //обрезка справа
+                        break;
+                }
 
+                bd.Bar.PathType = pathType;
                 dc.Close();
             }
 
@@ -144,13 +166,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guidelines.GuidelinesX.Add(rect.Right + m_halfPenWidth);
             guidelines.GuidelinesY.Add(rect.Top + m_halfPenWidth);
             guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
-            
+
             dc.PushGuidelineSet(guidelines);
             dc.DrawRectangle(brush, Pen, rect);
             dc.Pop();
         }
 
-        void DrawGeometry(DrawingContext dc, BarData bd, Brush brush)
+        void DrawGeometry(DrawingContext dc, BarData bd, Brush brush, bool left)
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
@@ -164,12 +186,20 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var s = new LineSegment(new Point(end.X, start.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = new LineSegment(new Point(end.X, end.Y), true);
+            s = left 
+                ? new LineSegment(new Point(end.X, end.Y), true)
+                : new LineSegment(new Point(end.X - Canvas.DayColumnWidth, end.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true);
+            s = left 
+                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
+                : new LineSegment(new Point(start.X, end.Y), true);
             s.Freeze();
-            pf.Segments.Add(new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true));
+            s = left
+                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
+                : new LineSegment(new Point(start.X, end.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
             s = new LineSegment(new Point(start.X, start.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
@@ -224,15 +254,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //если машину взяли/вернули в течении 1 месяца
             if (b.MonthCount == 1)
             {
-                dayCount += ((b.DateEnd - b.DateStart).Days + 1);
+                dayCount += ((b.DateEnd.Date - b.DateStart.Date).Days + 1);
             }
             //если машина взята в аренду на несколько месяцев
             else
             {
                 var firstMonth = periodMonthes.First();
 
-                var startDate = b.DateStart;
-                var endDate = b.DateEnd;
+                var startDate = b.DateStart.Date;
+                var endDate = b.DateEnd.Date;
 
                 //если съём начался за пределами первого месяца в выбранном периоде
                 if (firstMonth > b.DateStart.GetMonth())
@@ -374,7 +404,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return offset;
         }
 
-        
+
 
         /// <summary>
         /// Данные для отрисовки полоски
@@ -471,6 +501,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 public FigureType Type { get { return m_type; } }
 
                 /// <summary>
+                /// Тип кривой, описывающей фигуру
+                /// </summary>
+                public DrawPathType PathType { get; set; }
+
+                /// <summary>
                 /// Проверка пересечения фигур
                 /// </summary>
                 /// <param name="f">Другая фигура</param>
@@ -548,6 +583,24 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        /// <summary>
+        /// Типы отрисовываемых кривых
+        /// </summary>
+        public enum DrawPathType
+        {
+            /// <summary>
+            /// Прямоугольник
+            /// </summary>
+            Rectangle,
+            /// <summary>
+            /// Скос слева
+            /// </summary>
+            Geometry_L,
+            /// <summary>
+            /// Скос справа
+            /// </summary>
+            Geometry_R
+        }
 
     }
 }

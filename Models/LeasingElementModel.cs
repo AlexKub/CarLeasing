@@ -13,6 +13,13 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string ElementID { get; internal set; }
 
+        /// <summary>
+        /// Набор, к которому принадлежит элемент
+        /// </summary>
+        public LeasingSet Set { get; private set; }
+
+        #region Notify properties
+
         private MonthHeaderModel pv_Month;
         /// <summary>
         /// Возвращает или задаёт Модель месяцА, с которым связана текущая Аренда
@@ -78,10 +85,17 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string CarName { get { return pv_CarName; } set { if (pv_CarName != value) { pv_CarName = value; OnPropertyChanged(); } } }
 
+        #endregion
+
         /// <summary>
         /// Вовзращает видимое количество дней
         /// </summary>
         public int VisibleDaysCount { get; private set; }
+
+        public LeasingElementModel(LeasingSet set)
+        {
+            Set = set;
+        }
 
         #region IIndexable
 
@@ -95,7 +109,7 @@ namespace CarLeasingViewer.Models
             CalculateWidth(pv_Leasing);
 
             if (Leasing != null)
-                DaysCount = (Leasing.DateEnd - Leasing.DateStart).Days + 1;
+                DaysCount = (Leasing.DateEnd.Date - Leasing.DateStart.Date).Days + 1;
             else
                 DaysCount = 0;
 
@@ -124,7 +138,7 @@ namespace CarLeasingViewer.Models
                                 //реальный срок аренды: 2 мес. (январь февраль); 
                                 //видимый срок аренды: 1 мес. (февраль) <-- интересует это, т.к. параметр используется при расчёте отрисовки текста на полосках
                                 //видимый срок аренды - длина полоски, которую видит пользователь (сколько букв поместится).
-                                VisibleDaysCount = (Leasing.DateEnd - firstVisibleMonth.FirstDate).Days + 1;
+                                VisibleDaysCount = (Leasing.DateEnd.Date - firstVisibleMonth.FirstDate).Days + 1;
                                 return;
                             }
                     }
@@ -189,13 +203,13 @@ namespace CarLeasingViewer.Models
             //если машину взяли/вернули в течении 1 месяца
             if (b.MonthCount == 1)
             {
-                dayCount += (b.DateEnd - b.DateStart).Days;
+                dayCount += (b.DateEnd.Date - b.DateStart.Date).Days;
             }
             //если машина взята в аренду на несколько месяцев
             else
             {
-                var startDate = b.DateStart;
-                var endDate = b.DateEnd;
+                var startDate = b.DateStart.Date;
+                var endDate = b.DateEnd.Date;
 
                 //если съём начался за пределами первого месяца в выбранном периоде
                 if (b.Monthes[0] > b.DateStart.GetMonth())
@@ -250,7 +264,7 @@ namespace CarLeasingViewer.Models
         /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
         public LeasingElementModel Clone()
         {
-            var newInstance = new LeasingElementModel();
+            var newInstance = new LeasingElementModel(Set);
             newInstance.pv_CarName = pv_CarName;
             newInstance.pv_Width = pv_Width;
             newInstance.pv_Month = pv_Month;
