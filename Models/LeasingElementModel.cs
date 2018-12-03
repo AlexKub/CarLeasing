@@ -30,7 +30,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Возвращает или задаёт Месяца, к которым принадлежит текущая аренда
         /// </summary>
-        public MonthHeaderModel[] Monthes { get { return pv_Monthes; } set { pv_Monthes = value; SetVisibleCount(); OnPropertyChanged(); } }
+        public MonthHeaderModel[] Monthes { get { return pv_Monthes; } set { pv_Monthes = value; OnPropertyChanged(); } }
 
         private Leasing pv_Leasing;
         /// <summary>
@@ -115,6 +115,8 @@ namespace CarLeasingViewer.Models
 
             if (DaysCount < 0)
                 DaysCount = 0;
+
+            SetVisibleCount();
         }
 
         void SetVisibleCount()
@@ -126,9 +128,10 @@ namespace CarLeasingViewer.Models
                 var lMonthes = Leasing?.Monthes;
                 if (lMonthes != null && lMonthes.Length > 1)
                 {
-                    if (Monthes.Length > 0)
+                    var setMonthes = Set?.Monthes;
+                    if (setMonthes != null && setMonthes.Count > 0)
                     {
-                        var firstVisibleMonth = Monthes[0]?.OwnerSet?.Monthes?.FirstOrDefault()?.Month;
+                        var firstVisibleMonth = setMonthes.FirstOrDefault()?.Month;
 
                         if (firstVisibleMonth != null)
                             if (Leasing.DateStart.GetMonth() < firstVisibleMonth)
@@ -139,6 +142,8 @@ namespace CarLeasingViewer.Models
                                 //видимый срок аренды: 1 мес. (февраль) <-- интересует это, т.к. параметр используется при расчёте отрисовки текста на полосках
                                 //видимый срок аренды - длина полоски, которую видит пользователь (сколько букв поместится).
                                 VisibleDaysCount = (Leasing.DateEnd.Date - firstVisibleMonth.FirstDate).Days + 1;
+
+                                //возвращаемся, чтобы не сбросить полученное значение
                                 return;
                             }
                     }
@@ -273,6 +278,7 @@ namespace CarLeasingViewer.Models
             newInstance.pv_Leasing = pv_Leasing;
             newInstance.pv_DaysCount = pv_DaysCount;
             newInstance.pv_Monthes = pv_Monthes;
+            newInstance.VisibleDaysCount = VisibleDaysCount;
 
             return newInstance;
         }
