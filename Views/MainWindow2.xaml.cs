@@ -190,11 +190,19 @@ namespace CarLeasingViewer.Views
             if (subscribe)
             {
                 LeasingChart.RowSelectionChanged += LeasingChart_RowSelectionChanged;
+                Activated += MainWindow2_Activated;
             }
             else
             {
                 LeasingChart.RowSelectionChanged -= LeasingChart_RowSelectionChanged;
+                Activated -= MainWindow2_Activated;
             }
+        }
+
+        private void MainWindow2_Activated(object sender, EventArgs e)
+        {
+            //перерисовка статистики при разворачивании
+            LeasingChart.Draw();
         }
 
         private void LeasingChart_RowSelectionChanged(RowManager.Row row)
@@ -216,12 +224,5 @@ namespace CarLeasingViewer.Views
             }
         }
 
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-
-            //перерисовка статистики при разворачивании
-            LeasingChart.Draw();
-        }
     }
 }
