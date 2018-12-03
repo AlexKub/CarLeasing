@@ -254,7 +254,7 @@ namespace CarLeasingViewer.Models
 
             #endregion
 
-            Width = (pv_DayColumnWidth * dayCount) + dayCount; //прибавляем количество дней, т.к. ширина границ - 1
+            Width = (pv_DayColumnWidth * dayCount) + (dayCount * AppStyles.ColumnWidth); //плюс ширины границ
         }
 
         string DebugDisplay()
