@@ -98,7 +98,8 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public void UpdatePrice()
         {
-
+            if (!App.SearchSettings.TestData)
+                Price = DB_Manager.Default.GetCarPrice(pv_Car);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static CarLeasingViewer.Controls.LeasingChartManagers.RowManager;
 
 namespace CarLeasingViewer.Models
@@ -55,6 +56,33 @@ namespace CarLeasingViewer.Models
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
             items.Add(new StatisticItemModel("Общее время аренды", leasingCount.ToString() + " дн."));
             items.Add(new StatisticItemModel("% загрузки", Math.Round((leasingCount / loadPercent), 2).ToString() + " %"));
+
+            var model = row.Car;
+
+            if (model != null)
+            {
+                //получаем свежую цену из БД
+                model.UpdatePrice();
+
+                //если указана цена
+                if (!(model?.Price.IsNullOrEmpty() ?? false))
+                {
+                    var price = row.Car.Price;
+
+                    const string format = "F2";
+
+                    Func<decimal, string> convert = (p) => { return p.ToString(format) + " р."; };
+
+                    if (price.Day != decimal.Zero)
+                        items.Add(new StatisticItemModel("От 1 до 2 дней", convert(price.Day)));
+
+                    if (price.Week != decimal.Zero)
+                        items.Add(new StatisticItemModel("От 3 до 6 дней", convert(price.Week)));
+
+                    if (price.Long != decimal.Zero)
+                        items.Add(new StatisticItemModel("Более 7 дней", convert(price.Long)));
+                }
+            }
 
             Items = items;
         }

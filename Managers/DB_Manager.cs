@@ -416,6 +416,84 @@ namespace CarLeasingViewer
             return cars;
         }
 
+        /// <summary>
+        /// Получение текущей цены на машину
+        /// </summary>
+        /// <param name="car">Машина</param>
+        /// <returns>Возвращает цены на переданную машину или ссылку по умолчанию</returns>
+        public CarPriceList GetCarPrice(Car car)
+        {
+            if (car == null)
+                return CarPriceList.Default;
+
+            try
+            {
+                var sql = $@"DECLARE @defultDate AS Datetime = '1753-01-01 00:00:00'
+                            SELECT
+                                  [Minimum Quantity] AS Quantity
+                                  ,[Unit Price] AS Price
+                              FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales Price] AS p
+                            	WHERE p.[Ending Date] = @defultDate
+                            		AND p.[Item No_] = '{car.No}'";
+
+                using (var con = new SqlConnection(m_connectionString))
+                {
+                    var com = new SqlCommand(sql);
+                    com.Connection = con;
+
+                    con.Open();
+
+                    using (var reader = com.ExecuteReader())
+                    {
+                        CarPriceList price = null;
+                        decimal val;
+                        int quantity;
+                        var values = new decimal[3];
+
+                        //получаем 3 строки с Срок | Цена
+                        while (reader.Read())
+                        {
+                            if (price == null)
+                                price = CarPriceList.Default;
+
+                            //считываем срок (1, 3 или 7)
+                            quantity = (int)(decimal)reader["Quantity"];
+                            
+                            val = (decimal)reader["Price"];
+
+                            switch (quantity)
+                            {
+                                case 1:
+                                    //от 1 до 2 дней
+                                    values[0] = val;
+                                    break;
+                                case 3:
+                                    //от 3 до 6
+                                    values[1] = val;
+                                    break;
+                                case 7:
+                                    //от 7
+                                    values[2] = val;
+                                    break;
+                                default: //хрен знает что пришло
+                                    break;
+                            }
+                        }
+
+                        if (price != null)
+                            return new CarPriceList(values[0], values[1], values[2]);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                m_loger.Log("Возникло исключение при запросе цены на машину из БД", ex
+                    , new LogParameter("No_", car?.No));
+            }
+
+            return CarPriceList.Default;
+        }
+
         public IEnumerable<Region> GetRegions()
         {
             List<Region> regions = new List<Region>();

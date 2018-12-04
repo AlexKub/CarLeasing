@@ -86,5 +86,18 @@ namespace CarLeasingViewer
 
             return true;
         }
+
+        /// <summary>
+        /// Проверка калличия значений по ссылке на указанную цену
+        /// </summary>
+        /// <param name="price">Цена</param>
+        /// <returns>Возвращает наличие значений по указанной ссылке</returns>
+        public static bool IsNullOrEmpty(this CarPriceList price)
+        {
+            if (price == null)
+                return false;
+
+            return price.IsEmpty;
+        }
     }
 }

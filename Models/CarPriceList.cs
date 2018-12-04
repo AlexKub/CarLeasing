@@ -63,11 +63,9 @@
                 if (this == Default)
                     return true;
 
-                const decimal zero = 0m;
-
-                return Day == zero
-                    && Week == zero
-                    && Long == zero;
+                return Day == decimal.Zero
+                    && Week == decimal.Zero
+                    && Long == decimal.Zero;
             }
         }
 
@@ -124,6 +122,5 @@
 
             return $"{Day.ToString(format)} | {Week.ToString(format)} | {Long.ToString(format)}";
         }
-
     }
 }
