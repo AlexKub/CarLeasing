@@ -262,11 +262,18 @@ namespace CarLeasingViewer.Models
         List<CarModel> GetCarModels(IEnumerable<MonthBusiness> data)
         {
             var rowIndex = 0;
-            return data
+            var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => cb.Name)
+            .Select(cb => new { cb.Name, cb.ItemNo })
             .Distinct()
-            .Select(name => new CarModel() { Text = name, RowIndex = rowIndex++ }).ToList();
+            .Select(o => new CarModel() { Text = o.Name, Car = App.Cars.FirstOrDefault(c => c.No.Equals(o.ItemNo)) }).ToList();
+
+            var ordered = SortManager.OrderByPrice(notOrdered).ToList();
+
+            foreach (var model in ordered)
+                model.RowIndex = rowIndex++;
+
+            return ordered;
         }
 
         List<CarCommentModel> GetComments(IReadOnlyList<CarModel> cars)

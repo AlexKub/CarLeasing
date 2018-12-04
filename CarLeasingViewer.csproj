@@ -78,6 +78,7 @@
     <Compile Include="Converters\NegativeConverter.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
+    <Compile Include="Models\CarPriceList.cs" />
     <Compile Include="Models\LeasingElementID_Manager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasGridDrawManager.cs" />
@@ -128,14 +129,14 @@
     <Compile Include="Converters\NullableConverter.cs" />
     <Compile Include="Converters\StringValueVisibilityConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
-    <Compile Include="DataManager.cs" />
+    <Compile Include="Managers\DataManager.cs" />
     <Compile Include="DBSearchType.cs" />
-    <Compile Include="DB_Manager.cs" />
+    <Compile Include="Managers\DB_Manager.cs" />
     <Compile Include="Converters\TypeNameConverter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GridIndexHelper.cs" />
     <Compile Include="GridOrientation.cs" />
-    <Compile Include="IGridLengthManager.cs" />
+    <Compile Include="Managers\IGridLengthManager.cs" />
     <Compile Include="Interfaces\IIndexable.cs" />
     <Compile Include="Models\CarCommentModel.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -191,7 +192,7 @@
     <Compile Include="Models\TabItemModels\PeriodTabItem.cs" />
     <Compile Include="Models\TabItemModels\TabItemModel.cs" />
     <Compile Include="Randomizer.cs" />
-    <Compile Include="SortManager.cs" />
+    <Compile Include="Managers\SortManager.cs" />
     <Compile Include="ViewModels\LeasingViewViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

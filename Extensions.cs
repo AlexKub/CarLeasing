@@ -68,5 +68,23 @@ namespace CarLeasingViewer
             return index;
         }
 
+        /// <summary>
+        /// Проверка, что в коллекции есть хотя бы один элемент или она проинициализирована
+        /// </summary>
+        /// <typeparam name="T">Тип элементов в коллекции</typeparam>
+        /// <param name="collection">Коллекция элементов (допустим null)</param>
+        /// <returns>Возвращает флаг, что в коллекции присутсвует хотя бы один элемент</returns>
+        public static bool IsEmpty<T>(this IEnumerable<T> collection)
+        {
+            if (collection == null)
+                return true;
+
+            foreach (var item in collection)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -99,5 +99,40 @@ namespace CarLeasingViewer
 
             return task;
         }
+
+        /// <summary>
+        /// Сортировка моделей по цене аренды за 1 день в порядке возрастания
+        /// </summary>
+        /// <param name="notSorted">Набор моделей для сортировки</param>
+        /// <returns>Возвращает отсортированный или пустой набор</returns>
+        public static IEnumerable<CarModel> OrderByPrice(IEnumerable<CarModel> notSorted)
+        {
+            if (notSorted.IsEmpty())
+                return Enumerable.Empty<CarModel>();
+
+            //при тестовых данных нет информации о ценах из БД
+            //(т.к., собственно, не факт, что есть подключение к БД)
+            if (App.SearchSettings.TestData)
+                return Enumerable.Empty<CarModel>();
+
+            //получаем отсортированные стоимости машин
+            var priceOrder = DB_Manager.Default.GetDayPriceOrder();
+
+            foreach (var model in notSorted)
+            {
+                //для каждой машины находим её текущую 'дневную' цену 
+                var tuple = priceOrder.FirstOrDefault(t => model.Car != null && t.Item1.Equals(model.Car.No));
+
+                if (tuple != null)
+                {
+                    var price = model.Price;
+                    //обновляем ценники для сортировки
+                    model.Price = new CarPriceList(tuple.Item2, price.Week, price.Long);
+                }
+            }
+
+            //сортируем по минимальной цене
+            return notSorted.OrderBy(m => m.Price.Day).ToList();
+        }
     }
 }

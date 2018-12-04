@@ -52,6 +52,10 @@ namespace CarLeasingViewer
             }
         }
 
+        #region queries
+
+        
+
         /// <summary>
         /// Получение списка доступных методов
         /// </summary>
@@ -119,6 +123,7 @@ namespace CarLeasingViewer
             return monthes;
         }
 
+        [Obsolete("Перешёл на 'начальный-конечный' месяц")]
         public MonthBusiness GetBusinessByMonth(Month month, SearchSettings settings = null, Region region = null)
         {
             if (settings == null)
@@ -328,7 +333,7 @@ namespace CarLeasingViewer
             //добавляем не занятые авто
             AddFreeCars(carBusinesses);
 
-            var monthBusiness = new MonthBusiness(carBusinesses.OrderBy(cb => cb.Name));
+            var monthBusiness = new MonthBusiness(carBusinesses); //.OrderBy(cb => cb.Name)); сортировка теперь при выборке
             monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
 
             return monthBusiness;
@@ -351,18 +356,25 @@ namespace CarLeasingViewer
             List<Car> cars = new List<Car>();
             try
             {
-                var sql = $@"SELECT DISTINCT
+                var sql = $@"DECLARE @defultDate AS Datetime = '1753-01-01 00:00:00'
+                        SELECT DISTINCT
                           i.[No_] as ID
                         , i.[Description] as CarName
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked] as Blocked
+                        , p.[Unit Price] as Price
 
                          FROM Carlson$Item i
-                    WHERE 1 = 1
+                            LEFT JOIN [Carlson$Sales Price] p ON p.[Item No_] = i.No_
+                    
+                         WHERE 1 = 1
                            {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
-                            {((region == null || region.IsTotal) ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}";
+                            {((region == null || region.IsTotal) ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}
+                            AND p.[Minimum Quantity] = 1.0
+							AND p.[Ending Date] = @defultDate
+                        ORDER BY Price, ID";
 
                 using (var con = new SqlConnection(m_connectionString))
                 {
@@ -459,6 +471,56 @@ namespace CarLeasingViewer
 
             return regions;
         }
+
+        /// <summary>
+        /// Получение порядка цен на авто
+        /// </summary>
+        /// <returns>Возвращает набор [ID, Price]</returns>
+        public IEnumerable<Tuple<string, decimal>> GetDayPriceOrder()
+        {
+            List<Tuple<string, decimal>> prices = new List<Tuple<string, decimal>>();
+
+            try
+            {
+                var sql = @"DECLARE @defaultDate AS Datetime = '1753-01-01 00:00:00'
+
+                            SELECT
+                                  [Item No_] AS ID
+                                  ,[Unit Price] AS Price
+                              FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales Price] AS p
+                            	WHERE 1 = 1
+                            		AND [Minimum Quantity] = 1.0
+                            		AND p.[Ending Date] = @defaultDate
+                            		AND p.[Unit of Measure Code] = 'ДЕНЬ'
+                            		ORDER BY p.[Item No_]";
+
+                using (var con = new SqlConnection(m_connectionString))
+                {
+                    var com = new SqlCommand(sql);
+                    com.Connection = con;
+
+                    con.Open();
+
+                    using (var reader = com.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            prices.Add(new Tuple<string, decimal>((string)reader["ID"], (decimal)reader["Price"]));
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                m_loger.Log("Возникло исключение при запросе порядка цен на авто из БД", ex);
+            }
+
+            return prices;
+        }
+
+        #endregion
+
+        #region private        
 
         string GetAvailableMonthesQuery(SearchSettings settings, int year = 0)
         {
@@ -571,5 +633,7 @@ namespace CarLeasingViewer
                 }
             }
         }
+
+        #endregion
     }
 }

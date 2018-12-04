@@ -56,6 +56,12 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int MonthOffset { get { return pv_MonthOffset; } set { pv_MonthOffset = value; OnPropertyChanged(); } }
 
+        private CarPriceList pv_Price = CarPriceList.Default;
+        /// <summary>
+        /// Возвращает или задаёт Цену на машину
+        /// </summary>
+        public CarPriceList Price { get { return pv_Price; } set { pv_Price = value; OnPropertyChanged(); } }
+
         /// <summary>
         /// Индекс строки
         /// </summary>
@@ -88,10 +94,17 @@ namespace CarLeasingViewer.Models
         }
 
         /// <summary>
+        /// Обновление цены авто из БД
+        /// </summary>
+        public void UpdatePrice()
+        {
+
+        }
+
+        /// <summary>
         /// Новый экземпляр с теми же значениями свойств, кроме RowIndex
         /// </summary>
         /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
-
         public CarModel Clone()
         {
             var newInstance = new CarModel();
@@ -99,6 +112,7 @@ namespace CarLeasingViewer.Models
             newInstance.pv_Car = pv_Car;
             newInstance.pv_HightlightBrush = pv_HightlightBrush;
             newInstance.pv_MonthOffset = pv_MonthOffset;
+            newInstance.pv_Price = pv_Price;
 
             return newInstance;
         }
