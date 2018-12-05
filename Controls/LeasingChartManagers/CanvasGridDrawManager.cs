@@ -59,51 +59,20 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             if (height > 0d && Canvas.ActualWidth > 0) //если высота нулевая - нет смысла рисовать. Она всёравно сольётся с другой
             {
-                //if (rData.Drawed)
-                //{
-                //    //если изменилась высота уже отрисованной строки
-                //    if (!rData.EqualsHeight(height))
-                //    {
-                //        rData.Offset = height;
-                //
-                //        //проставляем высоты у всех следующих строк
-                //        var level = height; //общая высота текущей строки
-                //                            //расчитываем отдельно, чтобы в следующем цикле пользоваться константой
-                //        for (int i = 0; i < index; i++)
-                //        {
-                //            level += m_rowsData[i].Offset;
-                //        }
-                //
-                //        //проставляем дельту новой высоты для всех последующих отрисованных строк
-                //        for (int i = (index + 1); i < m_rowsData.Count; i++)
-                //        {
-                //            var d = m_rowsData[i];
-                //            if (d.Drawed)
-                //            {
-                //                level += d.Offset;
-                //                d.Line.Y1 = level;
-                //                d.Line.Y2 = level;
-                //            }
-                //        }
-                //    }
-                //}
-                //else //отрисовка линий на Canvas
-                //{
-                    if (index == 0)
+                if (index == 0)
+                {
+                    dv = DrawRow(height, rData); //первую строку просто рисуем
+                }
+                else
+                {
+                    //суммируем высоты всех предидущих строк
+                    for (int i = 0; i < index; i++)
                     {
-                        dv = DrawRow(height, rData); //первую строку просто рисуем
+                        height += m_rowsData[i].Offset;
                     }
-                    else
-                    {
-                        //суммируем высоты всех предидущих строк
-                        for (int i = 0; i < index; i++)
-                        {
-                            height += m_rowsData[i].Offset;
-                        }
 
-                        dv = DrawRow(height, rData);
-                    }
-                //}
+                    dv = DrawRow(height, rData);
+                }
             }
 
             return dv;

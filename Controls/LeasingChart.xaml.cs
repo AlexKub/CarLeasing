@@ -549,10 +549,11 @@ namespace CarLeasingViewer.Controls
 
             size.Width = (m_set.DaysCount * DayColumnWidth) + m_set.DaysCount;
 
-            if (m_set.RowsCount == 0)
+            var rCount = m_set.RowsCount;
+            if (rCount == 0)
                 return size;
 
-            size.Height = m_set.RowsCount * RowHeight;
+            size.Height = (rCount * RowHeight) + (rCount * AppStyles.GridLineWidth) + 1;
 
             return size;
         }
