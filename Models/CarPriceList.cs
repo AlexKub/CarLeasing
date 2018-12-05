@@ -23,7 +23,7 @@
                 switch (dayCount)
                 {
                     case 0:
-                        return 0m;
+                        return decimal.Zero;
                     case 1:
                     case 2:
                         return Day;
@@ -121,6 +121,19 @@
             const string format = "F2";
 
             return $"{Day.ToString(format)} | {Week.ToString(format)} | {Long.ToString(format)}";
+        }
+
+        /// <summary>
+        /// Проверка на соответствие цен
+        /// </summary>
+        /// <param name="price">Сравниваемая цена</param>
+        /// <returns>Возвращает соответствие переданной цены и текущей</returns>
+        public bool Equals(CarPriceList price)
+        {
+            return price != null
+                && price.Day == Day
+                && price.Week == Week
+                && price.Long == Long;
         }
     }
 }
