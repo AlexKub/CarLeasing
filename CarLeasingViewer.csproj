@@ -79,7 +79,6 @@
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
     <Compile Include="Models\CarPriceList.cs" />
-    <Compile Include="Models\LeasingElementID_Manager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasGridDrawManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasDrawManager.cs" />
@@ -87,32 +86,11 @@
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\SimpleCommand.cs" />
-    <Compile Include="Controls\BusinessTextBlock.xaml.cs">
-      <DependentUpon>BusinessTextBlock.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CachedTabControl.xaml.cs">
-      <DependentUpon>CachedTabControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\DynamicDefinitionsGrid.xaml.cs">
-      <DependentUpon>DynamicDefinitionsGrid.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\LeasingChart.xaml.cs">
       <DependentUpon>LeasingChart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\LineGrid.xaml.cs">
-      <DependentUpon>LineGrid.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MonthBusinessGrid.xaml.cs">
-      <DependentUpon>MonthBusinessGrid.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\MapedItemsContainer.xaml.cs">
-      <DependentUpon>MapedItemsContainer.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PeriodSelector.xaml.cs">
       <DependentUpon>PeriodSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\VerticalLineGrid.xaml.cs">
-      <DependentUpon>VerticalLineGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\WeekDaysPanel.xaml.cs">
       <DependentUpon>WeekDaysPanel.xaml</DependentUpon>
@@ -121,8 +99,6 @@
     <Compile Include="Converters\BussinessDateConverter.cs" />
     <Compile Include="Converters\EmptyCollectionVisibilityConverter.cs" />
     <Compile Include="Converters\IconToImageSourceConverter.cs" />
-    <Compile Include="Converters\LineColumnConverter.cs" />
-    <Compile Include="Converters\LineRowConverter.cs" />
     <Compile Include="Converters\MainTabItemSelector.cs" />
     <Compile Include="Converters\MonthesDaysCountConverter.cs" />
     <Compile Include="Converters\MonthLeasingsConverter.cs" />
@@ -140,7 +116,6 @@
     <Compile Include="Interfaces\IIndexable.cs" />
     <Compile Include="Models\CarCommentModel.cs" />
     <Compile Include="Models\CarModel.cs" />
-    <Compile Include="Models\LeasingElementsCollectionModel.cs" />
     <Compile Include="Models\LeasingElementModel.cs" />
     <Compile Include="Models\LeasingSet.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
@@ -176,7 +151,6 @@
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\CarBusiness.cs" />
     <Compile Include="Models\Day.cs" />
-    <Compile Include="Models\GridMap.cs" />
     <Compile Include="Models\Month.cs" />
     <Compile Include="Models\Monthes.cs" />
     <Compile Include="Models\MonthBusiness.cs" />
@@ -196,36 +170,12 @@
     <Compile Include="ViewModels\LeasingViewViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Views\MainWindow2.xaml.cs">
-      <DependentUpon>MainWindow2.xaml</DependentUpon>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisibleArea.cs" />
     <Compile Include="XamlExtensions\StickyScrollHeader.cs" />
-    <Page Include="Controls\BusinessTextBlock.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\CachedTabControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\DynamicDefinitionsGrid.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\LeasingChart.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\LineGrid.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MonthBusinessGrid.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MapedItemsContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -233,24 +183,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\VerticalLineGrid.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\WeekDaysPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ResourceDictionaries\Colors.xaml">
@@ -265,7 +203,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MainWindow2.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

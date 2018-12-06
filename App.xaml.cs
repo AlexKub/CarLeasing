@@ -63,9 +63,9 @@ namespace CarLeasingViewer
             //    new FrameworkPropertyMetadata { DefaultValue = 25 } );
         }
 
-        public static MainWindow2 GetMainWindow()
+        public static MainWindow GetMainWindow()
         {
-            return App.Current.MainWindow as MainWindow2;
+            return App.Current.MainWindow as MainWindow;
         }
 
         /// <summary>

@@ -36,11 +36,21 @@ namespace CarLeasingViewer
             return min;
         }
 
+        /// <summary>
+        /// Получение месяца из даты
+        /// </summary>
+        /// <param name="date">Дата</param>
+        /// <returns>Возвращает соответствующий месяц</returns>
         public static Month GetMonth(this DateTime date)
         {
             return new Month(date);
         }
 
+        /// <summary>
+        /// Получение русского имени месяца для даты
+        /// </summary>
+        /// <param name="date">Дата</param>
+        /// <returns>Возвращает соответствующее имя месяца</returns>
         public static string GetMonthName(this DateTime date)
         {
             return Month.GetRussianName((Monthes)date.Month);

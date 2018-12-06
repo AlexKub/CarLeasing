@@ -7,7 +7,7 @@ namespace CarLeasingViewer.ViewModels
 {
     public class LeasingViewViewModel : ViewModelBase, IDisposable
     {
-        Views.MainWindow2 m_Window;
+        Views.MainWindow m_Window;
 
         private Month m_FromMonth;
         /// <summary>
@@ -41,16 +41,14 @@ namespace CarLeasingViewer.ViewModels
         /// </summary>
         public StatisticModel Statistic { get { return pv_Statistic; } set { if (pv_Statistic != value) { pv_Statistic = value; OnPropertyChanged(); } } }
 
-        public Views.MainWindow2 Window { get { return m_Window; } set { m_Window = value; } }
+        public Views.MainWindow Window { get { return m_Window; } set { m_Window = value; } }
 
         public LeasingViewViewModel() { }
 
-        public LeasingViewViewModel(Views.MainWindow2 window)
+        public LeasingViewViewModel(Views.MainWindow window)
         {
             m_Window = window;
         }
-
-        #region Obsolet properties
 
         private IReadOnlyList<CarModel> pv_Cars;
         /// <summary>
@@ -98,8 +96,6 @@ namespace CarLeasingViewer.ViewModels
         /// Возвращает или задаёт набор Комментариев к машинам
         /// </summary>
         public IReadOnlyList<CarCommentModel> Comments { get { return pv_Comments; } set { if (pv_Comments != value) { pv_Comments = value; GridIndexHelper.SetIndexes(value); OnPropertyChanged(); } } }
-
-        #endregion
 
         private LeasingSet m_LeasingSet = new LeasingSet();
         /// <summary>

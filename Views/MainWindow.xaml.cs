@@ -11,9 +11,9 @@ namespace CarLeasingViewer.Views
     /// <summary>
     /// Interaction logic for MainWindow2.xaml
     /// </summary>
-    public partial class MainWindow2 : Window
+    public partial class MainWindow : Window
     {
-        public MainWindow2()
+        public MainWindow()
         {
             var vm = new LeasingViewViewModel(this);
 
@@ -62,7 +62,7 @@ namespace CarLeasingViewer.Views
 
             Loaded += MainWindow2_Loaded;
         }
-        public MainWindow2(LeasingViewViewModel vm)
+        public MainWindow(LeasingViewViewModel vm)
         {
             vm.Window = this;
             DataContext = vm;

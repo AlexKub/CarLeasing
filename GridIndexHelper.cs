@@ -8,6 +8,12 @@ namespace CarLeasingViewer
     /// </summary>
     static class GridIndexHelper
     {
+
+        /// <summary>
+        /// Простановка индексов строк и колонок для коллекций
+        /// </summary>
+        /// <typeparam name="T">Тип значений в коллекции</typeparam>
+        /// <param name="indexableCollection">Индексируемая коллекция</param>
         public static void SetIndexes<T>(IEnumerable<T> indexableCollection) 
             where T : IIndexable
         {
