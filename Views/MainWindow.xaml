@@ -219,44 +219,52 @@
                     <Border.BorderThickness>
                         <Thickness Bottom="0" 
                                    Left="{x:Static local:AppStyles.GridLineWidth}" 
-                                   Right="{x:Static local:AppStyles.GridLineWidth}" 
+                                   Right="0" 
                                    Top="{x:Static local:AppStyles.GridLineWidth}"/>
                     </Border.BorderThickness>
-                    <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged">
-                        <ItemsControl ItemsSource="{Binding CarModels, UpdateSourceTrigger=PropertyChanged}">
-                            <ItemsControl.Resources>
-                                <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
-                                <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="0"/>
-                            </ItemsControl.Resources>
-                            <ItemsControl.ItemContainerStyle>
-                                <Style>
-                                    <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
-                                </Style>
-                            </ItemsControl.ItemContainerStyle>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border d:DataContext="{d:DesignInstance models:CarModel}"
+                    <ScrollViewer Name="CarColumnScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CarColumnScroll_ScrollChanged" >
+                        <Border BorderBrush="{StaticResource GridBorderBrush}" VerticalAlignment="Top">
+                            <Border.BorderThickness>
+                                <Thickness Bottom="0" 
+                                   Left="0" 
+                                   Right="{x:Static local:AppStyles.GridLineWidth}" 
+                                   Top="0"/>
+                            </Border.BorderThickness>
+                            <ItemsControl ItemsSource="{Binding CarModels, UpdateSourceTrigger=PropertyChanged}" >
+                                <ItemsControl.Resources>
+                                    <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
+                                    <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="0"/>
+                                </ItemsControl.Resources>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style>
+                                        <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border d:DataContext="{d:DesignInstance models:CarModel}"
                                             Style="{StaticResource ItemBorderStyle}" 
                                             Background="{Binding HightlightBrush}" 
                                             MouseMove="TextBlock_MouseMove" 
                                             MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" 
                                             PreviewMouseRightButtonUp="TextBlock_MouseRightButtonUp">
-                                        <Grid >
-                                            <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
-                                            
-                                            <!-- квадратик для индикации "блокированных" -->
-                                            <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            <Grid >
+                                                <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
+
+                                                <!-- квадратик для индикации "блокированных" -->
+                                                <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта" HorizontalAlignment="Right" VerticalAlignment="Top"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
                     </ScrollViewer>
                 </Border>
 

@@ -15,6 +15,11 @@ namespace CarLeasingViewer.Views
     {
         LeasingViewViewModel m_viewModel;
 
+        /// <summary>
+        /// Костыль для отключения автообновления при тесте
+        /// </summary>
+        bool m_firstLoad = false;
+
         public MainWindow()
         {
             m_viewModel = new LeasingViewViewModel();
@@ -193,7 +198,7 @@ namespace CarLeasingViewer.Views
 
         private void M_viewModel_SetChanged(LeasingSetEventArgs e)
         {
-            if(e.New != null)
+            if (e.New != null)
             {
                 e.New.Chart = LeasingChart;
 
@@ -205,6 +210,17 @@ namespace CarLeasingViewer.Views
 
         private void MainWindow2_Activated(object sender, EventArgs e)
         {
+            //отключаем в тест_моде, а то дебажить невозможно
+            //каждый раз при переходе в Студию окно перерисовывается
+            if (App.TestMode)
+            {
+                if (!m_firstLoad)
+                    //для первой загрузки включаем, т.к. необходимо проверить отрисовку при свёрнутом окне
+                    m_firstLoad = true;
+                else
+                    return;
+            }
+
             m_viewModel.Update();
 
             //перерисовка статистики при разворачивании
@@ -224,7 +240,7 @@ namespace CarLeasingViewer.Views
                     s.Load(row, vm.LeasingSet);
                 else
                     //отображение статистики по текущему набору
-                    s.Load(vm.LeasingSet);   
+                    s.Load(vm.LeasingSet);
 
                 vm.Statistic = s;
             }

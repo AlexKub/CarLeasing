@@ -157,7 +157,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawColumn(double offset, LineData ld)
         {
-            var cHeight = Canvas.Height > Canvas.ActualHeight ? Canvas.Height : Canvas.ActualHeight;
+            var cHeight = Canvas.Height; //> Canvas.ActualHeight ? Canvas.Height : Canvas.ActualHeight;
+            cHeight = cHeight - 1; //немного выходит за границу
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
             GuidelineSet guideSet = new GuidelineSet();
             guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
