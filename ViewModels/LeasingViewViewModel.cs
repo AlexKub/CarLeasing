@@ -7,7 +7,21 @@ namespace CarLeasingViewer.ViewModels
 {
     public class LeasingViewViewModel : ViewModelBase, IDisposable
     {
-        Views.MainWindow m_Window;
+        /// <summary>
+        /// Комманда сортировки по периоду
+        /// </summary>
+        public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
+        void SortPeriod()
+        {
+            Update();
+        }
+
+        /// <summary>
+        /// При изменении Набора аренды
+        /// </summary>
+        public event LeasingSetEvent SetChanged;
+
+        #region properties
 
         private Month m_FromMonth;
         /// <summary>
@@ -26,29 +40,11 @@ namespace CarLeasingViewer.ViewModels
         /// </summary>
         public SearchSettings SearchSettings { get { return App.SearchSettings; } }
 
-        /// <summary>
-        /// Комманда сортировки по периоду
-        /// </summary>
-        public ActionCommand SortPeriodCommand { get { return new ActionCommand(SortPeriod); } }
-        void SortPeriod()
-        {
-            Update();
-        }
-
         private StatisticModel pv_Statistic;
         /// <summary>
         /// Возвращает или задаёт Статистику внизу
         /// </summary>
         public StatisticModel Statistic { get { return pv_Statistic; } set { if (pv_Statistic != value) { pv_Statistic = value; OnPropertyChanged(); } } }
-
-        public Views.MainWindow Window { get { return m_Window; } set { m_Window = value; } }
-
-        public LeasingViewViewModel() { }
-
-        public LeasingViewViewModel(Views.MainWindow window)
-        {
-            m_Window = window;
-        }
 
         private IReadOnlyList<CarModel> pv_Cars;
         /// <summary>
@@ -101,14 +97,36 @@ namespace CarLeasingViewer.ViewModels
         /// <summary>
         /// Возвращает или задаёт Набор занаятости Авто
         /// </summary>
-        public LeasingSet LeasingSet { get { return m_LeasingSet; } set { m_LeasingSet = value; OnSetChanged(value); OnPropertyChanged(); } }
+        public LeasingSet LeasingSet
+        {
+            get { return m_LeasingSet; }
+            set
+            {
+                if (m_LeasingSet != value)
+                {
+                    var oldValue = m_LeasingSet;
+
+                    m_LeasingSet = value;
+
+                    OnSetChanged(value);
+
+                    OnPropertyChanged();
+
+                    SetChanged?.Invoke(new LeasingSetEventArgs(value, oldValue));
+                }
+            }
+        }
+
+        #endregion
+
+        public LeasingViewViewModel() { }
 
         void OnSetChanged(LeasingSet set)
         {
             if (set == null)
                 return;
 
-            switch(set.Monthes.Count)
+            switch (set.Monthes.Count)
             {
                 case 0:
                     break;
@@ -122,13 +140,13 @@ namespace CarLeasingViewer.ViewModels
                     break;
             }
 
-            if (m_Window != null)
-                m_Window.LeasingChart.LeasingSet = set;
-
             Statistic = new StatisticModel();
             Statistic.Load(set);
         }
 
+        /// <summary>
+        /// Обновление данных модели из БД
+        /// </summary>
         public void Update()
         {
             if (FromMonth == null || ToMonth == null)
@@ -136,12 +154,6 @@ namespace CarLeasingViewer.ViewModels
 
             var newSet = new LeasingSet() { Data = DataManager.GetDataset(FromMonth, ToMonth) };
             LeasingSet = newSet;
-
-            if (m_Window != null)
-            {
-                newSet.Chart = m_Window.LeasingChart;
-                m_Window.LeasingChart.Draw();
-            }
         }
 
         public void Dispose()

@@ -54,7 +54,7 @@ namespace CarLeasingViewer
 
         #region queries
 
-        
+
 
         /// <summary>
         /// Получение списка доступных методов
@@ -67,7 +67,7 @@ namespace CarLeasingViewer
             if (settings == null)
                 settings = App.SearchSettings;
 
-            var sql = string.Empty; 
+            var sql = string.Empty;
 
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
@@ -197,22 +197,17 @@ namespace CarLeasingViewer
 
                             buyer = (string)reader["Buyer"];
 
-                            if (cb.Count > 0 && cb.Business.Last().Title.Equals(buyer))
-                                cb.Business.Last().DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
-                            else
-                            {
-                                var b = new Leasing();
-                                b.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
-                                b.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
-                                b.Title = buyer;
-                                b.Type = BusinessType.Leasing;
-                                b.Comment = (string)reader["Comment"];
-                                b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
-                                b.Saler = (string)reader["Saler"];
-                                b.Blocked = ((byte)reader["Blocked"]) > 0;
+                            var b = new Leasing();
+                            b.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
+                            b.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
+                            b.Title = buyer;
+                            b.Type = BusinessType.Leasing;
+                            b.Comment = (string)reader["Comment"];
+                            b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
+                            b.Saler = (string)reader["Saler"];
+                            b.Blocked = ((byte)reader["Blocked"]) > 0;
 
-                                cb.Add(b);
-                            }
+                            cb.Add(b);
                         }
                     }
                 }
@@ -329,7 +324,7 @@ namespace CarLeasingViewer
                             SELECT
                                   [Minimum Quantity] AS Quantity
                                   ,[Unit Price] AS Price
-                              FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales Price] AS p
+                              FROM [Carlson$Sales Price] AS p
                             	WHERE p.[Ending Date] = @defultDate
                             		AND p.[Item No_] = '{car.No}'";
 
@@ -355,7 +350,7 @@ namespace CarLeasingViewer
 
                             //считываем срок (1, 3 или 7)
                             quantity = (int)(decimal)reader["Quantity"];
-                            
+
                             val = (decimal)reader["Price"];
 
                             switch (quantity)
@@ -382,7 +377,7 @@ namespace CarLeasingViewer
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 m_loger.Log("Возникло исключение при запросе цены на машину из БД", ex
                     , new LogParameter("No_", car?.No));
@@ -394,9 +389,9 @@ namespace CarLeasingViewer
         public IEnumerable<Region> GetRegions()
         {
             List<Region> regions = new List<Region>();
-            
 
-            if (App.SearchSettings.TestData)
+
+            if (App.TestMode && App.SearchSettings.TestData)
             {
                 regions = new List<Region>()
                 {
@@ -460,13 +455,14 @@ namespace CarLeasingViewer
                 var sql = @"DECLARE @defaultDate AS Datetime = '1753-01-01 00:00:00'
 
                             SELECT
-                                  [Item No_] AS ID
-                                  ,[Unit Price] AS Price
-                              FROM [CARLSON_Test_10052018].[dbo].[Carlson$Sales Price] AS p
+                                  p.[Item No_] AS ID
+                                  , p.[Unit Price] AS Price
+                              FROM [Carlson$Sales Price] AS p
+                                LEFT JOIN [Carlson$Item] i ON i.[No_] = p.[Item No_]
                             	WHERE 1 = 1
-                            		AND [Minimum Quantity] = 1.0
+                            		AND i.[IsService] = 0
+                                    AND i.[IsFranchise] = 0
                             		AND p.[Ending Date] = @defaultDate
-                            		AND p.[Unit of Measure Code] = 'ДЕНЬ'
                             		ORDER BY p.[Item No_]";
 
                 using (var con = new SqlConnection(m_connectionString))
@@ -485,7 +481,7 @@ namespace CarLeasingViewer
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 m_loger.Log("Возникло исключение при запросе порядка цен на авто из БД", ex);
             }
@@ -544,6 +540,7 @@ namespace CarLeasingViewer
 	                    , h.[Date End] as DateEnd
 	                    , h.[Time End] as TimeEnd
 	                    , h.[Comment Text] as Comment
+                        , {(settings.SelectedDBSearchType == DBSearchType.Curent ? "0" : "1")} as Invoice
                          FROM Carlson$Item i
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
@@ -555,40 +552,6 @@ namespace CarLeasingViewer
                             AND h.[Date Begin] IS NOT NULL
                             {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
-        }
-
-        String GetBusinessByMonthQuery(Month month, SearchSettings settings = null, Region region = null)
-        {
-            return $@"SELECT 
-                         i.[No_]
-                        , i.[Description] as CarName
-                        , i.[Vehicle Reg_ No_] as CarNumber
-                        , i.[Blocked] as Blocked
-                        , l.[Document No_]
-	                    ,h.[Salesperson Code] as Saler
-	                    ,h.[Bal_ Account No_]
-	                    ,h.[Sell-to Customer Name] as Buyer
-	                    ,h.[Bill-to Name]
-	                    ,h.[Ship-to Name]
-	                    ,h.[Venicle Operation Area]
-	                    ,h.[Date Begin] as DateStart
-	                    ,h.[Time Begin]
-	                    ,h.[Date End] as DateEnd
-	                    ,h.[Time End]
-	                    ,h.[Comment Text] as Comment
-                         FROM Carlson$Item i
-                        	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
-                        	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
-                        
-                        WHERE 1 = 1
-                            {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
-                        	AND i.IsService = 0
-                        	AND i.IsFranchise = 0
-                            AND h.[Date Begin] IS NOT NULL
-                            {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
-                            AND ((h.[Date Begin] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{month.GetSqlDate(1)}' AND '{month.Next().GetSqlDate(1)}'))
-                        
-                        ORDER BY CarName";
         }
 
         void AddFreeCars(List<CarBusiness> carBusinesses)

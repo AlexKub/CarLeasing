@@ -14,6 +14,11 @@ namespace CarLeasingViewer
         static LogSet m_loger = LogManager.GetDefaultLogSet<App>();
         public static LogSet Loger { get { return m_loger; } }
 
+        /// <summary>
+        /// Тестовый режим
+        /// </summary>
+        public static bool TestMode { get; private set; }
+
         public static IDictionary<int, IEnumerable<Month>> AvailableMonthes { get; private set; } = new Dictionary<int, IEnumerable<Month>>();
 
         public static IEnumerable<Month> AvailableMonthesAll
@@ -61,6 +66,19 @@ namespace CarLeasingViewer
             //Timeline.DesiredFrameRateProperty.OverrideMetadata(
             //    typeof(Timeline),
             //    new FrameworkPropertyMetadata { DefaultValue = 25 } );
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            var args = e.Args;
+
+            if(args != null && args.Length > 0)
+            {
+                //тестовый режим
+                TestMode = args.Any(a => a.Equals("test"));
+            }
+
+            base.OnStartup(e);
         }
 
         public static MainWindow GetMainWindow()

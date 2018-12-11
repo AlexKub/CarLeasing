@@ -65,7 +65,7 @@ namespace CarLeasingViewer
 
             //при тестовых данных нет информации о ценах из БД
             //(т.к., собственно, не факт, что есть подключение к БД)
-            if (App.SearchSettings.TestData)
+            if (App.TestMode && App.SearchSettings.TestData)
                 return Enumerable.Empty<CarModel>();
 
             //получаем отсортированные стоимости машин
@@ -85,7 +85,12 @@ namespace CarLeasingViewer
             }
 
             //сортируем по минимальной цене
-            return notSorted.OrderBy(m => m.Price.Day).ToList();
+            //и имени, на случае отсутствия цены
+            var result = from m in notSorted
+                         orderby m.Price.Day, m.Text
+                         select m;
+
+            return result;
         }
     }
 }

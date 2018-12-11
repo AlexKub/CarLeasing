@@ -1,7 +1,5 @@
 ﻿using CarLeasingViewer.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CarLeasingViewer
 {
@@ -20,7 +18,7 @@ namespace CarLeasingViewer
         {
             MonthBusiness[] monthBuisnesses = null;
 
-            if (App.SearchSettings.TestData)
+            if (App.TestMode && App.SearchSettings.TestData)
             {
                 var rMonth = Randomizer.GetRandomMonth(2018);
                 List<MonthBusiness> businesses = new List<MonthBusiness>();

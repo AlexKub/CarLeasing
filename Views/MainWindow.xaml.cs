@@ -13,16 +13,17 @@ namespace CarLeasingViewer.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        LeasingViewViewModel m_viewModel;
+
         public MainWindow()
         {
-            var vm = new LeasingViewViewModel(this);
-
+            m_viewModel = new LeasingViewViewModel();
 
             var curentYear = DateTime.Now.Year;
             var rMonth = Randomizer.GetRandomMonth(curentYear);
             MonthBusiness[] monthBuisnesses = null;
 
-            if (App.SearchSettings.TestData)
+            if (App.TestMode && App.SearchSettings.TestData)
             {
                 App.SetAvailable(Month.GetMonthes(new DateTime(curentYear, 1, 1), new DateTime(curentYear, 12, 1)));
                 monthBuisnesses = DataManager.GetDataset(App.AvailableMonthesAll.First(), App.AvailableMonthesAll.Last());
@@ -55,21 +56,10 @@ namespace CarLeasingViewer.Views
 
             Subscribe(true);
 
-            DataContext = vm;
+            DataContext = m_viewModel;
 
             //Set проставляем после инициализации, т.к. не явно заполняется контрол
-            vm.LeasingSet = set;
-
-            Loaded += MainWindow2_Loaded;
-        }
-        public MainWindow(LeasingViewViewModel vm)
-        {
-            vm.Window = this;
-            DataContext = vm;
-            InitializeComponent();
-
-            if (vm != null && vm.LeasingSet != null && vm.LeasingSet.Chart != null)
-                vm.LeasingSet.Chart = LeasingChart;
+            m_viewModel.LeasingSet = set;
 
             Loaded += MainWindow2_Loaded;
         }
@@ -189,18 +179,34 @@ namespace CarLeasingViewer.Views
         {
             if (subscribe)
             {
+                m_viewModel.SetChanged += M_viewModel_SetChanged;
                 LeasingChart.RowSelectionChanged += LeasingChart_RowSelectionChanged;
                 Activated += MainWindow2_Activated;
             }
             else
             {
+                m_viewModel.SetChanged -= M_viewModel_SetChanged;
                 LeasingChart.RowSelectionChanged -= LeasingChart_RowSelectionChanged;
                 Activated -= MainWindow2_Activated;
             }
         }
 
+        private void M_viewModel_SetChanged(LeasingSetEventArgs e)
+        {
+            if(e.New != null)
+            {
+                e.New.Chart = LeasingChart;
+
+                LeasingChart.LeasingSet = e.New;
+
+                LeasingChart.Draw();
+            }
+        }
+
         private void MainWindow2_Activated(object sender, EventArgs e)
         {
+            m_viewModel.Update();
+
             //перерисовка статистики при разворачивании
             LeasingChart.Draw();
         }

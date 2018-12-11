@@ -104,7 +104,10 @@
                     <TextBlock Text="Поиск по" VerticalAlignment="Center" />
                     <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{Binding DBSearchTypes}" VerticalAlignment="Center" SelectedItem="{Binding SelectedDBSearchType}"/>
                 </DockPanel>
-                <CheckBox Grid.Column="2" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="2" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" 
+                          IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
+                          Checked="OnSearchSettingsChanged"
+                          Visibility="{Binding Source={x:Static local:App.TestMode}, Converter={StaticResource CommonVisibilityConverter}}"/>
                 <CheckBox Grid.Column="3" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
             </Grid>
         </Grid>
@@ -121,9 +124,9 @@
                         <Setter Property="FontFamily" Value="Times New Roman"/>
                         <Setter Property="TextAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
-                        <EventSetter Event="MouseMove" Handler="TextBlock_MouseMove"/>
-                        <EventSetter Event="MouseLeftButtonDown" Handler="TextBlock_MouseLeftButtonDown"/>
-                        <EventSetter Event="MouseRightButtonDown" Handler="TextBlock_MouseRightButtonUp"/>
+                        <!--<EventSetter Event="MouseMove" Handler="TextBlock_MouseMove"/>-->
+                        <!--<EventSetter Event="MouseLeftButtonDown" Handler="TextBlock_MouseLeftButtonDown"/>-->
+                        <!--<EventSetter Event="MouseRightButtonDown" Handler="TextBlock_MouseRightButtonUp"/>-->
                     </Style>
 
                     <!-- Стили границ у элементов в коллекциях Машин и Комментариев -->
@@ -207,7 +210,7 @@
                         </controls:LeasingChart>
                     </ScrollViewer>
                 </Border>
-                
+
                 <!-- Левая колонка с машинами -->
                 <Border Grid.Column="0" Grid.Row="{StaticResource ChartRowIndex}" Margin="0 -1 0 -1" BorderBrush="{StaticResource GridBorderBrush}">
                     <Border.BorderThickness>
@@ -236,10 +239,15 @@
                                 <DataTemplate>
                                     <Border d:DataContext="{d:DesignInstance models:CarModel}"
                                             Style="{StaticResource ItemBorderStyle}" 
-                                            Background="{Binding HightlightBrush}" >
-                                        <Grid>
+                                            Background="{Binding HightlightBrush}" 
+                                            MouseMove="TextBlock_MouseMove" 
+                                            MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" 
+                                            PreviewMouseRightButtonUp="TextBlock_MouseRightButtonUp">
+                                        <Grid >
                                             <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
-                                            <Rectangle Fill="Coral" Height="13" Width="13" VerticalAlignment="Top" HorizontalAlignment="Right" ToolTip="Снята с учёта" 
+                                            
+                                            <!-- квадратик для индикации "блокированных" -->
+                                            <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта" HorizontalAlignment="Right" VerticalAlignment="Top"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
                                         </Grid>
                                     </Border>

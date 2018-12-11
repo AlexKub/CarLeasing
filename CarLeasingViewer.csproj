@@ -169,7 +169,6 @@
     <Compile Include="Managers\SortManager.cs" />
     <Compile Include="ViewModels\LeasingViewViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
