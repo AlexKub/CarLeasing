@@ -48,7 +48,7 @@ namespace CarLeasingViewer
         static List<Tuple<DBSearchType, string>> m_descriptions = new List<Tuple<DBSearchType, string>>()
         {
             new Tuple<DBSearchType, string>(DBSearchType.All, "Все")
-            ,new Tuple<DBSearchType, string>(DBSearchType.Old, "Архив")
+            ,new Tuple<DBSearchType, string>(DBSearchType.Old, "Учтённые")
             ,new Tuple<DBSearchType, string>(DBSearchType.Curent, "Активные")
         };
 
