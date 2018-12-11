@@ -49,7 +49,7 @@ namespace CarLeasingViewer
         {
             new Tuple<DBSearchType, string>(DBSearchType.All, "Все")
             ,new Tuple<DBSearchType, string>(DBSearchType.Old, "Учтённые")
-            ,new Tuple<DBSearchType, string>(DBSearchType.Curent, "Активные")
+            ,new Tuple<DBSearchType, string>(DBSearchType.Curent, "Текущие")
         };
 
         /// <summary>
