@@ -11,7 +11,7 @@
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
         mc:Ignorable="d"
-        Title="Загрузка ТС" Height="450" Width="700" MinWidth="1000"
+        Title="Загрузка ТС" Height="450" Width="700" MinWidth="1150"
         d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
     <Window.Resources>
         <!-- Ширина(высота) ScrollBar'a -->
@@ -58,6 +58,7 @@
         <converters:StringValueVisibilityConverter x:Key="StringVisibilityConverter"/>
         <converters:MonthLeasingsConverter x:Key="MonthLeasingsConverter"/>
         <converters:MonthesDaysCountConverter x:Key="MonthesDaysCountConverter"/>
+        <converters:DBSearchTypeConverter x:Key="SearchTypeConverter"/>
 
         <Style x:Key="TitleBox" TargetType="TextBlock" BasedOn="{StaticResource CenteredTextBlock}">
             <Setter Property="Padding" Value="3"/>
@@ -102,7 +103,9 @@
 
                 <DockPanel Grid.Column="1" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
                     <TextBlock Text="Поиск по" VerticalAlignment="Center" />
-                    <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{Binding DBSearchTypes}" VerticalAlignment="Center" SelectedItem="{Binding SelectedDBSearchType}"/>
+                    <ComboBox Margin="3 0 3 0" SelectedIndex="0" VerticalAlignment="Center" 
+                              ItemsSource="{Binding DBSearchTypes}"
+                              SelectedItem="{Binding SelectedDBSearchType, Converter={StaticResource SearchTypeConverter}}"/>
                 </DockPanel>
                 <CheckBox Grid.Column="2" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" 
                           IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 

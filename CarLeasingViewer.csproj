@@ -74,6 +74,7 @@
     <Compile Include="Controls\LeasingChartManagers\CanvasRowLayoutDrawManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\TooltipManager.cs" />
     <Compile Include="Converters\ColumnWidthConverter.cs" />
+    <Compile Include="Converters\DBSearchTypeConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
     <Compile Include="Converters\NegativeConverter.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />

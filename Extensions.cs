@@ -109,5 +109,17 @@ namespace CarLeasingViewer
 
             return price.IsEmpty;
         }
+
+        /// <summary>
+        /// Получение видимого представления поиска по БД
+        /// </summary>
+        /// <param name="type">Тип поиска по БД</param>
+        /// <returns>Возвращает видимое представление</returns>
+        public static string GetDescription(this DBSearchType type)
+        {
+            return DBSearchTypeHelper.GetDescription(type);
+        }
+
+        
     }
 }

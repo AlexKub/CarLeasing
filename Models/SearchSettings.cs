@@ -11,7 +11,10 @@ namespace CarLeasingViewer.Models
     {
         public static ApplicationSearchSettings GlobalSettings { get { return ApplicationSearchSettings.Instance; } }
 
-        public IEnumerable<DBSearchType> DBSearchTypes { get { return Enum.GetValues(typeof(DBSearchType)).OfType<DBSearchType>(); } }
+        /// <summary>
+        /// Все значения Типов поиска по БД для View
+        /// </summary>
+        public IEnumerable<string> DBSearchTypes { get { return DBSearchTypeHelper.GetAllDescriptions(); } }
 
         protected DBSearchType _SelectedDBSearchType;
         /// <summary>
