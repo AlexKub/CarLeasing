@@ -33,7 +33,6 @@
             <converters:VisibilityConverter x:Key="InverterdVisibilityConverter" OnFalse="Visible" OnTrue="Collapsed"/>
             <converters:NullableConverter x:Key="NullableBoolConverter"/>
             <converters:BoolInverterConverter x:Key="BoolInverter"/>
-            <converters:NegativeConverter x:Key="NegativeConverter"/>
 
             <!-- Цвет заливки бордеров -->
             <Color x:Key="LightBorderColor">#FFD3D3D3</Color>

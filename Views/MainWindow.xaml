@@ -54,10 +54,6 @@
             </Setter>
         </Style>
 
-        <converters:BussinessDateConverter x:Key="DateConverter"/>
-        <converters:StringValueVisibilityConverter x:Key="StringVisibilityConverter"/>
-        <converters:MonthLeasingsConverter x:Key="MonthLeasingsConverter"/>
-        <converters:MonthesDaysCountConverter x:Key="MonthesDaysCountConverter"/>
         <converters:DBSearchTypeConverter x:Key="SearchTypeConverter"/>
 
         <Style x:Key="TitleBox" TargetType="TextBlock" BasedOn="{StaticResource CenteredTextBlock}">
@@ -231,10 +227,6 @@
                                    Top="0"/>
                             </Border.BorderThickness>
                             <ItemsControl ItemsSource="{Binding CarModels, UpdateSourceTrigger=PropertyChanged}" >
-                                <ItemsControl.Resources>
-                                    <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
-                                    <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="0"/>
-                                </ItemsControl.Resources>
                                 <ItemsControl.ItemContainerStyle>
                                     <Style>
                                         <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
@@ -273,10 +265,6 @@
                 <Border Grid.Row="{StaticResource ChartRowIndex}" Grid.Column="2" Margin="0 -1 0 -1" BorderThickness="1" BorderBrush="{StaticResource GridBorderBrush}" Visibility="Collapsed">
                     <ScrollViewer Name="CommentsColumnScroll" HorizontalScrollBarVisibility="Hidden" ScrollChanged="CommentsColumnScroll_ScrollChanged" >
                         <ItemsControl ItemsSource="{Binding Comments, UpdateSourceTrigger=PropertyChanged}">
-                            <ItemsControl.Resources>
-                                <!-- Конвертер ширины текущей колонки родительского Grid'а. Важно! указать верный индекс колонки -->
-                                <converters:ColumnWidthConverter x:Key="WidthConverter" ColumnIndex="2"/>
-                            </ItemsControl.Resources>
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Row" Value="{Binding RowIndex}"/>
