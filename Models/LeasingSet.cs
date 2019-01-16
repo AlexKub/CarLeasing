@@ -187,7 +187,7 @@ namespace CarLeasingViewer.Models
             {
                 if (pv_Leasings != value)
                 {
-                    pv_Leasings = value;                    
+                    pv_Leasings = value;
 
                     if (value != null)
                     {
@@ -349,58 +349,7 @@ namespace CarLeasingViewer.Models
         /// <param name="date">Выбранная дата</param>
         public void Sort(DateTime date)
         {
-            var rows = m_baseSet.Rows;
-
-            if (rows != null && rows.Count() > 0)
-            {
-                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
-                bool busy = false;
-
-                //время для даты начала не интересует
-                //если берут сегодня, то машина занята*
-                //* см. исключение в условии ниже
-                DateStart = date.Date;
-                DateEnd = date;
-
-                foreach (var row in rows)
-                {
-                    if (row.Bars.Count > 0)
-                    {
-                        foreach (var bar in row.Bars)
-                        {
-                            if (bar.Model == null || bar.Model.Leasing == null)
-                                continue;
-
-                            var l = bar.Model.Leasing;
-
-                            if(l.DateStart.Date <= DateStart && l.DateEnd > date)
-                            {
-                                //допустимо пересечение периода окончания
-                                //например машину заняли до 14.00
-                                //а оператор подбирает машину с 16.00 того же дня
-                                if (l.DateEnd.Date == date.Date)
-                                    continue;
-
-                                busy = true;
-                                break;
-                            }
-                        }
-
-                        if (!busy)
-                            //выбираем свободные машины на указанную дату
-                            sorted.Add(row);
-
-                        busy = false;
-                    }
-                }
-
-                if (sorted.Count() == 0)
-                    SetEmpty();
-                else
-                {
-                    SetSorted(sorted);
-                }
-            }
+            Sort(date.Date, date);
         }
 
         /// <summary>
@@ -409,53 +358,21 @@ namespace CarLeasingViewer.Models
         /// <param name="date">Выбранная дата</param>
         public void Sort(DateTime dateStart, DateTime dateEnd)
         {
-            var rows = m_baseSet.Rows;
+            if (m_baseSet.Rows == null || m_baseSet.Rows.Count == 0)
+                return;
 
-            if (rows != null && rows.Count() > 0)
-            {
-                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
-                bool busy = false;
+            var sorted = m_baseSet.Rows.SelectFree(dateStart, dateEnd);
 
-                //для даты начала время не важно
-                //если машину берут сегодня, то она занята*
-                //* кроме случаев, когда берут и сдают в тот же день
-                DateStart = dateStart.Date;
-                DateEnd = dateEnd;
+            //для даты начала время не важно
+            //если машину берут сегодня, то она занята*
+            //* кроме случаев, когда берут и сдают в тот же день
+            DateStart = dateStart.Date;
+            DateEnd = dateEnd;
 
-                foreach (var row in rows)
-                {
-                    if (row.Bars.Count > 0)
-                    {
-                        foreach (var bar in row.Bars)
-                        {
-                            if (bar.Model == null || bar.Model.Leasing == null)
-                                continue;
-
-                            var l = bar.Model.Leasing;
-                            //проверка, что аренда пересекается с указанным периодом
-                            if (l.Cross(dateStart, dateEnd)
-                                //проверка, что аренда не заканчивается на начале выбранного периода
-                                //в таком случае, машина может освободиться во второй половине интересующего срока
-                                && l.DateEnd.Date != dateStart.Date)
-                            {
-                                busy = true;
-                                break;
-                            }
-                        }
-
-                        if (!busy)
-                            //выбираем те машины, что свободны
-                            sorted.Add(row);
-
-                        busy = false;
-                    }
-                }
-
-                if (sorted.Count() == 0)
-                    SetEmpty();
-                else
-                    SetSorted(sorted);
-            }
+            if (sorted.Count == 0)
+                SetEmpty();
+            else
+                SetSorted(sorted);
         }
 
         /// <summary>
@@ -522,7 +439,7 @@ namespace CarLeasingViewer.Models
 
             CarModels = cars;
             Comments = comments;
-            Leasings = leasings;           
+            Leasings = leasings;
 
             Chart.Draw();
         }

@@ -92,5 +92,62 @@ namespace CarLeasingViewer
 
             return result;
         }
+
+        /// <summary>
+        /// Выбор свободных машин в указанные даты
+        /// </summary>
+        /// <param name="collection">Список машин</param>
+        /// <param name="dateStart">Дата начала (включительно)</param>
+        /// <param name="dateEnd">Дата окончания (включительно)</param>
+        /// <returns>ВОзвращает новый список, свободных в указанные даты</returns>
+        public static IList<Controls.LeasingChartManagers.RowManager.Row> SelectFree(this IEnumerable<Controls.LeasingChartManagers.RowManager.Row> collection, DateTime dateStart, DateTime dateEnd)
+        {
+            if (collection.IsEmpty())
+            {
+                return collection?.ToList() ?? Enumerable.Empty<Controls.LeasingChartManagers.RowManager.Row>().ToList();
+            }
+            else
+            { 
+                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                bool busy = false;
+
+                foreach (var row in collection)
+                {
+                    if (row.Bars.Count > 0) //если авто арендовано
+                    {
+                        //для каждой аренды
+                        foreach (var bar in row.Bars) 
+                        {
+                            if (bar.Model == null || bar.Model.Leasing == null)
+                                continue;
+
+                            var l = bar.Model.Leasing;
+                            //проверка, что аренда пересекается с указанным периодом
+                            if (l.Cross(dateStart, dateEnd)
+                                //проверка, что аренда не заканчивается на начале выбранного периода
+                                //в таком случае, машина может освободиться во второй половине интересующего срока
+                                && l.DateEnd.Date != dateStart.Date)
+                            {
+                                //если машина занята - идём дальше
+                                busy = true;
+                                break;
+                            }
+                        }
+
+                        if (!busy)
+                            //выбираем те машины, что свободны
+                            sorted.Add(row);
+
+                        busy = false;
+                    }
+                    else
+                        sorted.Add(row);
+                }
+
+                return sorted;
+            }
+        }
+
+        
     }
 }
