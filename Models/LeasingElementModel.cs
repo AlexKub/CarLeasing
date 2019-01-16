@@ -8,6 +8,10 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public partial class LeasingElementModel : ViewModels.ViewModelBase, IIndexable
     {
+#if Test
+        bool m_calculate = false;
+#endif
+
         /// <summary>
         /// Уникальный ID элемента в контексте Canvas'а
         /// </summary>
@@ -36,7 +40,27 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Возвращает или задаёт информацию о Занятости
         /// </summary>
-        public Leasing Leasing { get { return pv_Leasing; } set { if (pv_Leasing != value) { pv_Leasing = value; CalculateParams(); OnPropertyChanged(); } } }
+        public Leasing Leasing
+        {
+            get { return pv_Leasing; }
+            set
+            {
+                if (pv_Leasing != value)
+                {
+                    pv_Leasing = value;
+
+#if Test
+                    if (m_calculate)
+                        CalculateParams();
+#else
+                    CalculateParams();
+#endif
+
+
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private int pv_DaysCount;
         /// <summary>
@@ -91,6 +115,17 @@ namespace CarLeasingViewer.Models
         /// Вовзращает видимое количество дней
         /// </summary>
         public int VisibleDaysCount { get; private set; }
+
+#if Test
+
+        public LeasingElementModel()
+        {
+            //не подсчитывать параметры для фейков, если не указано явно
+            m_calculate = false;
+        }
+
+#endif
+
 
         public LeasingElementModel(LeasingSet set)
         {
@@ -149,7 +184,7 @@ namespace CarLeasingViewer.Models
                     }
                 }
             }
-            
+
             VisibleDaysCount = DaysCount;
         }
 

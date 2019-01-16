@@ -99,7 +99,7 @@ namespace CarLeasingViewer
         /// <param name="collection">Список машин</param>
         /// <param name="dateStart">Дата начала (включительно)</param>
         /// <param name="dateEnd">Дата окончания (включительно)</param>
-        /// <returns>ВОзвращает новый список, свободных в указанные даты</returns>
+        /// <returns>Возвращает новый список, свободных в указанные даты</returns>
         public static IList<Controls.LeasingChartManagers.RowManager.Row> SelectFree(this IEnumerable<Controls.LeasingChartManagers.RowManager.Row> collection, DateTime dateStart, DateTime dateEnd)
         {
             if (collection.IsEmpty())

@@ -5,22 +5,27 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarLeasingViewer", "CarLeasingViewer.csproj", "{5E9EC1D6-5280-410E-B712-CA0602C429B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarLeasingViewer.Tests", "..\UnitTestProject1\CarLeasingViewer.Tests.csproj", "{B5144C6B-2363-4543-B4F7-0F9252601987}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarLeasingViewer.Tests", "Tests\CarLeasingViewer.Tests.csproj", "{B5144C6B-2363-4543-B4F7-0F9252601987}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Test|Any CPU = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{5E9EC1D6-5280-410E-B712-CA0602C429B4}.Test|Any CPU.Build.0 = Test|Any CPU
 		{B5144C6B-2363-4543-B4F7-0F9252601987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5144C6B-2363-4543-B4F7-0F9252601987}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5144C6B-2363-4543-B4F7-0F9252601987}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5144C6B-2363-4543-B4F7-0F9252601987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5144C6B-2363-4543-B4F7-0F9252601987}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{B5144C6B-2363-4543-B4F7-0F9252601987}.Test|Any CPU.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

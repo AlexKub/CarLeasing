@@ -38,6 +38,18 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public MonthHeaderModel Previous { get { return pv_Previous; } set { if (pv_Previous != value) { pv_Previous = value; OnPropertyChanged(); } } }
 
+#if Test
+
+        /// <summary>
+        /// Только для фейков
+        /// </summary>
+        public MonthHeaderModel()
+        {
+            //только для теста
+        }
+
+#endif
+
         public MonthHeaderModel(LeasingSet set)
         {
             OwnerSet = set;
