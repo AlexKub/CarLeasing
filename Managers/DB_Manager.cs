@@ -186,10 +186,13 @@ namespace CarLeasingViewer
                                 cb.ItemNo = (string)reader["No_"];
                                 carBusinesses.Add(cb);
 
-                                var number = ((string)reader["CarNumber"]).Trim();
-                                var lastCharIndex = number.Last(c => char.IsLetter(c)) + 1;
+                                var number = ((string)reader["CarNumber"])?.Trim() ?? string.Empty;
 
-                                if ((lastCharIndex) < number.Length)
+                                var lastCharIndex = number.Length > 0 
+                                    ? number.Last(c => char.IsLetter(c)) + 1 //ищем последнюю букву
+                                    : 0;
+
+                                if (lastCharIndex <= number.Length) //отрезаем регион
                                     number = number.Substring(lastCharIndex, number.Length - lastCharIndex);
 
                                 cb.Name = $"{curentCar} ({number})";
@@ -219,7 +222,8 @@ namespace CarLeasingViewer
             }
             catch (Exception ex)
             {
-                m_loger.Log("Возникло исключение при запросе выборки из БД", ex);
+                m_loger.Log("Возникло исключение при запросе выборки из БД", ex,
+                    new LogParameter("Запрос", sql));
             }
 
             //добавляем не занятые авто
@@ -263,6 +267,7 @@ namespace CarLeasingViewer
                            {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
+                            AND i.[IsPlasticCard] = 0
                             {((region == null || region.IsTotal) ? string.Empty : ("AND i.[Responsibility Center] = " + region.DBKey))}
                             AND p.[Minimum Quantity] = 1.0
 							AND p.[Ending Date] = @defultDate
@@ -462,6 +467,7 @@ namespace CarLeasingViewer
                             	WHERE 1 = 1
                             		AND i.[IsService] = 0
                                     AND i.[IsFranchise] = 0
+                                    AND i.[IsPlasticCard] = 0
                             		AND p.[Ending Date] = @defaultDate
                             		ORDER BY p.[Item No_]";
 
@@ -509,6 +515,7 @@ namespace CarLeasingViewer
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
+                            AND i.[IsPlasticCard] = 0
                             AND h.[Date Begin] IS NOT NULL
                             {(year > 0 ? ("AND YEAR(h.[Date Begin]) = " + year.ToString()) : "")}
                         
@@ -549,6 +556,7 @@ namespace CarLeasingViewer
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
+                            AND i.[IsPlasticCard] = 0
                             AND h.[Date Begin] IS NOT NULL
                             {((region == null || region.IsTotal) ? string.Empty : "AND i.[Responsibility Center] = '" + region.DBKey + "'")}
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";

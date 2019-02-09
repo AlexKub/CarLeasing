@@ -111,7 +111,7 @@ namespace CarLeasingViewer.Controls
                 {
                     _this.m_barM.DayColumnWidth = newVal;
                 }
-                if(_this.m_textM != null)
+                if (_this.m_textM != null)
                 {
                     _this.m_textM.DayColumnWidth = newVal;
                 }
@@ -414,7 +414,7 @@ namespace CarLeasingViewer.Controls
             if (set == null)
                 return;
 
-            if(subscribe)
+            if (subscribe)
             {
                 set.MonthesChanged += OnSetMonthesChanged;
             }
@@ -501,7 +501,6 @@ namespace CarLeasingViewer.Controls
         {
             if (rowsI == null)
                 return;
-                //rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
 
             //для случаев, когда меняется размер контрола, а сетка остаётся прежней
             if (m_gridM != null)
@@ -611,7 +610,8 @@ namespace CarLeasingViewer.Controls
 
         public void AddVisual(DrawingVisual visual)
         {
-            m_children.Add(visual);
+            if (visual != null && m_children != null)
+                m_children.Add(visual);
         }
 
         public void Remove(DrawingVisual visual)
