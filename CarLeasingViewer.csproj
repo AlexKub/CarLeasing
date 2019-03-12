@@ -250,5 +250,8 @@
   <ItemGroup>
     <Resource Include="Main.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\maintenance.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
