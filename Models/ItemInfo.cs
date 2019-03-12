@@ -30,11 +30,10 @@ namespace CarLeasingViewer.Models
 
         public Month[] Monthes { get; set; }
 
-        MaintenanceInfo m_Maintenance = new MaintenanceInfo();
         /// <summary>
         /// Информация о нахождении в ремонте
         /// </summary>
-        public MaintenanceInfo Maintenance { get { return m_Maintenance; } }
+        public MaintenanceInfo Maintenance { get; set; }
 
         /// <summary>
         /// Количество аренд на текущий месяц
