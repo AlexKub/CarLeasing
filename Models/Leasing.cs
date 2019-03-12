@@ -6,7 +6,7 @@ namespace CarLeasingViewer.Models
     /// Единица аренды авто
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public class Leasing
+    public class Leasing : IPeriod
     {
         public string Title { get; set; }
 

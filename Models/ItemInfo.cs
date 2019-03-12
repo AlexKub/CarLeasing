@@ -30,6 +30,12 @@ namespace CarLeasingViewer.Models
 
         public Month[] Monthes { get; set; }
 
+        MaintenanceInfo m_Maintenance = new MaintenanceInfo();
+        /// <summary>
+        /// Информация о нахождении в ремонте
+        /// </summary>
+        public MaintenanceInfo Maintenance { get { return m_Maintenance; } }
+
         /// <summary>
         /// Количество аренд на текущий месяц
         /// </summary>
@@ -56,7 +62,7 @@ namespace CarLeasingViewer.Models
             if (carBusiness == null)
                 return false;
 
-            if(string.IsNullOrEmpty(carBusiness.ID))
+            if (string.IsNullOrEmpty(carBusiness.ID))
             {
                 if (string.IsNullOrEmpty(Name))
                     return false;

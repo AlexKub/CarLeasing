@@ -88,7 +88,9 @@
     <Compile Include="Controls\LeasingChartManagers\TooltipManager.cs" />
     <Compile Include="Converters\DBSearchTypeConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
+    <Compile Include="inclusively.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
+    <Compile Include="IPeriod.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
     <Compile Include="Models\CarPriceList.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Models\CarModel.cs" />
     <Compile Include="Models\LeasingElementModel.cs" />
     <Compile Include="Models\LeasingSet.cs" />
+    <Compile Include="Models\MaintenanceInfo.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
@@ -235,6 +238,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Extensions.Period.cs" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -252,6 +256,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\maintenance.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
