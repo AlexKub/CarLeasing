@@ -9,7 +9,7 @@
         /// <summary>
         /// ID машины
         /// </summary>
-        public string No { get; set; }
+        public string ID { get; set; }
 
         /// <summary>
         /// Модель (Марка + модель)

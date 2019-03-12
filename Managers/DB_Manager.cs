@@ -176,14 +176,14 @@ namespace CarLeasingViewer
 
                             var no_ = (string)reader["No_"];
 
-                            cb = carBusinesses.FirstOrDefault(_cb => _cb.ItemNo.Equals(no_));
+                            cb = carBusinesses.FirstOrDefault(_cb => _cb.ID.Equals(no_));
                             if (cb == null)
                             {
                                 previosCar = curentCar;
 
                                 cb = new CarBusiness();
                                 cb.Monthes = Month.GetMonthes(start, end);
-                                cb.ItemNo = (string)reader["No_"];
+                                cb.ID = (string)reader["No_"];
                                 carBusinesses.Add(cb);
 
                                 var number = ((string)reader["CarNumber"])?.Trim() ?? string.Empty;
@@ -295,7 +295,7 @@ namespace CarLeasingViewer
                             id = (string)reader["ID"];
 
                             car = new Car(carName, carNumber);
-                            car.No = id;
+                            car.ID = id;
 
                             if (includeBlocked)
                                 car.Blocked = ((byte)reader["Blocked"]) > 0;
@@ -331,7 +331,7 @@ namespace CarLeasingViewer
                                   ,[Unit Price] AS Price
                               FROM [Carlson$Sales Price] AS p
                             	WHERE p.[Ending Date] = @defultDate
-                            		AND p.[Item No_] = '{car.No}'";
+                            		AND p.[Item No_] = '{car.ID}'";
 
                 using (var con = new SqlConnection(m_connectionString))
                 {
@@ -385,7 +385,7 @@ namespace CarLeasingViewer
             catch (Exception ex)
             {
                 m_loger.Log("Возникло исключение при запросе цены на машину из БД", ex
-                    , new LogParameter("No_", car?.No));
+                    , new LogParameter("No_", car?.ID));
             }
 
             return CarPriceList.Default;
@@ -566,12 +566,12 @@ namespace CarLeasingViewer
         {
             foreach (var car in App.Cars)
             {
-                if (carBusinesses.Any(b => b.ItemNo.Equals(car.No)))
+                if (carBusinesses.Any(b => b.ID.Equals(car.ID)))
                     continue;
                 else
                 {
                     var cb = new CarBusiness();
-                    cb.ItemNo = car.No;
+                    cb.ID = car.ID;
                     cb.Name = car.FullName;
                     cb.Monthes = new Month[0];
                     //cb.Add(new Leasing() { }); //пустой экземпляр - костыль для текущей логики

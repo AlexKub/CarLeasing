@@ -14,7 +14,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// ID позиции (колонка No_ в Items)
         /// </summary>
-        public string ItemNo { get; set; }
+        public string ID { get; set; }
         /// <summary>
         /// Наименование авто
         /// </summary>
@@ -43,7 +43,7 @@ namespace CarLeasingViewer.Models
 
         string DebugDisplay()
         {
-            return (string.IsNullOrEmpty(ItemNo) ? "NO_ID" : ItemNo) + " | " + (string.IsNullOrEmpty(Name) ? "NO_NAME" : Name);
+            return (string.IsNullOrEmpty(ID) ? "NO_ID" : ID) + " | " + (string.IsNullOrEmpty(Name) ? "NO_NAME" : Name);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace CarLeasingViewer.Models
             if (carBusiness == null)
                 return false;
 
-            if(string.IsNullOrEmpty(carBusiness.ItemNo))
+            if(string.IsNullOrEmpty(carBusiness.ID))
             {
                 if (string.IsNullOrEmpty(Name))
                     return false;
@@ -65,7 +65,7 @@ namespace CarLeasingViewer.Models
             }
             else
             {
-                return carBusiness.ItemNo.Equals(ItemNo);
+                return carBusiness.ID.Equals(ID);
             }
         }
 

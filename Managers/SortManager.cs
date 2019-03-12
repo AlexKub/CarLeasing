@@ -74,7 +74,7 @@ namespace CarLeasingViewer
             foreach (var model in notSorted)
             {
                 //для каждой машины находим её текущую 'дневную' цену 
-                var tuple = priceOrder.FirstOrDefault(t => model.Car != null && t.Item1.Equals(model.Car.No));
+                var tuple = priceOrder.FirstOrDefault(t => model.Car != null && t.Item1.Equals(model.Car.ID));
 
                 if (tuple != null)
                 {

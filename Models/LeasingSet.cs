@@ -264,9 +264,9 @@ namespace CarLeasingViewer.Models
             var rowIndex = 0;
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new { cb.Name, cb.ItemNo })
+            .Select(cb => new { cb.Name, cb.ID })
             .Distinct()
-            .Select(o => new CarModel() { Text = o.Name, Car = App.Cars.FirstOrDefault(c => c.No.Equals(o.ItemNo)) }).ToList();
+            .Select(o => new CarModel() { Text = o.Name, Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)) }).ToList();
 
             var ordered = SortManager.OrderByPrice(notOrdered).ToList();
 
