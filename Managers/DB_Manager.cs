@@ -128,7 +128,7 @@ namespace CarLeasingViewer
             if (settings == null)
                 settings = App.SearchSettings;
 
-            var carBusinesses = new List<CarBusiness>();
+            var carBusinesses = new List<ItemInfo>();
 
             var sql = string.Empty;
 
@@ -169,7 +169,7 @@ namespace CarLeasingViewer
                         var curentCar = string.Empty;
                         var previosCar = string.Empty;
                         var buyer = string.Empty;
-                        CarBusiness cb = null;
+                        ItemInfo cb = null;
                         while (reader.Read())
                         {
                             curentCar = (string)reader["CarName"];
@@ -181,7 +181,7 @@ namespace CarLeasingViewer
                             {
                                 previosCar = curentCar;
 
-                                cb = new CarBusiness();
+                                cb = new ItemInfo();
                                 cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ID = (string)reader["No_"];
                                 carBusinesses.Add(cb);
@@ -562,7 +562,7 @@ namespace CarLeasingViewer
                             AND ((h.[Date Begin] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}') OR (h.[Date End] BETWEEN '{start.GetSqlDate(1)}' AND '{end.Next().GetSqlDate(1)}'))";
         }
 
-        void AddFreeCars(List<CarBusiness> carBusinesses)
+        void AddFreeCars(List<ItemInfo> carBusinesses)
         {
             foreach (var car in App.Cars)
             {
@@ -570,7 +570,7 @@ namespace CarLeasingViewer
                     continue;
                 else
                 {
-                    var cb = new CarBusiness();
+                    var cb = new ItemInfo();
                     cb.ID = car.ID;
                     cb.Name = car.FullName;
                     cb.Monthes = new Month[0];

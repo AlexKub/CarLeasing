@@ -154,7 +154,7 @@
     <Compile Include="Models\ApplicationSearchSettings.cs" />
     <Compile Include="Models\Leasing.cs" />
     <Compile Include="Models\Car.cs" />
-    <Compile Include="Models\CarBusiness.cs" />
+    <Compile Include="Models\ItemInfo.cs" />
     <Compile Include="Models\Day.cs" />
     <Compile Include="Models\Month.cs" />
     <Compile Include="Models\Monthes.cs" />

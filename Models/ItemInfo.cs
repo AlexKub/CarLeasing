@@ -7,7 +7,7 @@ namespace CarLeasingViewer.Models
     /// Аренда авто
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public class CarBusiness : ViewModelBase
+    public class ItemInfo : ViewModelBase
     {
         List<Leasing> m_businesses = new List<Leasing>();
 
@@ -51,7 +51,7 @@ namespace CarLeasingViewer.Models
         /// </summary>
         /// <param name="carBusiness">Экземпляр для сравнения</param>
         /// <returns>Возвращает соответствие уникального ключа экземпляров</returns>
-        public bool EqualsID(CarBusiness carBusiness)
+        public bool EqualsID(ItemInfo carBusiness)
         {
             if (carBusiness == null)
                 return false;

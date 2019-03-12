@@ -18,9 +18,9 @@ namespace CarLeasingViewer.Models
         /// </summary>
         readonly Dictionary<int, double> m_rowActualHeights = new Dictionary<int, double>();
 
-        readonly IEnumerable<CarBusiness> m_baseCollection;
+        readonly IEnumerable<ItemInfo> m_baseCollection;
 
-        internal IEnumerable<CarBusiness> BaseCollection => m_baseCollection;
+        internal IEnumerable<ItemInfo> BaseCollection => m_baseCollection;
 
         internal int BaseCollectionCount { get; private set; }
 
@@ -43,11 +43,11 @@ namespace CarLeasingViewer.Models
 
         public Month[] Monthes { get; set; }
 
-        private ObservableCollection<CarBusiness> pv_CarBusiness;
+        private ObservableCollection<ItemInfo> pv_CarBusiness;
         /// <summary>
         /// Возвращает или задаёт
         /// </summary>
-        public ObservableCollection<CarBusiness> CarBusiness { get { return pv_CarBusiness; } set { if (pv_CarBusiness != value) { pv_CarBusiness = value; CurentCount = value.Count; OnPropertyChanged(); } } }
+        public ObservableCollection<ItemInfo> CarBusiness { get { return pv_CarBusiness; } set { if (pv_CarBusiness != value) { pv_CarBusiness = value; CurentCount = value.Count; OnPropertyChanged(); } } }
 
         /// <summary>
         /// Возвращает или задаёт Актуальную высоту строки
@@ -62,19 +62,19 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        public MonthBusiness() : this(Enumerable.Empty<CarBusiness>()) { }
+        public MonthBusiness() : this(Enumerable.Empty<ItemInfo>()) { }
 
-        public MonthBusiness(IEnumerable<CarBusiness> baseCollection)
+        public MonthBusiness(IEnumerable<ItemInfo> baseCollection)
         {
             m_baseCollection = baseCollection;
             BaseCollectionCount = baseCollection.Count();
 
-            CarBusiness = new ObservableCollection<CarBusiness>(baseCollection);
+            CarBusiness = new ObservableCollection<ItemInfo>(baseCollection);
         }
 
         public void ResetFilter()
         {
-            CarBusiness = new ObservableCollection<CarBusiness>(m_baseCollection);
+            CarBusiness = new ObservableCollection<ItemInfo>(m_baseCollection);
         }
 
         string DebugDisplay()

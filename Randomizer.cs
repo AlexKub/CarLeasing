@@ -46,9 +46,9 @@ namespace CarLeasingViewer
             return mb;
         }
 
-        static IEnumerable<CarBusiness> Generate(Month month)
+        static IEnumerable<ItemInfo> Generate(Month month)
         {
-            List<CarBusiness> values = new List<CarBusiness>();
+            List<ItemInfo> values = new List<ItemInfo>();
             for (int i = 0; i < 100; i++)
             {
                 values.Add(GenerateBusiness(i, month));
@@ -57,9 +57,9 @@ namespace CarLeasingViewer
             return values;
         }
 
-        static IEnumerable<CarBusiness> Generate(Month start, Month end)
+        static IEnumerable<ItemInfo> Generate(Month start, Month end)
         {
-            List<CarBusiness> values = new List<CarBusiness>();
+            List<ItemInfo> values = new List<ItemInfo>();
             for (int i = 0; i < 100; i++)
             {
                 values.Add(GenerateBusiness(i, start, end));
@@ -68,9 +68,9 @@ namespace CarLeasingViewer
             return values;
         }
 
-        static CarBusiness GenerateBusiness(int index, Month month)
+        static ItemInfo GenerateBusiness(int index, Month month)
         {
-            var cb = new CarBusiness();
+            var cb = new ItemInfo();
             cb.Name = "Car_" + index.ToString();
             cb.Month = month;
 
@@ -106,9 +106,9 @@ namespace CarLeasingViewer
             return cb;
         }
 
-        static CarBusiness GenerateBusiness(int index, Month start, Month end)
+        static ItemInfo GenerateBusiness(int index, Month start, Month end)
         {
-            var cb = new CarBusiness();
+            var cb = new ItemInfo();
             cb.Name = "Car_" + index.ToString();
             //start = new Month(start.Year, m_rand.Next(start.Index, end.Index + 1));
             //end = new Month(end.Year, m_rand.Next(start.Index, end.Index + 1));
