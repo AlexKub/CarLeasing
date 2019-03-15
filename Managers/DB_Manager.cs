@@ -1,8 +1,8 @@
 ﻿using CarLeasingViewer.Models;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 
 namespace CarLeasingViewer
@@ -184,11 +184,32 @@ namespace CarLeasingViewer
                                 cb = new ItemInfo();
                                 cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ID = (string)reader["No_"];
+                                try
+                                {
+                                    var value = reader["IsMaintaining"] as byte?;
+
+                                    var hasMaintaining = value == null ? false : value > 0;
+                                    if (hasMaintaining)
+                                    {
+                                        var mi = new MaintenanceInfo();
+                                        mi.DateStart = (DateTime)reader["MaintainanceStartDate"];
+                                        mi.DateStart = mi.DateStart.Add(((DateTime)reader["MaintainanceStartTime"]).TimeOfDay);
+                                        mi.DateEnd = (DateTime)reader["MaintainanceEndDate"];
+                                        mi.DateEnd = mi.DateEnd.Add(((DateTime)reader["MaintainanceEndTime"]).TimeOfDay);
+                                        mi.Description = (string)reader["MaintainanceDescription"];
+                                        cb.Maintenance = mi;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    m_loger.Log("Возникло исключение при считывании Информации о ремонте из БД", ex);
+                                }
+
                                 carBusinesses.Add(cb);
 
                                 var number = ((string)reader["CarNumber"])?.Trim() ?? string.Empty;
 
-                                var lastCharIndex = number.Length > 0 
+                                var lastCharIndex = number.Length > 0
                                     ? number.Last(c => char.IsLetter(c)) + 1 //ищем последнюю букву
                                     : 0;
 
@@ -548,9 +569,16 @@ namespace CarLeasingViewer
 	                    , h.[Time End] as TimeEnd
 	                    , h.[Comment Text] as Comment
                         , {(settings.SelectedDBSearchType == DBSearchType.Curent ? "0" : "1")} as Invoice
+                        , u.[Active] as IsMaintaining
+                        , u.[Date Begin] as MaintainanceStartDate
+                        , u.[Time Degin] as MaintainanceStartTime
+                        , u.[Date End] as MaintainanceEndDate
+                        , u.[Time End] as MaintainanceEndTime
+                        , u.[Description] as MaintainanceDescription
                          FROM Carlson$Item i
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
+                            LEFT JOIN [Carlson$Venicle Temp_ UnAvail_] u ON u.[Item No_] = i.No_
                         
                         WHERE 1 = 1
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
