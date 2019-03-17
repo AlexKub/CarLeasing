@@ -130,6 +130,7 @@
     <Compile Include="Models\MonthLeasing.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
+    <Compile Include="StaticResources.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />
     <Compile Include="Log\ILogParameter.cs" />
@@ -206,6 +207,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ResourceDictionaries\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResourceDictionaries\StandartImages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -255,10 +260,13 @@
     <Resource Include="Main.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\maintenance.ico" />
+    <Resource Include="Resources\maintenance.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\maintenance.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

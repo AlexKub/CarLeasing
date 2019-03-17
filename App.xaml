@@ -11,6 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ResourceDictionaries/Colors.xaml" />
                 <ResourceDictionary Source="/ResourceDictionaries/StandartImages.xaml" />
+                <ResourceDictionary Source="/ResourceDictionaries/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style x:Key="HorizontalItemsControl" TargetType="ItemsControl">
                 <Setter Property="ItemsPanel">

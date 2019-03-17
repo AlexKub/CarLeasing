@@ -10,6 +10,7 @@
         xmlns:models="clr-namespace:CarLeasingViewer.Models"
         xmlns:controls="clr-namespace:CarLeasingViewer.Controls"
         xmlns:converters="clr-namespace:CarLeasingViewer.Converters"
+        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Title="Загрузка ТС" Height="450" Width="700" MinWidth="1150"
         d:DataContext="{d:DesignInstance Type=vm:LeasingViewViewModel}">
@@ -63,13 +64,19 @@
 
     <Grid Margin="10 0 10 0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
+        <Menu Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <MenuItem Header="Помощь">
+                <MenuItem Header="Каталог логирования"/>
+            </MenuItem>
+        </Menu>
         <!-- Настройки выборки -->
-        <Grid >
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
@@ -112,7 +119,7 @@
         </Grid>
 
         <!-- Основной график лизинга -->
-        <Border BorderThickness=" 0 0 1 0" Grid.Row="1" Grid.Column="1" MinHeight="300" BorderBrush="{StaticResource LightBorderBrush}">
+        <Border BorderThickness=" 0 0 1 0" Grid.Row="2" Grid.Column="1" MinHeight="300" BorderBrush="{StaticResource LightBorderBrush}">
             <Grid MouseLeave="ScrollViewer_MouseLeave" 
                   d:DataContext="{d:DesignInstance Type=models:LeasingSet}"  DataContext="{Binding LeasingSet}"  >
                 <Grid.Resources>
@@ -248,9 +255,16 @@
                                             <Grid >
                                                 <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
 
-                                                <!-- квадратик для индикации "блокированных" -->
-                                                <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!-- квадратик для индикации "блокированных" -->
+                                                    <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
+                                                    <!-- Иконка Занятости авто -->
+                                                    <Image Source="{StaticResource Maintenance}" 
+                                                        Width="{StaticResource StandartIconSize}" 
+                                                        Height="{StaticResource StandartIconSize}"
+                                                        Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -291,7 +305,7 @@
         </Border>
 
         <!-- Строка внизу со статистикой -->
-        <Border Grid.Row="2" SnapsToDevicePixels="True" BorderThickness="1" VerticalAlignment="Top" 
+        <Border Grid.Row="3" SnapsToDevicePixels="True" BorderThickness="1" VerticalAlignment="Top" 
                 BorderBrush="{StaticResource LightBorderBrush}" 
                 Visibility="{Binding Statistic.HasItems, Converter={StaticResource CommonVisibilityConverter}}">
             <ItemsControl ItemsSource="{Binding Statistic}">

@@ -44,6 +44,12 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public bool Blocked { get { return m_Blocked; } set { m_Blocked = value; OnPropertyChanged(); } }
 
+        private bool m_isMaintaining;
+        /// <summary>
+        /// Возвращает или задаёт Флаг занятости авто
+        /// </summary>
+        public bool IsMaintaining { get { return m_isMaintaining; } set { m_isMaintaining = value; OnPropertyChanged(); } }
+
         private string pv_Text;
         /// <summary>
         /// Возвращает или задаёт
