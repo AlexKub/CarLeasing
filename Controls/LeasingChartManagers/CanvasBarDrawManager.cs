@@ -45,6 +45,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public Brush BlockedBarBrush { get; set; }
 
+        /// <summary>
+        /// Кисть для заливки находящихся в ремонте
+        /// </summary>
+        public Brush MaintenanceBrush { get; set; }
+
         double m_rowHeight;
         /// <summary>
         /// Высота строки
