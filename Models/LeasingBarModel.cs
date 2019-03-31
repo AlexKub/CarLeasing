@@ -183,8 +183,8 @@ namespace CarLeasingViewer.Models
             StringBuilder sb = new StringBuilder();
             //<действие> c XX по ХХ <месяц>
             string inline = "    ";
-            sb.AppendLine("В аренде:")
-                .Append(pv_Leasing.TooltipRow(inline, sb));
+            sb.AppendLine("В аренде:");
+            pv_Leasing.AppendTooltipRow(sb, inline);
 
             return sb.ToString();
         }

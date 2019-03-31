@@ -70,6 +70,12 @@ namespace CarLeasingViewer
             return !((this_period.DateStart > period.DateEnd) || (this_period.DateEnd < period.DateStart));
         }
 
+        public static string TooltipRow(this IPeriod period)
+        {
+            var sb = new StringBuilder();
+
+            return AppendTooltipRow(period, sb).ToString();
+        }
         /// <summary>
         /// Строковое представление
         /// </summary>
@@ -77,7 +83,7 @@ namespace CarLeasingViewer
         /// <param name="inline">Отступ</param>
         /// <param name="sb">Текущий экземпляр StringBuilder</param>
         /// <returns></returns>
-        public static string TooltipRow(this IPeriod period, string inline = "    ", StringBuilder sb = null)
+        public static StringBuilder AppendTooltipRow(this IPeriod period, StringBuilder sb, string inline = "    ")
         {
             //копипаста из BussinessDateConverter (старая версия)
             if (sb == null)
@@ -97,7 +103,7 @@ namespace CarLeasingViewer
                 .Append(period.DateEnd.Year.ToString()).Append(" ")
                 .Append(period.DateEnd.TimeOfDay.Hours > 0 ? period.DateEnd.TimeOfDay.ToString(@"hh\:mm") : string.Empty);
 
-            return sb.ToString();
+            return sb;
         }
     }
 }
