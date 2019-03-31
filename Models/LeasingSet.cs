@@ -349,11 +349,9 @@ namespace CarLeasingViewer.Models
                     if(item.Maintenance != null)
                     {
                         leasingBarModels.Add(
-                            new MaintenanceBarModel(this)
+                            new MaintenanceBarModel(this, item)
                             {
                                 RowIndex = index,
-                                Period = item.Maintenance,
-                                
                             });
                     }
                 }

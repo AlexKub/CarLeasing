@@ -1,4 +1,5 @@
-﻿using CarLeasingViewer.Models;
+﻿using CarLeasingViewer.Interfaces;
+using CarLeasingViewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -26,7 +27,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         System.Drawing.Font m_drawingFont;
 
-        Dictionary<LeasingBarModel, BarData> m_bars = new Dictionary<LeasingBarModel, BarData>();
+        Dictionary<ITitledBar, BarData> m_bars = new Dictionary<ITitledBar, BarData>();
 
         public Brush TextBrush { get; set; }
 
@@ -123,7 +124,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             TextBrush.Freeze();
         }
 
-        public DrawingVisual DrawText(LeasingBarModel model)
+        public DrawingVisual DrawText(ITitledBar model)
         {
             //проверяем инициализацию для интерфейса шрифта
             //инициализирован при заполнении шрифта (this.FontFamily)
@@ -167,7 +168,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         DrawingVisual DrawText(BarData bd)
         {
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
-            string text = bd?.Model?.Leasing?.Title ?? "NO TITLE";
+            string text = bd?.Model?.Text ?? "NO TITLE";
 
             //обрезаем ООО для компаний, т.к. информация бессмысленная
             //в tooltip'e и так видно абревиатуру ЮЛ, а при аренде на пару дней видно только ООО
@@ -363,7 +364,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// </summary>
             public Figure Border { get; set; }
 
-            public LeasingBarModel Model { get; set; }
+            public ITitledBar Model { get; set; }
 
             /// <summary>
             /// Флаг отрисовки текста для данной полоски

@@ -93,6 +93,7 @@
     <Compile Include="Interfaces\IDrawableBar.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Interfaces\IPeriod.cs" />
+    <Compile Include="Interfaces\ITitledBar.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
     <Compile Include="Models\CarPriceList.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />

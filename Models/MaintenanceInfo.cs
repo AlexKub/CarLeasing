@@ -18,7 +18,7 @@ namespace CarLeasingViewer.Models
             set
             {
                 m_DateStart = value;
-                MonthCount = PeriodManaging.CalculateMonthCount(this);
+                MonthCount = this.CalculateMonthCount();
             }
         }
 
@@ -32,7 +32,7 @@ namespace CarLeasingViewer.Models
             set
             {
                 m_DateEnd = value;
-                MonthCount = PeriodManaging.CalculateMonthCount(this);
+                MonthCount = this.CalculateMonthCount();
             }
         }
 

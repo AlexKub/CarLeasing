@@ -9,7 +9,7 @@ namespace CarLeasingViewer.Models
     /// Модель для плашки занятости авто
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public partial class LeasingBarModel : ViewModels.ViewModelBase, IIndexable, IDrawableBar
+    public partial class LeasingBarModel : ViewModels.ViewModelBase, IIndexable, ITitledBar
     {
 #if Test
         bool m_calculate = false;
@@ -170,6 +170,8 @@ namespace CarLeasingViewer.Models
                 return rows.ToArray();
             }
         }
+
+        public string Title => Leasing?.Title ?? "NO_TITLE";
 
         /// <summary>
         /// Получение строкового представления срока аренды

@@ -1,4 +1,5 @@
 ﻿using CarLeasingViewer.Controls.LeasingChartManagers;
+using CarLeasingViewer.Interfaces;
 using CarLeasingViewer.Models;
 using System;
 using System.Collections.Generic;
@@ -284,11 +285,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public double RowHeight { get { return (double)GetValue(dp_RowHeight); } set { SetValue(dp_RowHeight, value); } }
 
-        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<LeasingBarModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingBarModel>() });
+        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<IDrawableBar>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<IDrawableBar>() });
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<LeasingBarModel> Leasings { get { return (IEnumerable<LeasingBarModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<IDrawableBar> Leasings { get { return (IEnumerable<IDrawableBar>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
         LeasingSet m_set;
         /// <summary>
@@ -350,7 +351,7 @@ namespace CarLeasingViewer.Controls
 
             var rowsI = GetRowIndexes();
 
-            RedrawGrid(rowsI);
+            ReDrawGrid(rowsI);
 
             //отрисовка Layout'ов для строк графика
             if (m_rowLayoutM != null)
@@ -367,20 +368,27 @@ namespace CarLeasingViewer.Controls
             //отрисовка прямоугольников и текста
             if (m_barM != null && m_textM != null)
             {
-                foreach (var bm in Leasings)
+                if (Leasings == null)
+                    App.Loger.Log("Пустая ссылка на анбор аренд авто. Отрисовка пропущена.");
+                else
                 {
-                    if (!Valid(bm))
-                        continue;
+                    foreach (var bm in Leasings)
+                    {
+                        if (!Valid(bm))
+                            continue;
 
-                    dv = m_barM.DrawBar(bm);
+                        dv = m_barM.DrawBar(bm);
 
-                    if (dv != null)
-                        m_children.Add(dv);
+                        if (dv != null)
+                            m_children.Add(dv);
 
-                    dv = m_textM.DrawText(bm);
+                        var titled = bm as ITitledBar;
+                        if (titled != null)
+                            dv = m_textM.DrawText(titled);
 
-                    if (dv != null)
-                        m_children.Add(dv);
+                        if (dv != null)
+                            m_children.Add(dv);
+                    }
                 }
             }
         }
@@ -505,11 +513,10 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        bool Valid(LeasingBarModel model)
+        bool Valid(IDrawableBar model)
         {
-            if (model == null
-                || model.Leasing == null
-                || (model.Month == null && (model.Monthes == null || model.Monthes.Length == 0)))
+            if (model == null || model.Period == null)
+                //|| (model.Month == null && (model.Monthes == null || model.Monthes.Length == 0)))
                 return false;
 
             return true;
@@ -518,7 +525,7 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Перерисовка сетки
         /// </summary>
-        public void RedrawGrid(IEnumerable<int> rowsI = null)
+        public void ReDrawGrid(IEnumerable<int> rowsI = null)
         {
             if (rowsI == null)
                 return;

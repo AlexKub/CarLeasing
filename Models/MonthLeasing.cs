@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CarLeasingViewer.Models
 {
@@ -23,9 +24,9 @@ namespace CarLeasingViewer.Models
                 {
                     pv_MonthHeader = value;
 
-                    if(pv_Leasings != null)
+                    if (pv_Leasings != null)
                     {
-                        foreach (var leasing in pv_Leasings)
+                        foreach (var leasing in pv_Leasings.OfType<LeasingBarModel>())
                         {
                             leasing.Month = value;
                         }
@@ -35,11 +36,11 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        private IReadOnlyList<LeasingBarModel> pv_Leasings;
+        private IReadOnlyList<Interfaces.IDrawableBar> pv_Leasings;
         /// <summary>
         /// Возвращает или задаёт набор занятости автомобилей в текущем месяце
         /// </summary>
-        public IReadOnlyList<LeasingBarModel> Leasings
+        public IReadOnlyList<Interfaces.IDrawableBar> Leasings
         {
             get { return pv_Leasings; }
             set
@@ -55,12 +56,14 @@ namespace CarLeasingViewer.Models
                     if (value != null)
                     {
                         var distinctRowIndexes = new List<int>(100);
-                        foreach (var leasing in value)
+                        foreach (var bar in value)
                         {
-                            if (!distinctRowIndexes.Contains(leasing.RowIndex))
-                                distinctRowIndexes.Add(leasing.RowIndex);
+                            if (!distinctRowIndexes.Contains(bar.RowIndex))
+                                distinctRowIndexes.Add(bar.RowIndex);
 
-                            leasing.Month = MonthHeader;
+                            var leasing = bar as LeasingBarModel;
+                            if (leasing != null)
+                                leasing.Month = MonthHeader;
                         }
 
                         rowCount = distinctRowIndexes.Count;

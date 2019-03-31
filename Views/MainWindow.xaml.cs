@@ -177,7 +177,7 @@ namespace CarLeasingViewer.Views
         {
             LeasingChart.VisibleArea.ChartHeight = LeasingScroll.ActualHeight;
             LeasingChart.VisibleArea.ChartWith = LeasingScroll.ActualWidth;
-            LeasingChart.RedrawGrid();
+            LeasingChart.ReDrawGrid();
         }
 
         void Subscribe(bool subscribe)
