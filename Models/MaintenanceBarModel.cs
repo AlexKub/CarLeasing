@@ -13,6 +13,8 @@ namespace CarLeasingViewer.Models
 
         public string Text { get; private set; }
 
+        public Controls.LeasingChartManagers.ChartBarType BarType => Controls.LeasingChartManagers.ChartBarType.Maintenance;
+
         public string[] ToolTipRows { get; private set; }
 
         public MaintenanceBarModel(LeasingSet set, ItemInfo item)

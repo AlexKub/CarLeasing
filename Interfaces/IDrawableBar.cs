@@ -33,6 +33,14 @@ namespace CarLeasingViewer.Interfaces
         string[] ToolTipRows { get; }
 
         /// <summary>
+        /// Тип отрисовываемого элемента
+        /// </summary>
+        /// <remarks>Чтобы избежать приведения типов для моделей при отрисовке 
+        /// (ускорить отрисовку), 
+        /// решил вывести признак в перечисление</remarks>
+        Controls.LeasingChartManagers.ChartBarType BarType { get; }
+
+        /// <summary>
         /// Генерация копии
         /// </summary>
         /// <returns>Новая полная копия</returns>

@@ -119,6 +119,8 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int VisibleDaysCount { get; private set; }
 
+        public Controls.LeasingChartManagers.ChartBarType BarType => Controls.LeasingChartManagers.ChartBarType.Leasing;
+
 #if Test
 
         public LeasingElementModel()
