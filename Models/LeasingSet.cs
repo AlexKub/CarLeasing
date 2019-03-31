@@ -351,7 +351,7 @@ namespace CarLeasingViewer.Models
                         leasingBarModels.Add(
                             new MaintenanceBarModel(this, item)
                             {
-                                RowIndex = index,
+                                RowIndex = rowIndex,
                             });
                     }
                 }
