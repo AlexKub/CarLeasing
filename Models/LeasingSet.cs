@@ -48,7 +48,7 @@ namespace CarLeasingViewer.Models
     /// Общий набор Аренд авто для LeasingChart
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public class LeasingSet : ViewModels.ViewModelBase, IDisposable
+    public class LeasingSet : ViewModels.ViewModelBase, IDisposable, IPeriod
     {
         /// <summary>
         /// Базовый набор (без сортировок)
@@ -65,19 +65,40 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public bool Sorted { get { return !m_baseSetted; } }
 
+        DateTime m_dateStart;
         /// <summary>
         /// Дата начала (при сортировке)
         /// </summary>
-        public DateTime DateStart { get; private set; }
+        public DateTime DateStart
+        {
+            get { return m_dateStart; }
+            private set
+            {
+                m_dateStart = value;
+                MonthCount = this.CalculateMonthCount();
+            }
+        }
 
+        DateTime m_dateEnd;
         /// <summary>
         /// Дата окончания (при сортировке)
         /// </summary>
-        public DateTime DateEnd { get; private set; }
+        public DateTime DateEnd
+        {
+            get { return m_dateEnd; }
+            private set
+            {
+                m_dateEnd = value;
+                MonthCount = this.CalculateMonthCount();
+            }
+        }
+
+        /// <summary>
+        /// Количество месяцев в рассматриваемом периоде Набора
+        /// </summary>
+        public int MonthCount { get; private set; }
 
         #region Notify properties
-
-
 
         private int m_RowsCount;
         /// <summary>
@@ -267,11 +288,12 @@ namespace CarLeasingViewer.Models
                 .SelectMany(mb => mb.CarBusiness)
             .Select(cb => new { cb.Name, cb.ID, cb.Maintenance })
             .Distinct()
-            .Select(o => 
-            new CarModel() {
+            .Select(o =>
+            new CarModel()
+            {
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
-                IsMaintaining  = o.Maintenance != null
+                IsMaintaining = o.Maintenance != null
             }).ToList();
 
             var ordered = SortManager.OrderByPrice(notOrdered).ToList();
@@ -287,9 +309,9 @@ namespace CarLeasingViewer.Models
             return cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
         }
 
-        List<LeasingBarModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
+        List<IDrawableBar> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
         {
-            var leasingBarModels = new List<LeasingBarModel>();
+            var leasingBarModels = new List<IDrawableBar>();
 
             var index = 0;
 
@@ -306,7 +328,10 @@ namespace CarLeasingViewer.Models
                             rowIndex = car == null ? 0 : car.RowIndex;
                             var model = new LeasingBarModel(this)
                             {
-                                CarName = m_CarModels.Count > 0 ? m_CarModels[rowIndex].Text : b.CarName,
+                                CarName = 
+                                    m_CarModels.Count > 0 
+                                        ? m_CarModels[rowIndex].Text 
+                                        : b.CarName,
                                 Leasing = b,
                                 RowIndex = rowIndex,
                                 DayColumnWidth = columnWidth
@@ -319,7 +344,20 @@ namespace CarLeasingViewer.Models
 
                             return model;
                         }));
+
+                    //отрисовка ремонта
+                    if(item.Maintenance != null)
+                    {
+                        leasingBarModels.Add(
+                            new MaintenanceBarModel(this)
+                            {
+                                RowIndex = index,
+                                Period = item.Maintenance,
+                                
+                            });
+                    }
                 }
+
                 index++;
             }
 
@@ -539,11 +577,11 @@ namespace CarLeasingViewer.Models
 
             public List<CarCommentModel> Comments { get; private set; }
 
-            public List<LeasingBarModel> Leasings { get; private set; }
+            public List<IDrawableBar> Leasings { get; private set; }
 
             public List<Controls.LeasingChartManagers.RowManager.Row> Rows { get; private set; }
 
-            public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<LeasingBarModel> leasings)
+            public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<IDrawableBar> leasings)
             {
                 Cars = cars;
                 Comments = comments;

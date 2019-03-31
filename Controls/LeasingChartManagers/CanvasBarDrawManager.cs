@@ -1,5 +1,6 @@
 ﻿using CarLeasingViewer.Interfaces;
 using CarLeasingViewer.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -22,6 +23,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Смещение по строке (высота строки + ширина полоски)
         /// </summary>
         double m_rowOffset;
+
+        Pen m_MaintenancePen;
 
         Brush m_brush;
         /// <summary>
@@ -54,10 +57,28 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         public Brush BlockedBarBrush { get; set; }
 
+        Brush m_MaintenanceBrush;
         /// <summary>
         /// Кисть для заливки находящихся в ремонте
         /// </summary>
-        public Brush MaintenanceBrush { get; set; }
+        public Brush MaintenanceBrush
+        {
+            get
+            {
+                return m_MaintenanceBrush;
+            }
+            set
+            {
+                m_MaintenanceBrush = value;
+
+                //простановка  отрисовки зеброй
+                m_MaintenancePen = new Pen(value, 3d);
+                var dStyle = DashStyles.Dash;
+                dStyle.Freeze();
+                m_MaintenancePen.DashStyle = dStyle;
+                m_MaintenancePen.Freeze();
+            }
+        }
 
         double m_rowHeight;
         /// <summary>
@@ -163,7 +184,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var lem = bd.Model as LeasingBarModel;
             if (lem != null)
                 brush = lem.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
-            
+            else if (bd.Model is MaintenanceBarModel)
+                brush = m_MaintenanceBrush;
+            else
+                throw new NotImplementedException($"Отрисовка для типа модели '{bd.Model?.GetType().Name ?? "NULL_MODEL"}'");
+
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
@@ -204,7 +229,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guidelines.GuidelinesY.Add(rect.Bottom + m_halfPenWidth);
 
             dc.PushGuidelineSet(guidelines);
-            dc.DrawRectangle(brush, Pen, rect);
+
+            var isMaintenance = bd.Model is MaintenanceBarModel;
+            var pen = isMaintenance ? m_MaintenancePen : Pen; 
+            dc.DrawRectangle(brush, pen, rect);
             dc.Pop();
         }
 
