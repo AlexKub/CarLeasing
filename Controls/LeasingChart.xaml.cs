@@ -384,10 +384,12 @@ namespace CarLeasingViewer.Controls
 
                         var titled = bm as ITitledBar;
                         if (titled != null)
+                        {
                             dv = m_textM.DrawText(titled);
 
-                        if (dv != null)
-                            m_children.Add(dv);
+                            if (dv != null)
+                                m_children.Add(dv);
+                        }
                     }
                 }
             }
