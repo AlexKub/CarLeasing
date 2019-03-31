@@ -3,6 +3,10 @@ using CarLeasingViewer.Interfaces;
 
 namespace CarLeasingViewer.Models
 {
+    /// <summary>
+    /// Модель для отрисовки периода Ремонта авто на ГРафике
+    /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class MaintenanceBarModel : Interfaces.IDrawableBar
     {
         public int RowIndex { get; set; }

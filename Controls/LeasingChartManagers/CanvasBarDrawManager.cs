@@ -23,6 +23,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Смещение по строке (высота строки + ширина полоски)
         /// </summary>
         double m_rowOffset;
+        Pen m_currentPen;
+        Brush m_currentBrush;
 
         Pen m_MaintenancePen;
 
@@ -179,15 +181,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         }
                 }
 
-            //задаём кисть для заливки полоски
-            var brush = BackgroundBrush;
-            var lem = bd.Model as LeasingBarModel;
-            if (lem != null)
-                brush = lem.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
-            else if (bd.Model is MaintenanceBarModel)
-                brush = m_MaintenanceBrush;
-            else
-                throw new NotImplementedException($"Отрисовка для типа модели '{bd.Model?.GetType().Name ?? "NULL_MODEL"}'");
+            //задаём инструменты отрисовки
+            SetDrawTools(bd.Model.BarType);
 
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
@@ -195,13 +190,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 switch (pathType) //выбор геометрии полоски
                 {
                     case DrawPathType.Rectangle:
-                        DrawRect(dc, bd, brush); //обычный прямоугольник
+                        DrawRect(dc, bd); //обычный прямоугольник
                         break;
                     case DrawPathType.Geometry_L:
-                        DrawGeometry(dc, bd, brush, true); //обрезка слева
+                        DrawGeometry(dc, bd, true); //обрезка слева
                         break;
                     case DrawPathType.Geometry_R:
-                        DrawGeometry(dc, bd, brush, false); //обрезка справа
+                        DrawGeometry(dc, bd, false); //обрезка справа
                         break;
                 }
 
@@ -216,7 +211,30 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
-        void DrawRect(DrawingContext dc, BarData bd, Brush brush)
+        /// <summary>
+        /// Простановка настроек отрисовки
+        /// </summary>
+        /// <param name="type">Тип панели</param>
+        void SetDrawTools(ChartBarType type)
+        {
+            switch (type)
+            {
+                //отрисовка панелек Занятости
+                case ChartBarType.Leasing:
+                    m_currentPen = m_MaintenancePen;
+                    m_currentBrush = m_MaintenanceBrush;
+                    break;
+                //отрисовка панелек Ремонта
+                case ChartBarType.Maintenance:
+                    m_currentPen = Pen;
+                    m_currentBrush = BackgroundBrush;
+                    break;
+                default:
+                    throw new NotImplementedException($"Отрисовка для типа модели '{type.ToString()}' не реализована");
+            }
+        }
+
+        void DrawRect(DrawingContext dc, BarData bd)
         {
             Rect rect = new Rect(bd.HorizontalOffset, bd.VerticalOffset, GetWidth(bd.Model), RowHeight);
             bd.Bar = rect;
@@ -232,11 +250,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             var isMaintenance = bd.Model is MaintenanceBarModel;
             var pen = isMaintenance ? m_MaintenancePen : Pen; 
-            dc.DrawRectangle(brush, pen, rect);
+            dc.DrawRectangle(m_currentBrush, m_currentPen, rect);
             dc.Pop();
         }
 
-        void DrawGeometry(DrawingContext dc, BarData bd, Brush brush, bool left)
+        void DrawGeometry(DrawingContext dc, BarData bd, bool left)
         {
             PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();
@@ -282,7 +300,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             bd.Bar = g;
             dc.PushGuidelineSet(guidelines);
-            dc.DrawGeometry(brush, Pen, g);
+            dc.DrawGeometry(m_currentBrush, m_currentPen, g);
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
@@ -634,6 +652,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 public static implicit operator Geometry(Figure g) => g?.Geometry;
 
                 public static implicit operator Figure(Rect r) => new Figure(r);
+
                 public static implicit operator Figure(Geometry g) => new Figure(g);
 
                 string DebugerDisplay()
