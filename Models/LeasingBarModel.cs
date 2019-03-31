@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using CarLeasingViewer.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace CarLeasingViewer.Models
 {
@@ -6,7 +9,7 @@ namespace CarLeasingViewer.Models
     /// Модель для плашки занятости авто
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public partial class LeasingElementModel : ViewModels.ViewModelBase, IIndexable
+    public partial class LeasingBarModel : ViewModels.ViewModelBase, IIndexable, IDrawableBar
     {
 #if Test
         bool m_calculate = false;
@@ -127,7 +130,7 @@ namespace CarLeasingViewer.Models
 #endif
 
 
-        public LeasingElementModel(LeasingSet set)
+        public LeasingBarModel(LeasingSet set)
         {
             Set = set;
         }
@@ -135,6 +138,99 @@ namespace CarLeasingViewer.Models
         #region IIndexable
 
         int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
+
+        #endregion
+
+        #region IDrawableBar
+
+        IPeriod IDrawableBar.Period => pv_Leasing;
+
+        LeasingSet IDrawableBar.Set => Set;
+
+        string IDrawableBar.Text => pv_CarName;
+
+        string[] IDrawableBar.ToolTipRows
+        {
+            get
+            {
+                //формирование строчек всплывающей подсказски
+                //для Аренды
+                var rows = new List<string>(4);
+
+                rows.Add(pv_Leasing?.Title ?? "NULL");
+                rows.Add(pv_CarName);
+                rows.Add(GetDataSpan());
+
+                var comment = pv_Leasing?.Comment;
+                if (!string.IsNullOrEmpty(comment))
+                    rows.Add(comment);
+
+                return rows.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Получение строкового представления срока аренды
+        /// </summary>
+        /// <param name="model">Модель</param>
+        /// <returns>Возвращает срок аренды</returns>
+        string GetDataSpan()
+        {
+            //копипаста из BussinessDateConverter (старая версия)
+            StringBuilder sb = new StringBuilder();
+            //<действие> c XX по ХХ <месяц>
+            string inline = "    ";
+            sb.AppendLine("В аренде:").Append(inline).Append("c ");
+
+            var b = pv_Leasing;
+            //if (b.MonthCount < 2) //для одного месяца
+            //    sb.Append(b.DateStart.Day.ToString())
+            //        //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateStart.Year.ToString() + " ") : string.Empty)
+            //        .Append(" ")
+            //        .Append(b.DateEnd.Day.ToString()).Append(" ")
+            //        //.Append(b.DateStart.Month == b.DateEnd.Month ? "" : b.DateStart.GetMonthName() + " ")
+            //        .AppendLine(b.DateStart.TimeOfDay.Hours > 0 ? b.DateStart.TimeOfDay.ToString(@"hh\:mm") : string.Empty)
+            //        .Append(inline)
+            //        .Append("по ")
+            //        .Append(b.DateEnd.Day.ToString())
+            //        .Append(" ")
+            //        .Append(b.DateEnd.GetMonthName()).Append(" ")
+            //        //.Append(b.DateStart.Year < b.DateEnd.Year ? (b.DateEnd.Year.ToString() + " ") : string.Empty)
+            //        .Append(b.DateEnd.TimeOfDay.Hours > 0 ? b.DateEnd.TimeOfDay.ToString(@"hh\:mm") : string.Empty).Append(" ");
+            //else //для нескольких месяцев 
+            sb.Append(b.DateStart.Day.ToString()).Append(" ")
+                .Append(b.DateStart.GetMonthName()).Append(" ")
+                .Append(b.DateStart.Year.ToString()).Append(" ")
+                .AppendLine(b.DateStart.TimeOfDay.Hours > 0 ? b.DateStart.TimeOfDay.ToString(@"hh\:mm") : string.Empty)
+                .Append(inline)
+                .Append("по ")
+                .Append(b.DateEnd.Day.ToString()).Append(" ")
+                .Append(b.DateEnd.GetMonthName()).Append(" ")
+                .Append(b.DateEnd.Year.ToString()).Append(" ")
+                .Append(b.DateEnd.TimeOfDay.Hours > 0 ? b.DateEnd.TimeOfDay.ToString(@"hh\:mm") : string.Empty);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Получение нового экземпляра с теми же значениями свойств, кроме RowIndex
+        /// </summary>
+        /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
+        public IDrawableBar Clone()
+        {
+            var newInstance = new LeasingBarModel(Set);
+            newInstance.pv_CarName = pv_CarName;
+            newInstance.pv_Width = pv_Width;
+            newInstance.pv_Month = pv_Month;
+            newInstance.pv_DayColumnWidth = pv_DayColumnWidth;
+            newInstance.pv_DayOffset = pv_DayOffset;
+            newInstance.pv_Leasing = pv_Leasing;
+            newInstance.pv_DaysCount = pv_DaysCount;
+            newInstance.pv_Monthes = pv_Monthes;
+            newInstance.VisibleDaysCount = VisibleDaysCount;
+
+            return newInstance;
+        }
 
         #endregion
 
@@ -298,24 +394,6 @@ namespace CarLeasingViewer.Models
                 + " | " + CarName == null ? "NO CAR" : CarName;
         }
 
-        /// <summary>
-        /// Получение нового экземпляра с теми же значениями свойств, кроме RowIndex
-        /// </summary>
-        /// <returns>Возвращает новый экземпляр с теми же значениями свойств, кроме RowIndex</returns>
-        public LeasingElementModel Clone()
-        {
-            var newInstance = new LeasingElementModel(Set);
-            newInstance.pv_CarName = pv_CarName;
-            newInstance.pv_Width = pv_Width;
-            newInstance.pv_Month = pv_Month;
-            newInstance.pv_DayColumnWidth = pv_DayColumnWidth;
-            newInstance.pv_DayOffset = pv_DayOffset;
-            newInstance.pv_Leasing = pv_Leasing;
-            newInstance.pv_DaysCount = pv_DaysCount;
-            newInstance.pv_Monthes = pv_Monthes;
-            newInstance.VisibleDaysCount = VisibleDaysCount;
-
-            return newInstance;
-        }
+        
     }
 }

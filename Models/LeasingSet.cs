@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CarLeasingViewer.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -176,11 +177,11 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        private IReadOnlyList<LeasingElementModel> pv_Leasings = new List<LeasingElementModel>();
+        private IReadOnlyList<IDrawableBar> pv_Leasings = new List<IDrawableBar>();
         /// <summary>
         /// Возвращает или задаёт набор занятости автомобилей в текущем месяце
         /// </summary>
-        public IReadOnlyList<LeasingElementModel> Leasings
+        public IReadOnlyList<IDrawableBar> Leasings
         {
             get { return pv_Leasings; }
             set
@@ -286,9 +287,9 @@ namespace CarLeasingViewer.Models
             return cars.Select(car => new CarCommentModel() { RowIndex = car.RowIndex, Comment = (car.Text + "_comment") }).ToList();
         }
 
-        List<LeasingElementModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
+        List<LeasingBarModel> GetLeasingModels(IEnumerable<MonthBusiness> monthBuisnesses)
         {
-            var leasingBarModels = new List<LeasingElementModel>();
+            var leasingBarModels = new List<LeasingBarModel>();
 
             var index = 0;
 
@@ -299,11 +300,11 @@ namespace CarLeasingViewer.Models
                 {
                     var car = m_CarModels.FirstOrDefault(c => c.Text.Equals(item.Name));
                     var rowIndex = 0;
-                    leasingBarModels.AddRange(item.Business.Select(
+                    leasingBarModels.AddRange(item.Leasings.Select(
                         b =>
                         {
                             rowIndex = car == null ? 0 : car.RowIndex;
-                            var model = new LeasingElementModel(this)
+                            var model = new LeasingBarModel(this)
                             {
                                 CarName = m_CarModels.Count > 0 ? m_CarModels[rowIndex].Text : b.CarName,
                                 Leasing = b,
@@ -352,27 +353,27 @@ namespace CarLeasingViewer.Models
         /// Сортировка моделей по дате
         /// </summary>
         /// <param name="date">Выбранная дата</param>
-        public void Sort(DateTime date)
-        {
-            Sort(date.Date, date);
-        }
+        //public void Sort(DateTime date)
+        //{
+        //    Sort(date.Date, date);
+        //}
 
         /// <summary>
         /// Сортировка моделей по дате
         /// </summary>
         /// <param name="date">Выбранная дата</param>
-        public void Sort(DateTime dateStart, DateTime dateEnd)
+        public void Sort(IPeriod period)
         {
             if (m_baseSet.Rows == null || m_baseSet.Rows.Count == 0)
                 return;
 
-            var sorted = m_baseSet.Rows.SelectFree(dateStart, dateEnd);
+            var sorted = m_baseSet.Rows.SelectFree(period);
 
             //для даты начала время не важно
             //если машину берут сегодня, то она занята*
             //* кроме случаев, когда берут и сдают в тот же день
-            DateStart = dateStart.Date;
-            DateEnd = dateEnd;
+            DateStart = period.DateStart.Date;
+            DateEnd = period.DateEnd;
 
             if (sorted.Count == 0)
                 SetEmpty();
@@ -394,7 +395,7 @@ namespace CarLeasingViewer.Models
         void SetSorted(IEnumerable<Controls.LeasingChartManagers.RowManager.Row> rows)
         {
             var cars = new List<CarModel>();
-            var leasings = new List<LeasingElementModel>();
+            var leasings = new List<IDrawableBar>();
             var comments = new List<CarCommentModel>();
 
             //ставим флаг, что используются сортированные данные
@@ -403,7 +404,7 @@ namespace CarLeasingViewer.Models
 
             CarModel car = null;
             CarCommentModel comment = null;
-            LeasingElementModel leasing = null;
+            IDrawableBar leasing = null;
             if (rows != null && rows.Count() > 0)
             {
                 var rowIndex = 0;
@@ -538,11 +539,11 @@ namespace CarLeasingViewer.Models
 
             public List<CarCommentModel> Comments { get; private set; }
 
-            public List<LeasingElementModel> Leasings { get; private set; }
+            public List<LeasingBarModel> Leasings { get; private set; }
 
             public List<Controls.LeasingChartManagers.RowManager.Row> Rows { get; private set; }
 
-            public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<LeasingElementModel> leasings)
+            public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<LeasingBarModel> leasings)
             {
                 Cars = cars;
                 Comments = comments;
@@ -550,7 +551,7 @@ namespace CarLeasingViewer.Models
 
                 var rowIndex = 0;
                 var rows = new List<Controls.LeasingChartManagers.RowManager.Row>();
-                var rowLeasings = new List<LeasingElementModel>();
+                var rowLeasings = new List<LeasingBarModel>();
                 foreach (var car in Cars)
                 {
                     var newRow = new Controls.LeasingChartManagers.RowManager.Row(rowIndex)
@@ -558,7 +559,9 @@ namespace CarLeasingViewer.Models
                         Car = car,
                         Comment = comments[rowIndex]
                     };
-                    newRow.AddRange(leasings.Where(l => l.RowIndex == rowIndex).Select(l => new Controls.LeasingChartManagers.CanvasBarDrawManager.BarData(l)));
+                    newRow.AddRange(leasings
+                        .Where(l => l.RowIndex == rowIndex)
+                        .Select(l => new Controls.LeasingChartManagers.CanvasBarDrawManager.BarData(l)));
 
                     rows.Add(newRow);
                     rowIndex++;

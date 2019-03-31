@@ -51,7 +51,9 @@ namespace CarLeasingViewer.Models
 
             var items = new List<StatisticItemModel>();
 
-            var leasingCount = row.Bars.Sum(b => b.Model == null ? 0 : b.Model.DaysCount);
+            //выбираем только аренды авто
+            var leasings = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<LeasingBarModel>();
+            var leasingCount = leasings.Sum(l => l.DaysCount);
             var loadPercent = (double)(set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
             items.Add(new StatisticItemModel("Общее время аренды", leasingCount.ToString() + " дн."));

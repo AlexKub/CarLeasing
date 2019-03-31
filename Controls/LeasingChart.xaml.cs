@@ -284,11 +284,11 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public double RowHeight { get { return (double)GetValue(dp_RowHeight); } set { SetValue(dp_RowHeight, value); } }
 
-        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<LeasingElementModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingElementModel>() });
+        public static DependencyProperty dp_Leasings = DependencyProperty.Register(nameof(Leasings), typeof(IEnumerable<LeasingBarModel>), typeof(LeasingChart), new FrameworkPropertyMetadata() { DefaultValue = new List<LeasingBarModel>() });
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<LeasingElementModel> Leasings { get { return (IEnumerable<LeasingElementModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<LeasingBarModel> Leasings { get { return (IEnumerable<LeasingBarModel>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
 
         LeasingSet m_set;
         /// <summary>
@@ -505,7 +505,7 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        bool Valid(LeasingElementModel model)
+        bool Valid(LeasingBarModel model)
         {
             if (model == null
                 || model.Leasing == null

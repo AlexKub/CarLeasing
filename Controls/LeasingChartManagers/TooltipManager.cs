@@ -99,6 +99,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         void ShowTooltip(CanvasBarDrawManager.BarData bar, Point p)
         {
+
             var grid = new Grid();
             grid.Background = Brushes.LightGray;
             grid.Background.Freeze();
@@ -107,32 +108,27 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             grid.RowDefinitions.Add(new RowDefinition());
             //grid.RowDefinitions.Add(new RowDefinition());
 
-            var hasComment = !string.IsNullOrEmpty(bar.Model?.Leasing.Comment);
-            if (hasComment)
-                grid.RowDefinitions.Add(new RowDefinition());
-
             if (bar.Model == null)
             {
+                grid.RowDefinitions.Add(new RowDefinition());
                 NewStyledTooltipRow(grid, "NO MODEL", 0);
             }
             else
             {
-                NewStyledTooltipRow(grid, bar.Model.Leasing.Title, 0);
-
-                NewStyledTooltipRow(grid, bar.Model.CarName, 1);
-
-                NewStyledTooltipRow(grid, GetDataSpan(bar.Model), 2);
-
-                if (hasComment)
+                var tooltipRows = bar.Model.ToolTipRows;
+                if (tooltipRows == null || tooltipRows.Length == 0)
                 {
-                    NewStyledTooltipRow(grid, bar.Model.Leasing.Comment, 3);
+                    grid.RowDefinitions.Add(new RowDefinition());
+                    NewStyledTooltipRow(grid, "NO TOOLTIP INFO", 0);
                 }
-
-                //if (!string.IsNullOrEmpty(bar.Model.Leasing.Saler))
-                //{
-                //    var tb = NewStyledTooltipRow(grid, bar.Model.Leasing.Saler, 4);
-                //    tb.HorizontalAlignment = HorizontalAlignment.Right;
-                //}
+                else
+                {
+                    for (int i = 0; i < tooltipRows.Length; i++)
+                    {
+                        grid.RowDefinitions.Add(new RowDefinition());
+                        NewStyledTooltipRow(grid, tooltipRows[i], i);
+                    }
+                }
             }
 
             //force render для получения ActualHeight & ActualWidth
@@ -211,7 +207,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         /// <param name="model">Модель</param>
         /// <returns>Возвращает срок аренды</returns>
-        string GetDataSpan(LeasingElementModel model)
+        string GetDataSpan(LeasingBarModel model)
         {
             //копипаста из BussinessDateConverter (старая версия)
             StringBuilder sb = new StringBuilder();

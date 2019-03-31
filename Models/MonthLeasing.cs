@@ -35,11 +35,11 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        private IReadOnlyList<LeasingElementModel> pv_Leasings;
+        private IReadOnlyList<LeasingBarModel> pv_Leasings;
         /// <summary>
         /// Возвращает или задаёт набор занятости автомобилей в текущем месяце
         /// </summary>
-        public IReadOnlyList<LeasingElementModel> Leasings
+        public IReadOnlyList<LeasingBarModel> Leasings
         {
             get { return pv_Leasings; }
             set

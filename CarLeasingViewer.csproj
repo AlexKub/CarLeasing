@@ -89,8 +89,9 @@
     <Compile Include="Converters\DBSearchTypeConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
     <Compile Include="inclusively.cs" />
+    <Compile Include="Interfaces\IDrawableBar.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
-    <Compile Include="IPeriod.cs" />
+    <Compile Include="Interfaces\IPeriod.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
     <Compile Include="Models\CarPriceList.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
@@ -123,13 +124,15 @@
     <Compile Include="Interfaces\IIndexable.cs" />
     <Compile Include="Models\CarCommentModel.cs" />
     <Compile Include="Models\CarModel.cs" />
-    <Compile Include="Models\LeasingElementModel.cs" />
+    <Compile Include="Models\LeasingBarModel.cs" />
     <Compile Include="Models\LeasingSet.cs" />
     <Compile Include="Models\MaintenanceInfo.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
+    <Compile Include="Models\Period.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
+    <Compile Include="PeriodManaging.cs" />
     <Compile Include="StaticResources.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />

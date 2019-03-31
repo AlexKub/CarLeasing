@@ -16,5 +16,10 @@ namespace CarLeasingViewer
         /// Время окончания
         /// </summary>
         DateTime DateEnd { get; }
+
+        /// <summary>
+        /// Количество месяцев
+        /// </summary>
+        int MonthCount { get; }
     }
 }

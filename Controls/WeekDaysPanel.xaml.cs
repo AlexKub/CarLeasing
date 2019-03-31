@@ -195,10 +195,16 @@ namespace CarLeasingViewer.Controls
                                 return;
 
                             if (IsMultiselecting())
-                                set.Sort(new DateTime(Month.Year, Month.Index, m_selectingDays.Min().Index), new DateTime(Month.Year, Month.Index, m_selectingDays.Max().Index));
+                            {
+                                set.Sort(new Period(
+                                    new DateTime(Month.Year, Month.Index, m_selectingDays.Min().Index),
+                                    new DateTime(Month.Year, Month.Index, m_selectingDays.Max().Index)));
+                            }
                             else
-                                set.Sort(new DateTime(Month.Year, Month.Index, day.Index));
-                            //Sort(SortManager.SelectByDay(m_baseCollection, day.Index));
+                            {
+                                var date = new DateTime(Month.Year, Month.Index, day.Index);
+                                set.Sort(new Period(date, date));
+                            }
                         }
                     }
                     break;
@@ -222,10 +228,6 @@ namespace CarLeasingViewer.Controls
                     DownlightDays(multiselect: true);
                 else
                     HighLightDay(day, true, true);
-
-
-                //HighLightDay(day, true);
-                //m_selectingDays.Add(day);
             }
         }
 

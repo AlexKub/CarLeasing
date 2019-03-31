@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CarLeasingViewer.Models
 {
     /// <summary>
-    /// Аренда авто
+    /// Информация о ресурсе
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class ItemInfo : ViewModelBase
@@ -20,9 +20,9 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// Позиции Аренды авто
+        /// Аренды
         /// </summary>
-        public IList<Leasing> Business { get { return m_businesses; } }
+        public IList<Leasing> Leasings { get { return m_businesses; } }
         /// <summary>
         /// Месяц, в контексте которого рассаматриваем текущий жкземпляр
         /// </summary>

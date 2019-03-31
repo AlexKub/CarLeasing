@@ -1,4 +1,5 @@
-﻿using CarLeasingViewer.Models;
+﻿using CarLeasingViewer.Interfaces;
+using CarLeasingViewer.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -13,6 +14,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     public class CanvasBarDrawManager : CanvasDrawManager
     {
         double m_halfPenWidth;
+        /// <summary>
+        /// Ширина колонки + ширина линии сетки
+        /// </summary>
+        double m_OffsetColumnWidth;
+        /// <summary>
+        /// Смещение по строке (высота строки + ширина полоски)
+        /// </summary>
+        double m_rowOffset;
 
         Brush m_brush;
         /// <summary>
@@ -54,14 +63,31 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <summary>
         /// Высота строки
         /// </summary>
-        public double RowHeight { get { return m_rowHeight; } set { m_rowHeight = value; } }
+        public double RowHeight
+        {
+            get { return m_rowHeight; }
+            set
+            {
+                m_rowHeight = value;
+                m_rowOffset = value + AppStyles.GridLineWidth;
+            }
+        }
 
+        double m_DayColumnWidth;
         /// <summary>
         /// Ширина колонки дня
         /// </summary>
-        public double DayColumnWidth { get; set; }
+        public double DayColumnWidth
+        {
+            get { return m_DayColumnWidth; }
+            set
+            {
+                m_DayColumnWidth = value;
+                m_OffsetColumnWidth = value + AppStyles.GridLineWidth;
+            }
+        }
 
-        Dictionary<LeasingElementModel, BarData> m_bars = new Dictionary<LeasingElementModel, BarData>();
+        Dictionary<IDrawableBar, BarData> m_bars = new Dictionary<IDrawableBar, BarData>();
 
         /// <summary>
         /// Отрисованные / просчитанные прямоугольники
@@ -71,7 +97,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <summary>
         /// Данные отрисовки
         /// </summary>
-        public IReadOnlyDictionary<LeasingElementModel, BarData> Data { get { return m_bars; } }
+        public IReadOnlyDictionary<IDrawableBar, BarData> Data { get { return m_bars; } }
 
         public event BarDataHandler BarAdded;
 
@@ -80,9 +106,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         /// <param name="model">Ссылка на отрисовываемую модель</param>
         /// <returns>Возвращает данные отрисовки прямоугольника для модели</returns>
-        public BarData this[LeasingElementModel model] { get { if (m_bars.ContainsKey(model)) return m_bars[model]; else return null; } }
+        public BarData this[IDrawableBar model] { get { if (m_bars.ContainsKey(model)) return m_bars[model]; else return null; } }
 
-        public DrawingVisual DrawBar(LeasingElementModel barModel)
+        public DrawingVisual DrawBar(IDrawableBar barModel)
         {
             BarData bd = null;
             DrawingVisual dv = null;
@@ -93,8 +119,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 bd = new BarData(this);
                 bd.Index = barModel.RowIndex;
-                bd.VerticalOffset = barModel.RowIndex * RowHeight;
-                bd.HorizontalOffset = GetDayOffset(barModel) + GetMonthOffset(barModel);
+                bd.VerticalOffset = barModel.RowIndex * m_rowHeight;
+                bd.HorizontalOffset = GetDayOffset(barModel); //+ GetMonthOffset(barModel);
                 bd.Model = barModel;
                 m_bars.Add(barModel, bd);
             }
@@ -106,7 +132,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawBorder(BarData bd)
         {
-            var startDay = bd.Model.Leasing.DateStart.Date;
+            var startDay = bd.Model.Period.DateStart.Date;
 
             DrawPathType pathType = DrawPathType.Rectangle;
 
@@ -116,14 +142,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
                 //в таком случае нужно показать, что машина занята частично и нарисовать скос
-                if (set.DateStart.Date == bd.Model.Leasing.DateEnd.Date)
+                if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
                     pathType = DrawPathType.Geometry_R;
             }
             else
                 foreach (var item in Canvas.RowManager[bd.Index].Bars)
                 {
                     if (item.Model != null)
-                        if (item.Model.Leasing.DateEnd.Date == startDay)
+                        if (item.Model.Period.DateEnd.Date == startDay)
                         {
                             //рисуем скос у накладывающихся друг на друга сроков аренды
                             //когда машину сдают и берут в тот же день
@@ -132,11 +158,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         }
                 }
 
-            var brush = bd.Model.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
+            //задаём кисть для заливки полоски
+            var brush = BackgroundBrush;
+            var lem = bd.Model as LeasingBarModel;
+            if (lem != null)
+                brush = lem.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
+            
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {
-                switch(pathType)
+                switch (pathType) //выбор геометрии полоски
                 {
                     case DrawPathType.Rectangle:
                         DrawRect(dc, bd, brush); //обычный прямоугольник
@@ -191,12 +222,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var s = new LineSegment(new Point(end.X, start.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = left 
+            s = left
                 ? new LineSegment(new Point(end.X, end.Y), true)
                 : new LineSegment(new Point(end.X - Canvas.DayColumnWidth, end.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = left 
+            s = left
                 ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
                 : new LineSegment(new Point(start.X, end.Y), true);
             s.Freeze();
@@ -247,13 +278,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             m_bars.Clear();
         }
 
-        double GetWidth(LeasingElementModel model)
+        double GetWidth(IDrawableBar model)
         {
             var dayCount = 0; //прибавляем единичку, так как при сложении/вычитании теряем день
 
             #region Вычисляем количество дней
 
-            var b = model.Leasing;
+            var b = model.Period;
             var periodMonthes = Canvas?.LeasingSet?.Monthes.Select(m => m.Month).ToList();
 
             //если машину взяли/вернули в течении 1 месяца
@@ -314,12 +345,22 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return DayColumnWidth * dayCount;
         }
 
-        double GetDayOffset(LeasingElementModel model)
+        /// <summary>
+        /// Расчёт смещения полоски от левого края графика
+        /// </summary>
+        /// <param name="model">Отрисовываемая модель</param>
+        /// <returns>Возвращает смещение полоски от левого края графика</returns>
+        double GetDayOffset(IDrawableBar model)
         {
+            /*
+             * расчёт смещения полоски от левого края графика
+             * 
+             */
+
             if (model == null)
                 return 0d;
 
-            var b = model.Leasing;
+            var b = model.Period;//model.Leasing;
 
             if (b == null)
                 return 0d;
@@ -330,16 +371,16 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var monthes = Canvas?.LeasingSet?.Monthes;
 
             //если начало в текущем месяце
-            if (monthes != null)
+            if (monthes != null && monthes.Count > 0)
             {
-                var firstMonth = monthes.ElementAt(0).Month;
-                if (firstMonth > startMonth) //если съем начался ранее
-                    return 0d;
+                var viewFirstMonth = monthes[0].Month;
+                if (startMonth < viewFirstMonth) //если съем начался ранее
+                    return 0d; //никакого отступа
                 else
                 {
-                    if (firstMonth < startMonth) //если первый месяц выбранного периода начинается раньше
+                    if (startMonth > viewFirstMonth) //если первый месяц выбранного периода начинается раньше
                     {
-                        var prevMonth = firstMonth;
+                        var prevMonth = viewFirstMonth;
 
                         //перебираем месяцы с лева на право
                         //пока не наткнёмся на начальный месяц съёма авто
@@ -353,13 +394,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 }
             }
             //по каким-то причинам не заданы месяцы или дата начала ранее начального месяца
-            else if (b.CurrentMonth == null || b.CurrentMonth != startMonth)
-                return 0d;
+            //else if (b.CurrentMonth == null || b.CurrentMonth != startMonth)
+            //    return 0d;
 
+            //добавляем к количество дней, дни отступа в текущем месяце
             dayCount += b.DateStart.Day - 1;
 
             //смещение слева в точках
-            return dayCount * DayColumnWidth;
+            return dayCount * m_DayColumnWidth;
         }
 
         /// <summary>
@@ -367,7 +409,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         /// <param name="barModel">Данные текущей полоски месяца</param>
         /// <returns>Возвращает готовой смещение по месяцу или 0</returns>
-        double GetMonthOffset(LeasingElementModel barModel)
+        double GetMonthOffset(LeasingBarModel barModel)
         {
             /*
              * расчёт месячного смещения
@@ -375,9 +417,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
              * Пример (о чём речь):
              * если сейчас (в переданной модели) месяц март,
              * а в шапке перед этим месяцем вставены ещё сколько-то месяцев
-             * то необходимо к текущему смещению добавить ещё количество дней в этих месмяцах
+             * то необходимо к текущему смещению добавить ещё количество дней в этих месяцах
              * 
-             * количество дней в предидущих месяцах и возвращает этот метод
+             * общее количество дней в предидущих месяцах и возвращает этот метод
              */
             if (barModel == null)
                 return 0;
@@ -436,7 +478,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// </summary>
             public Figure Bar { get; set; }
 
-            public LeasingElementModel Model { get; set; }
+            public IDrawableBar Model { get; set; }
 
             /// <summary>
             /// Индекс видимости
@@ -457,7 +499,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 m_manager = manager;
             }
-            public BarData(LeasingElementModel model)
+            public BarData(IDrawableBar model)
             {
                 Model = model;
             }
@@ -477,7 +519,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             string DebugerDisplay()
             {
-                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.CarName);
+                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.Text.LogValue());
             }
 
             /// <summary>

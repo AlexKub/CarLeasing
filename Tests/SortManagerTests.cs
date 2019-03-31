@@ -143,7 +143,7 @@ namespace CarLeasingViewer.Tests
 
         Controls.LeasingChartManagers.CanvasBarDrawManager.BarData GenerateMockBar(DateTime dateStart, DateTime dateEnd)
         {
-            var leasingModel = new Models.LeasingElementModel();
+            var leasingModel = new Models.LeasingBarModel();
             leasingModel.Monthes = Month.GetMonthes(dateStart, dateEnd).Select(m => new MonthHeaderModel() { Month = m }).ToArray();
             leasingModel.Leasing = new Models.Leasing() { DateStart = dateStart, DateEnd = dateEnd };
             var bar = new Controls.LeasingChartManagers.CanvasBarDrawManager.BarData(leasingModel);

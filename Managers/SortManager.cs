@@ -22,7 +22,7 @@ namespace CarLeasingViewer
             var task = new Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>>(() =>
             {
                 return chart.RowManager.Rows
-                .Where(cb => cb.Bars.Any(b => b?.Model?.Leasing.Include(date) ?? false));
+                .Where(cb => cb.Bars.Any(b => b?.Model?.Period.Include(date) ?? false));
             });
 
             if (start)
@@ -39,12 +39,12 @@ namespace CarLeasingViewer
         /// <param name="dateEnd">Дата окончания периода</param>
         /// <param name="start">Запустить задачу</param>
         /// <returns>Возвращает задачу по выборке</returns>
-        public static Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>> SelectByDays(Controls.LeasingChart chart, DateTime dateStart, DateTime dateEnd, bool start = true)
+        public static Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>> SelectByDays(Controls.LeasingChart chart, IPeriod period, bool start = true)
         {
             var task = new Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>>(() =>
             {
                 return chart.RowManager.Rows
-                .Where(cb => cb.Bars.Any(b => b?.Model?.Leasing.Cross(dateStart, dateEnd) ?? false));
+                .Where(cb => cb.Bars.Any(b => b?.Model?.Period.Cross(period) ?? false));
             });
 
             if (start)
@@ -100,7 +100,7 @@ namespace CarLeasingViewer
         /// <param name="dateStart">Дата начала (включительно)</param>
         /// <param name="dateEnd">Дата окончания (включительно)</param>
         /// <returns>Возвращает новый список, свободных в указанные даты</returns>
-        public static IList<Controls.LeasingChartManagers.RowManager.Row> SelectFree(this IEnumerable<Controls.LeasingChartManagers.RowManager.Row> collection, DateTime dateStart, DateTime dateEnd)
+        public static IList<Controls.LeasingChartManagers.RowManager.Row> SelectFree(this IEnumerable<Controls.LeasingChartManagers.RowManager.Row> collection, IPeriod period)
         {
             if (collection.IsEmpty())
             {
@@ -118,15 +118,15 @@ namespace CarLeasingViewer
                         //для каждой аренды
                         foreach (var bar in row.Bars) 
                         {
-                            if (bar.Model == null || bar.Model.Leasing == null)
+                            if (bar.Model == null || bar.Model.Period == null)
                                 continue;
 
-                            var l = bar.Model.Leasing;
+                            var l = bar.Model.Period;
                             //проверка, что аренда пересекается с указанным периодом
-                            if (l.Cross(dateStart, dateEnd)
+                            if (l.Cross(period)
                                 //проверка, что аренда не заканчивается на начале выбранного периода
                                 //в таком случае, машина может освободиться во второй половине интересующего срока
-                                && l.DateEnd.Date != dateStart.Date)
+                                && l.DateEnd.Date != period.DateStart.Date)
                             {
                                 //если машина занята - идём дальше
                                 busy = true;

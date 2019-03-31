@@ -26,7 +26,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// </summary>
         System.Drawing.Font m_drawingFont;
 
-        Dictionary<LeasingElementModel, BarData> m_bars = new Dictionary<LeasingElementModel, BarData>();
+        Dictionary<LeasingBarModel, BarData> m_bars = new Dictionary<LeasingBarModel, BarData>();
 
         public Brush TextBrush { get; set; }
 
@@ -81,7 +81,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Загрузка набора для отрисовки
         /// </summary>
         /// <param name="data">Данные для отрисовки</param>
-        public void Load(IEnumerable<LeasingElementModel> data)
+        public void Load(IEnumerable<LeasingBarModel> data)
         {
             foreach (var item in data)
             {
@@ -123,7 +123,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             TextBrush.Freeze();
         }
 
-        public DrawingVisual DrawText(LeasingElementModel model)
+        public DrawingVisual DrawText(LeasingBarModel model)
         {
             //проверяем инициализацию для интерфейса шрифта
             //инициализирован при заполнении шрифта (this.FontFamily)
@@ -363,7 +363,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// </summary>
             public Figure Border { get; set; }
 
-            public LeasingElementModel Model { get; set; }
+            public LeasingBarModel Model { get; set; }
 
             /// <summary>
             /// Флаг отрисовки текста для данной полоски

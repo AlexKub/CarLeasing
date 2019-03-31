@@ -120,6 +120,18 @@ namespace CarLeasingViewer
             return DBSearchTypeHelper.GetDescription(type);
         }
 
-        
+        /// <summary>
+        /// НЕ пустое значение строки для логирования
+        /// </summary>
+        /// <param name="value">Текущее значение строки</param>
+        /// <returns>Возвращает текущее значение или флаги-заместители, если оно пустое</returns>
+        public static string LogValue(this string value)
+        {
+            return value == null
+                ? "NULL"
+                : string.IsNullOrWhiteSpace(value)
+                    ? "EMPTY"
+                    : value;
+        }
     }
 }
