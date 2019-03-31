@@ -221,13 +221,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 //отрисовка панелек Занятости
                 case ChartBarType.Leasing:
-                    m_currentPen = m_MaintenancePen;
-                    m_currentBrush = m_MaintenanceBrush;
+                    m_currentPen = Pen;
+                    m_currentBrush = BackgroundBrush;
                     break;
                 //отрисовка панелек Ремонта
                 case ChartBarType.Maintenance:
-                    m_currentPen = Pen;
-                    m_currentBrush = BackgroundBrush;
+                    m_currentPen = m_MaintenancePen;
+                    m_currentBrush = m_MaintenanceBrush;
                     break;
                 default:
                     throw new NotImplementedException($"Отрисовка для типа модели '{type.ToString()}' не реализована");
@@ -566,7 +566,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             string DebugerDisplay()
             {
                 var titled = Model as ITitledBar;
-                return Index.ToString() + " | " + (titled == null ? Model == null ? "NO_MODEL" : Model.GetType().Name : titled.Title.LogValue());
+                return Index.ToString() + " | " + 
+                    (titled == null 
+                        ? Model == null 
+                            ? "NO_MODEL" 
+                            : Model.GetType().Name 
+                        : titled.Title.LogValue());
             }
 
             /// <summary>

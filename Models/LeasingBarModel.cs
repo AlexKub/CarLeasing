@@ -119,8 +119,6 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int VisibleDaysCount { get; private set; }
 
-        public Controls.LeasingChartManagers.ChartBarType BarType => Controls.LeasingChartManagers.ChartBarType.Leasing;
-
 #if Test
 
         public LeasingElementModel()
@@ -170,6 +168,9 @@ namespace CarLeasingViewer.Models
         }
 
         public string Title => Leasing?.Title ?? "NO_TITLE";
+
+        public Controls.LeasingChartManagers.ChartBarType BarType => Controls.LeasingChartManagers.ChartBarType.Leasing;
+
 
         /// <summary>
         /// Получение строкового представления срока аренды
