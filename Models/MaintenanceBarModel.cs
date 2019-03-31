@@ -35,7 +35,15 @@ namespace CarLeasingViewer.Models
 
         void SetTooolTip(ItemInfo item)
         {
+            var period = Period.TooltipRow();
 
+            Text = "Ремонт " + period;
+
+            ToolTipRows = new string[] {
+                item.Name,
+                string.Empty,
+                period
+            };
         }
 
         public IDrawableBar Clone()

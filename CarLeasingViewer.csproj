@@ -134,7 +134,6 @@
     <Compile Include="Models\Period.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
-    <Compile Include="PeriodManaging.cs" />
     <Compile Include="StaticResources.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />
