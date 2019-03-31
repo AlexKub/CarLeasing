@@ -23,11 +23,6 @@ namespace CarLeasingViewer.Interfaces
         LeasingSet Set { get; }
 
         /// <summary>
-        /// Текст на полоске
-        /// </summary>
-        string Text { get; }
-
-        /// <summary>
         /// Строки для всплывающего окна
         /// </summary>
         string[] ToolTipRows { get; }

@@ -565,7 +565,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             string DebugerDisplay()
             {
-                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.Text.LogValue());
+                var titled = Model as ITitledBar;
+                return Index.ToString() + " | " + (titled == null ? Model == null ? "NO_MODEL" : Model.GetType().Name : titled.Title.LogValue());
             }
 
             /// <summary>

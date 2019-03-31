@@ -149,8 +149,6 @@ namespace CarLeasingViewer.Models
 
         LeasingSet IDrawableBar.Set => Set;
 
-        string IDrawableBar.Text => pv_CarName;
-
         string[] IDrawableBar.ToolTipRows
         {
             get

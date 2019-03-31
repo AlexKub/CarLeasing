@@ -168,7 +168,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         DrawingVisual DrawText(BarData bd)
         {
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
-            string text = bd?.Model?.Text ?? "NO TITLE";
+            string text = bd?.Model?.Title ?? "NO TITLE";
 
             //обрезаем ООО для компаний, т.к. информация бессмысленная
             //в tooltip'e и так видно абревиатуру ЮЛ, а при аренде на пару дней видно только ООО
