@@ -412,7 +412,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 return 0d;
 
             var dayCount = 0;
-            var startMonth = b.DateStart.GetMonth();
+            var modelStartMonth = b.DateStart.GetMonth();
 
             var monthes = Canvas.LeasingSet.Monthes;
             var viewFirstMonth = monthes.FirstOrDefault()?.Month;
@@ -421,27 +421,43 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 App.Loger.Log("Не удалось получить первого месяца набора при отрисовке графика");
             }
-            else if (viewFirstMonth.Index != startMonth.Index)
+            else if (viewFirstMonth.Index != modelStartMonth.Index)
             {
                 //если отрисовываемый период начинается НЕ в начальном месяце видимого пользователем периода
                 var offset = 0;
-                Month curMonth = viewFirstMonth.Index > startMonth.Index
-                    ? startMonth //если период начинается ранее
-                    : viewFirstMonth; //если период начинается позднее
-                
-                //перебираем месяца, считая количество дней смещения
+                Month start = null;
+                Month end = null;
+
+                //период текущей модели начался "в прошлом", относительно выбранного
+                var pastPeriod = viewFirstMonth.Index > modelStartMonth.Index;
+                if(pastPeriod)
+                {
+                    start = modelStartMonth;
+                    end = viewFirstMonth;
+                }
+                else
+                {
+                    start = viewFirstMonth;
+                    end = modelStartMonth;
+                }
+
+                //перебираем месяца, 
+                //считая суммарное количество дней
                 do
                 {
-                    offset += curMonth.DayCount;
-                    curMonth = curMonth.Next();
+                    offset += start.DayCount;
+                    start = start.Next();
                 }
-                while (curMonth != startMonth);
+                while (start != end);
 
-                //смещаем на графике в соответствующий месяц
-                dayCount += offset;
+                //смещаемся на графике в соответствующий месяц
+                //по количеству дней
+                dayCount += pastPeriod 
+                    ? (offset * -1) //вычитаем, если в прошлом
+                    : offset;
             }
 
-            //добавляем к количество дней, дни отступа в текущем месяце
+            //добавляем количество дней в текущем месяце
             dayCount += b.DateStart.Day - 1;
 
             //смещение слева в точках
