@@ -36,7 +36,7 @@ namespace CarLeasingViewer
             {
                 var db = DB_Manager.Default;
                 App.SetAvailable(DB_Manager.Default.GetAvailableMonthes());
-                App.SetCars(DB_Manager.Default.GetAllCars());
+                App.SetCars(DB_Manager.Default.GetAllCars(first, last));
                 App.SetRegions(DB_Manager.Default.GetRegions());
 
                 monthBuisnesses = new MonthBusiness[] { db.GetBusinessByMonthes(first, last) };

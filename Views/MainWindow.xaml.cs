@@ -36,7 +36,7 @@ namespace CarLeasingViewer.Views
             else
             {
                 App.SetAvailable(DB_Manager.Default.GetAvailableMonthes());
-                App.SetCars(DB_Manager.Default.GetAllCars());
+                
                 App.SetRegions(DB_Manager.Default.GetRegions());
 
                 var first = Month.Current.Previos();
@@ -50,6 +50,7 @@ namespace CarLeasingViewer.Views
                     }
                 }
 
+                App.SetCars(DB_Manager.Default.GetAllCars(first, last));
                 monthBuisnesses = DataManager.GetDataset(first, last);
             }
 

@@ -171,6 +171,7 @@ namespace CarLeasingViewer
                         var previosCar = string.Empty;
                         var buyer = string.Empty;
                         ItemInfo cb = null;
+                        bool includeNotActive = settings.IncludeNotActive;
                         while (reader.Read())
                         {
                             curentCar = (string)reader["CarName"];
@@ -188,20 +189,11 @@ namespace CarLeasingViewer
                                 cb.InsuranceEnd = (DateTime)reader["InsuranceEnd"];
                                 try
                                 {
-                                    var value = reader["IsMaintaining"] as byte?;
-
-                                    var hasMaintaining = value == null ? false : value > 0;
-                                    if (hasMaintaining)
+                                    if (includeNotActive && IsMaintaining(reader))
                                     {
-                                        var mi = new MaintenanceInfo();
-                                        mi.DateStart = (DateTime)reader["MaintainanceStartDate"];
-                                        mi.DateStart = mi.DateStart.Add(((DateTime)reader["MaintainanceStartTime"]).TimeOfDay);
-                                        mi.DateEnd = (DateTime)reader["MaintainanceEndDate"];
-                                        mi.DateEnd = mi.DateEnd.Add(((DateTime)reader["MaintainanceEndTime"]).TimeOfDay);
-                                        mi.Description = (string)reader["MaintainanceDescription"];
-
+                                        var mi = ReadMaintenanceInfo(reader);
                                         //если пересекается с выбираемым периодом
-                                        if (mi.Cross(selectingPeriod))
+                                        if (mi.Cross(selectingPeriod) && settings.IncludeNotActive)
                                             cb.Maintenance = mi;
                                     }
                                 }
@@ -267,7 +259,7 @@ namespace CarLeasingViewer
         /// <param name="settings">Текущие настройки</param>
         /// <param name="region">Регион</param>
         /// <returns>Возвращает выбранный набор машин или пустой список</returns>
-        public IEnumerable<Car> GetAllCars(SearchSettings settings = null, Region region = null)
+        public IEnumerable<Car> GetAllCars(Month start, Month end, SearchSettings settings = null, Region region = null)
         {
             if (settings == null)
                 settings = App.SearchSettings;
@@ -285,12 +277,20 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked] as Blocked
                         , p.[Unit Price] as Price
+                        /*, u.[Active] as IsMaintaining
+                        , u.[Date Begin] as MaintainanceStartDate
+                        , u.[Time Degin] as MaintainanceStartTime
+                        , u.[Date End] as MaintainanceEndDate
+                        , u.[Time End] as MaintainanceEndTime
+                        , u.[Description] as MaintainanceDescription*/
 
                          FROM Carlson$Item i
                             LEFT JOIN [Carlson$Sales Price] p ON p.[Item No_] = i.No_
+                            LEFT JOIN [Carlson$Venicle Temp_ UnAvail_] u ON u.[Item No_] = i.No_
                     
                          WHERE 1 = 1
-                           {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
+                            {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
+                            /*{(settings.IncludeNotActive ? string.Empty : $"AND ((u.Active IS NULL) OR ((u.[Date Begin] > '{start.FirstDate.GetSqlDate()}') OR (u.[Date End] < '{end.Next().FirstDate.GetSqlDate()}')))")}*/
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
                             AND i.[IsPlasticCard] = 0
@@ -313,8 +313,12 @@ namespace CarLeasingViewer
                         var id = string.Empty;
                         Car car = null;
                         var includeBlocked = settings.IncludeBlocked;
+                        var skipNotActive = !settings.IncludeNotActive;
+
                         while (reader.Read())
                         {
+                            //if (skipNotActive && IsMaintaining(reader))
+                            //    continue;
 
                             carName = (string)reader["CarName"];
                             carNumber = (string)reader["CarNumber"];
@@ -484,18 +488,17 @@ namespace CarLeasingViewer
             try
             {
                 var sql = @"DECLARE @defaultDate AS Datetime = '1753-01-01 00:00:00'
-
                             SELECT
-                                  p.[Item No_] AS ID
-                                  , p.[Unit Price] AS Price
-                              FROM [Carlson$Sales Price] AS p
+                                p.[Item No_] AS ID
+                                , p.[Unit Price] AS Price
+                            FROM [Carlson$Sales Price] AS p
                                 LEFT JOIN [Carlson$Item] i ON i.[No_] = p.[Item No_]
-                            	WHERE 1 = 1
-                            		AND i.[IsService] = 0
-                                    AND i.[IsFranchise] = 0
-                                    AND i.[IsPlasticCard] = 0
-                            		AND p.[Ending Date] = @defaultDate
-                            		ORDER BY p.[Item No_]";
+                            WHERE 1 = 1
+                                AND i.[IsService] = 0
+                                AND i.[IsFranchise] = 0
+                                AND i.[IsPlasticCard] = 0
+                                AND p.[Ending Date] = @defaultDate
+                            ORDER BY p.[Item No_]";
 
                 using (var con = new SqlConnection(m_connectionString))
                 {
@@ -588,6 +591,7 @@ namespace CarLeasingViewer
                         
                         WHERE 1 = 1
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
+                            {(settings.IncludeNotActive ? string.Empty : $"AND ((u.Active IS NULL) OR ((u.[Date Begin] > '{start.FirstDate.GetSqlDate()}') OR (u.[Date End] < '{end.Next().FirstDate.GetSqlDate()}')))")}
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
                             AND i.[IsPlasticCard] = 0
@@ -615,5 +619,26 @@ namespace CarLeasingViewer
         }
 
         #endregion
+
+        static MaintenanceInfo ReadMaintenanceInfo(SqlDataReader reader)
+        {
+            var mi = new MaintenanceInfo();
+            mi.DateStart = (DateTime)reader["MaintainanceStartDate"];
+            mi.DateStart = mi.DateStart.Add(((DateTime)reader["MaintainanceStartTime"]).TimeOfDay);
+            mi.DateEnd = (DateTime)reader["MaintainanceEndDate"];
+            mi.DateEnd = mi.DateEnd.Add(((DateTime)reader["MaintainanceEndTime"]).TimeOfDay);
+            mi.Description = (string)reader["MaintainanceDescription"];
+
+            return mi;
+        }
+
+        static bool IsMaintaining(SqlDataReader reader)
+        {
+            var value = reader["IsMaintaining"] as byte?;
+
+            return value == null ? false : value > 0;
+        }
+
+        
     }
 }

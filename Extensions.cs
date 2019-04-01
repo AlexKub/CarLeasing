@@ -120,6 +120,11 @@ namespace CarLeasingViewer
             return DBSearchTypeHelper.GetDescription(type);
         }
 
+        public static string GetSqlDate(this DateTime date)
+        {
+            return date.Year.ToString() + date.Month.ToString("00") + date.Day.ToString("00");
+        }
+
         /// <summary>
         /// НЕ пустое значение строки для логирования
         /// </summary>

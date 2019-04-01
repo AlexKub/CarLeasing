@@ -90,8 +90,10 @@
                                      AvailableYears="{x:Static local:App.AvailableYears}" 
                                      ShowAction="{Binding SortPeriodCommand}"/>
 
+            <!-- настройки выборки -->
             <Grid Grid.Column="1" HorizontalAlignment="Right" DataContext="{x:Static local:App.SearchSettings}">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -114,7 +116,12 @@
                           IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
                           Checked="OnSearchSettingsChanged"
                           Visibility="{Binding Source={x:Static local:App.TestMode}, Converter={StaticResource CommonVisibilityConverter}}"/>
-                <CheckBox Grid.Column="3" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="3" Content="Влючая не активные" Margin="3 0 3 0" VerticalAlignment="Center" 
+                          IsChecked="{Binding IncludeNotActive, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
+                          Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="4" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" 
+                          IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
+                          Checked="OnSearchSettingsChanged"/>
             </Grid>
         </Grid>
 
