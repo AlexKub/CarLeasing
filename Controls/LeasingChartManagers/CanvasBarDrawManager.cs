@@ -249,7 +249,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dc.PushGuidelineSet(guidelines);
 
             var isMaintenance = bd.Model is MaintenanceBarModel;
-            var pen = isMaintenance ? m_MaintenancePen : Pen; 
+            var pen = isMaintenance ? m_MaintenancePen : Pen;
             dc.DrawRectangle(m_currentBrush, m_currentPen, rect);
             dc.Pop();
         }
@@ -417,44 +417,31 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var monthes = Canvas.LeasingSet.Monthes;
             var viewFirstMonth = monthes.FirstOrDefault()?.Month;
 
-            if(viewFirstMonth == null)
+            if (viewFirstMonth == null)
             {
                 App.Loger.Log("Не удалось получить первого месяца набора при отрисовке графика");
             }
-            else if (viewFirstMonth.Index != modelStartMonth.Index)
+            //для тех, кто началася в прошлом периоде
+            //никакого отступа
+            else if (modelStartMonth.Index < viewFirstMonth.Index)
+                return 0;
+            //для моделей, чья дата начала позже текущего первого месяца
+            else if (modelStartMonth.Index > viewFirstMonth.Index)
             {
-                //если отрисовываемый период начинается НЕ в начальном месяце видимого пользователем периода
-                var offset = 0;
-                Month start = null;
-                Month end = null;
-
-                //период текущей модели начался "в прошлом", относительно выбранного
-                var pastPeriod = viewFirstMonth.Index > modelStartMonth.Index;
-                if(pastPeriod)
-                {
-                    start = modelStartMonth;
-                    end = viewFirstMonth;
-                }
-                else
-                {
-                    start = viewFirstMonth;
-                    end = modelStartMonth;
-                }
-
+                Month curMonth = viewFirstMonth;
+                int offset = 0;
                 //перебираем месяца, 
                 //считая суммарное количество дней
                 do
                 {
-                    offset += start.DayCount;
-                    start = start.Next();
+                    offset += curMonth.DayCount;
+                    curMonth = curMonth.Next();
                 }
-                while (start != end);
+                while (curMonth != modelStartMonth);
 
                 //смещаемся на графике в соответствующий месяц
                 //по количеству дней
-                dayCount += pastPeriod 
-                    ? (offset * -1) //вычитаем, если в прошлом
-                    : offset;
+                dayCount += offset;
             }
 
             //добавляем количество дней в текущем месяце
@@ -531,11 +518,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             string DebugerDisplay()
             {
                 var titled = Model as ITitledBar;
-                return Index.ToString() + " | " + 
-                    (titled == null 
-                        ? Model == null 
-                            ? "NO_MODEL" 
-                            : Model.GetType().Name 
+                return Index.ToString() + " | " +
+                    (titled == null
+                        ? Model == null
+                            ? "NO_MODEL"
+                            : Model.GetType().Name
                         : titled.Title.LogValue());
             }
 
