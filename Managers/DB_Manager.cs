@@ -184,6 +184,7 @@ namespace CarLeasingViewer
                                 cb = new ItemInfo();
                                 cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ID = (string)reader["No_"];
+                                cb.InsuranceEnd = (DateTime)reader["InsuranceEnd"];
                                 try
                                 {
                                     var value = reader["IsMaintaining"] as byte?;
@@ -556,6 +557,7 @@ namespace CarLeasingViewer
                         , i.[Description] as CarName
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked] as Blocked
+                        , i.[Venicle Insurance Date End] as InsuranceEnd
                         , l.[Document No_]
 	                    , h.[Salesperson Code] as Saler
 	                    , h.[Bal_ Account No_]

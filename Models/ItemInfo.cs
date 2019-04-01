@@ -1,4 +1,5 @@
 ﻿using CarLeasingViewer.ViewModels;
+using System;
 using System.Collections.Generic;
 
 namespace CarLeasingViewer.Models
@@ -34,6 +35,11 @@ namespace CarLeasingViewer.Models
         /// Информация о нахождении в ремонте
         /// </summary>
         public MaintenanceInfo Maintenance { get; set; }
+
+        /// <summary>
+        /// Дата окончания страховки
+        /// </summary>
+        public DateTime InsuranceEnd { get; set; }
 
         /// <summary>
         /// Количество аренд на текущий месяц
