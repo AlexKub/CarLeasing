@@ -197,12 +197,12 @@ namespace CarLeasingViewer.Controls
                             if (IsMultiselecting())
                             {
                                 set.Sort(new Period(
-                                    new DateTime(Month.Year, Month.Index, m_selectingDays.Min().Index),
-                                    new DateTime(Month.Year, Month.Index, m_selectingDays.Max().Index)));
+                                    new DateTime(Month.Year, Month.Number, m_selectingDays.Min().Index),
+                                    new DateTime(Month.Year, Month.Number, m_selectingDays.Max().Index)));
                             }
                             else
                             {
-                                var date = new DateTime(Month.Year, Month.Index, day.Index);
+                                var date = new DateTime(Month.Year, Month.Number, day.Index);
                                 set.Sort(new Period(date, date));
                             }
                         }

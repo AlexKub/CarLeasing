@@ -89,9 +89,9 @@ namespace CarLeasingViewer
                 var b = new Leasing();
                 b.Title = "bussy_" + i.ToString();
                 start = m_rand.Next(end, dayCount);
-                b.DateStart = new DateTime(month.Year, month.Index, start);
+                b.DateStart = new DateTime(month.Year, month.Number, start);
                 end = m_rand.Next(start, dayCount);
-                b.DateEnd = new DateTime(month.Year, month.Index, end);
+                b.DateEnd = new DateTime(month.Year, month.Number, end);
                 b.CurrentMonth = month;
                 b.CarName = cb.Name;
                 b.Saler = "Saler_" + i.ToString();
@@ -123,7 +123,7 @@ namespace CarLeasingViewer
 
             var blockedFlag = m_rand.Next(1, 25);
             var addBlocked = App.SearchSettings.IncludeBlocked;
-            for (int mi = start.Index; mi <= end.Index; mi++)
+            for (int mi = start.Number; mi <= end.Number; mi++)
             {
                 monthIndex = mi;
 

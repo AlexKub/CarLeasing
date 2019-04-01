@@ -31,7 +31,7 @@ namespace CarLeasingViewer.Models
                 if (dayIndex > DayCount)
                     throw new IndexOutOfRangeException($"Индекс дня '{dayIndex.ToString()}' больше количества дней в {Value.ToString()}");
 
-                return new DateTime(Year, Index, dayIndex);
+                return new DateTime(Year, Number, dayIndex);
             }
         }
 
@@ -48,10 +48,13 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public Monthes Value { get; private set; }
         /// <summary>
-        /// Индекс месяца в году
+        /// Номер месяца в году
+        /// </summary>
+        public int Number { get; private set; }
+        /// <summary>
+        /// Индекс месяца в текущей эре
         /// </summary>
         public int Index { get; private set; }
-
         /// <summary>
         /// Количество дней в месяце
         /// </summary>
@@ -65,7 +68,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Последняя дата месяца
         /// </summary>
-        public DateTime LastDate { get { return new DateTime(Year, Index, DayCount); } }
+        public DateTime LastDate { get { return new DateTime(Year, Number, DayCount); } }
 
         /// <summary>
         /// Первы день месяца
@@ -75,7 +78,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Первая дата месяца
         /// </summary>
-        public DateTime FirstDate { get { return new DateTime(Year, Index, 1); } }
+        public DateTime FirstDate { get { return new DateTime(Year, Number, 1); } }
 
         /// <summary>
         /// Проверка на не пустой экземпляр
@@ -139,16 +142,22 @@ namespace CarLeasingViewer.Models
             Year = year;
             Name = GetRussianName(month);
             Value = month;
-            Index = (int)month;
+            Number = (int)month;
             DayCount = GetDayCount(month);
             m_days = GetDays().ToList();
+
+            var prevYear = year - 1;
+            if (prevYear < 0)
+                prevYear = 0;
+
+            Index = (prevYear * 12) + Number;
         }
         public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
 
         public Month(DateTime date) : this(date.Year, (Monthes)date.Month) { }
 
         /// <summary>
-        /// ПОлучение количества дней в конкретном месяце
+        /// Получение количества дней в конкретном месяце
         /// </summary>
         /// <param name="month">Месяц</param>
         /// <returns>Возвращает количество дней в переданном месяце</returns>
@@ -229,7 +238,7 @@ namespace CarLeasingViewer.Models
 
         public static Month[] GetMonthes(Month start, Month end)
         {
-            return GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+            return GetMonthes(new DateTime(start.Year, start.Number, 1), new DateTime(end.Year, end.Number, 1));
         }
 
         /// <summary>
@@ -313,7 +322,7 @@ namespace CarLeasingViewer.Models
             if (IsEmpty)
                 return DayOfWeek.Sunday;
 
-            return new DateTime(Year, Index, 1).DayOfWeek;
+            return new DateTime(Year, Number, 1).DayOfWeek;
         }
 
         public static bool IsNullOrEmpty(Month m)
@@ -345,7 +354,7 @@ namespace CarLeasingViewer.Models
 
         public string GetSqlDate(int dayIndex)
         {
-            return Year.ToString() + (Index).ToString("00") + dayIndex.ToString("00");
+            return Year.ToString() + (Number).ToString("00") + dayIndex.ToString("00");
         }
 
         /// <summary>
@@ -390,7 +399,7 @@ namespace CarLeasingViewer.Models
                     return new Month(year, Value);
             }
 
-            var nextIndex = Index + offset;
+            var nextIndex = Number + offset;
 
             if (nextIndex < 13)
                 return new Month(year, (Monthes)nextIndex);
@@ -509,7 +518,7 @@ namespace CarLeasingViewer.Models
                 return false;
 
             if (m1.Year == m2.Year)
-                return m1.Index > m2.Index;
+                return m1.Number > m2.Number;
 
             else
                 return m1.Year > m2.Year;
@@ -521,7 +530,7 @@ namespace CarLeasingViewer.Models
                 return false;
 
             if (m1.Year == m2.Year)
-                return m1.Index < m2.Index;
+                return m1.Number < m2.Number;
 
             else
                 return m1.Year < m2.Year;
@@ -533,7 +542,7 @@ namespace CarLeasingViewer.Models
                 return false;
 
             if (m1.Year == m2.Year)
-                return m1.Index >= m2.Index;
+                return m1.Number >= m2.Number;
 
             else
                 return m1.Year >= m2.Year;
@@ -545,7 +554,7 @@ namespace CarLeasingViewer.Models
                 return false;
 
             if (m1.Year == m2.Year)
-                return m1.Index <= m2.Index;
+                return m1.Number <= m2.Number;
 
             else
                 return m1.Year <= m2.Year;
@@ -559,7 +568,7 @@ namespace CarLeasingViewer.Models
             if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
                 return false;
 
-            return m1.Year == m2.Year && m1.Index == m2.Index;
+            return m1.Year == m2.Year && m1.Number == m2.Number;
         }
 
         public static bool operator !=(Month m1, Month m2)
@@ -570,7 +579,7 @@ namespace CarLeasingViewer.Models
             if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
                 return true;
 
-            return m1.Index != m2.Index || m1.Year != m2.Year;
+            return m1.Number != m2.Number || m1.Year != m2.Year;
         }
     }
 }

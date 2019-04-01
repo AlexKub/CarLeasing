@@ -251,7 +251,7 @@ namespace CarLeasingViewer
             AddFreeCars(carBusinesses);
 
             var monthBusiness = new MonthBusiness(carBusinesses); //.OrderBy(cb => cb.Name)); сортировка теперь при выборке
-            monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+            monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Number, 1), new DateTime(end.Year, end.Number, 1));
 
             return monthBusiness;
         }

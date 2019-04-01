@@ -143,7 +143,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 bd = new BarData(this);
                 bd.Index = barModel.RowIndex;
                 bd.VerticalOffset = barModel.RowIndex * m_rowHeight;
-                bd.HorizontalOffset = GetDayOffset(barModel); //+ GetMonthOffset(barModel);
+                bd.HorizontalOffset = GetDayOffset(barModel);
                 bd.Model = barModel;
                 m_bars.Add(barModel, bd);
             }
@@ -414,34 +414,32 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var dayCount = 0;
             var startMonth = b.DateStart.GetMonth();
 
-            var monthes = Canvas?.LeasingSet?.Monthes;
+            var monthes = Canvas.LeasingSet.Monthes;
+            var viewFirstMonth = monthes.FirstOrDefault()?.Month;
 
-            //если начало в текущем месяце
-            if (monthes != null && monthes.Count > 0)
+            if(viewFirstMonth == null)
             {
-                var viewFirstMonth = monthes[0].Month;
-                if (startMonth < viewFirstMonth) //если съем начался ранее
-                    return 0d; //никакого отступа
-                else
-                {
-                    if (startMonth > viewFirstMonth) //если первый месяц выбранного периода начинается раньше
-                    {
-                        var prevMonth = viewFirstMonth;
-
-                        //перебираем месяцы с лева на право
-                        //пока не наткнёмся на начальный месяц съёма авто
-                        do
-                        {
-                            dayCount += prevMonth.DayCount;
-                            prevMonth = prevMonth.Next();
-                        }
-                        while (prevMonth != null && prevMonth != startMonth);
-                    }
-                }
+                App.Loger.Log("Не удалось получить первого месяца набора при отрисовке графика");
             }
-            //по каким-то причинам не заданы месяцы или дата начала ранее начального месяца
-            //else if (b.CurrentMonth == null || b.CurrentMonth != startMonth)
-            //    return 0d;
+            else if (viewFirstMonth.Index != startMonth.Index)
+            {
+                //если отрисовываемый период начинается НЕ в начальном месяце видимого пользователем периода
+                var offset = 0;
+                Month curMonth = viewFirstMonth.Index > startMonth.Index
+                    ? startMonth //если период начинается ранее
+                    : viewFirstMonth; //если период начинается позднее
+                
+                //перебираем месяца, считая количество дней смещения
+                do
+                {
+                    offset += curMonth.DayCount;
+                    curMonth = curMonth.Next();
+                }
+                while (curMonth != startMonth);
+
+                //смещаем на графике в соответствующий месяц
+                dayCount += offset;
+            }
 
             //добавляем к количество дней, дни отступа в текущем месяце
             dayCount += b.DateStart.Day - 1;
@@ -449,55 +447,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //смещение слева в точках
             return dayCount * m_DayColumnWidth;
         }
-
-        /// <summary>
-        /// Смещение по количеству дней в предидущих месяцах
-        /// </summary>
-        /// <param name="barModel">Данные текущей полоски месяца</param>
-        /// <returns>Возвращает готовой смещение по месяцу или 0</returns>
-        double GetMonthOffset(LeasingBarModel barModel)
-        {
-            /*
-             * расчёт месячного смещения
-             * 
-             * Пример (о чём речь):
-             * если сейчас (в переданной модели) месяц март,
-             * а в шапке перед этим месяцем вставены ещё сколько-то месяцев
-             * то необходимо к текущему смещению добавить ещё количество дней в этих месяцах
-             * 
-             * общее количество дней в предидущих месяцах и возвращает этот метод
-             */
-            if (barModel == null)
-                return 0;
-
-            var offset = 0d;
-
-            var monthes = Canvas.LeasingSet.Monthes;
-
-            if (barModel.Monthes != null && barModel.Monthes.Length > 2)
-            {
-                var firstMonth = barModel.Leasing.DateStart.GetMonth();
-                for (int i = 0; i < monthes.Count; i++)
-                {
-                    if (monthes[i].Month == firstMonth)
-                    {
-                        var prev = monthes[i].Previous;
-
-                        while (prev != null)
-                        {
-                            if (prev.Month != null)
-                                offset += (prev.Month.DayCount * DayColumnWidth);
-
-                            prev = prev.Previous;
-                        }
-                    }
-                }
-            }
-
-            return offset;
-        }
-
-
 
         /// <summary>
         /// Данные для отрисовки полоски

@@ -94,7 +94,7 @@ namespace CarLeasingViewer.Controls
                 if (mIndex > 12)
                     mIndex = 1;
                 _this.FromMonthes = _this.AvailableMonthes.Where(m => m.Year == newYear);
-                _this.FromMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Index == mIndex && m.Year == newYear);
+                _this.FromMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Number == mIndex && m.Year == newYear);
 
                 //_this.RefreshSelectedIndex(Period.From);
             }
@@ -113,7 +113,7 @@ namespace CarLeasingViewer.Controls
                 if (mIndex > 12)
                     mIndex = 1;
                 _this.ToMonthes = _this.AvailableMonthes.Where(m => m.Year == newYear);
-                _this.ToMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Index == mIndex && m.Year == newYear);
+                _this.ToMonth = _this.AvailableMonthes.FirstOrDefault(m => m.Number == mIndex && m.Year == newYear);
 
                 //_this.RefreshSelectedIndex(Period.To);
             }
@@ -239,7 +239,7 @@ namespace CarLeasingViewer.Controls
                 //проверка, что индекс не равен текущему 
                 //(предотвращение рекурсии, т.к. при изменении индекса вызывается соответствующее изменение месяца)
                 //и простановка индекса ткеущего выбранного месяца
-                var newIndex = monthes.IndexOf(month, (m) => m.Index == month.Index && m.Year == month.Year);
+                var newIndex = monthes.IndexOf(month, (m) => m.Number == month.Number && m.Year == month.Year);
 
                 var val = (int)GetValue(mProp);
                 if (newIndex != val)
