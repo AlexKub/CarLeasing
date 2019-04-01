@@ -157,6 +157,7 @@ namespace CarLeasingViewer
 
             try
             {
+                var selectingPeriod = new Period(start.FirstDate, end.LastDate);
                 using (var con = new SqlConnection(m_connectionString))
                 {
                     var com = new SqlCommand(sql);
@@ -198,7 +199,10 @@ namespace CarLeasingViewer
                                         mi.DateEnd = (DateTime)reader["MaintainanceEndDate"];
                                         mi.DateEnd = mi.DateEnd.Add(((DateTime)reader["MaintainanceEndTime"]).TimeOfDay);
                                         mi.Description = (string)reader["MaintainanceDescription"];
-                                        cb.Maintenance = mi;
+
+                                        //если пересекается с выбираемым периодом
+                                        if (mi.Cross(selectingPeriod))
+                                            cb.Maintenance = mi;
                                     }
                                 }
                                 catch (Exception ex)
