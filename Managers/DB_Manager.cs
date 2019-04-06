@@ -187,6 +187,7 @@ namespace CarLeasingViewer
                                 cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ID = (string)reader["No_"];
                                 cb.InsuranceEnd = (DateTime)reader["InsuranceEnd"];
+                                cb.AddInsuranceEnd = (DateTime)reader["AddInsuranceEnd"];
                                 try
                                 {
                                     if (includeNotActive && IsMaintaining(reader))
@@ -565,6 +566,7 @@ namespace CarLeasingViewer
                         , i.[Vehicle Reg_ No_] as CarNumber
                         , i.[Blocked] as Blocked
                         , i.[Venicle Insurance Date End] as InsuranceEnd
+                        , i.[Venicle Add_Insurance Date End] as AddInsuranceEnd
                         , l.[Document No_]
 	                    , h.[Salesperson Code] as Saler
 	                    , h.[Bal_ Account No_]

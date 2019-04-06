@@ -35,11 +35,14 @@ namespace CarLeasingViewer.Models
         /// Информация о нахождении в ремонте
         /// </summary>
         public MaintenanceInfo Maintenance { get; set; }
-
         /// <summary>
         /// Дата окончания страховки
         /// </summary>
         public DateTime InsuranceEnd { get; set; }
+        /// <summary>
+        /// Дата окончания страховки
+        /// </summary>
+        public DateTime AddInsuranceEnd { get; set; }
 
         /// <summary>
         /// Количество аренд на текущий месяц
