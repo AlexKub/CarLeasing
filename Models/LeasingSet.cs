@@ -294,7 +294,6 @@ namespace CarLeasingViewer.Models
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
                 IsMaintaining = o.Maintenance != null,
-                InsuranceVisibility = this.Include(o.InsuranceEnd) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed
             }).ToList();
 
             var ordered = SortManager.OrderByPrice(notOrdered).ToList();
@@ -565,6 +564,10 @@ namespace CarLeasingViewer.Models
                 Chart.Draw();
             }
         }
+
+        DateTime IPeriod.DateStart { get { return Sorted ? DateStart : ((Monthes.FirstOrDefault()?.Month?.FirstDate) ?? DateTime.MinValue); } }
+
+        DateTime IPeriod.DateEnd { get { return Sorted ? DateEnd : ((Monthes.LastOrDefault()?.Month?.LastDate) ?? DateTime.MinValue); } }
 
         /// <summary>
         /// Базовый, не отсортированный набор
