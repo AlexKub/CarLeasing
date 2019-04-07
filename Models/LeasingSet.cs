@@ -169,6 +169,7 @@ namespace CarLeasingViewer.Models
                         //простановка индекса колонок для Grid'а
                         GridIndexHelper.SetIndexes(value);
 
+                        SetInsurance();
                     }
 
                     if (MonthesChanged != null)
@@ -286,10 +287,10 @@ namespace CarLeasingViewer.Models
             var rowIndex = 0;
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, cb.InsuranceEnd })
+            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, Data = cb })
             .Distinct()
             .Select(o =>
-            new CarModel()
+            new CarModel(o.Data)
             {
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
@@ -328,9 +329,9 @@ namespace CarLeasingViewer.Models
                             rowIndex = car == null ? 0 : car.RowIndex;
                             var model = new LeasingBarModel(this)
                             {
-                                CarName = 
-                                    m_CarModels.Count > 0 
-                                        ? m_CarModels[rowIndex].Text 
+                                CarName =
+                                    m_CarModels.Count > 0
+                                        ? m_CarModels[rowIndex].Text
                                         : b.CarName,
                                 Leasing = b,
                                 RowIndex = rowIndex,
@@ -346,7 +347,7 @@ namespace CarLeasingViewer.Models
                         }));
 
                     //отрисовка ремонта
-                    if(item.Maintenance != null)
+                    if (item.Maintenance != null)
                     {
                         leasingBarModels.Add(
                             new MaintenanceBarModel(this, item)
@@ -410,6 +411,8 @@ namespace CarLeasingViewer.Models
             //* кроме случаев, когда берут и сдают в тот же день
             DateStart = period.DateStart.Date;
             DateEnd = period.DateEnd;
+
+            SetInsurance();
 
             if (sorted.Count == 0)
                 SetEmpty();
@@ -484,6 +487,25 @@ namespace CarLeasingViewer.Models
             Leasings = leasings;
 
             Chart.Draw();
+        }
+
+        void SetInsurance()
+        {
+            /*
+             * простановка видимости Окончания страховки
+             * 
+             */
+            foreach (var carModel in CarModels)
+            {
+                if (carModel.ItemInfo != null)
+                    if (carModel.ItemInfo.InsuranceEnd.Year > 2000)
+                    {
+                        carModel.InsuranceVisibility = this.Include(carModel.ItemInfo.InsuranceEnd) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                        continue;
+                    }
+
+                carModel.InsuranceVisibility = System.Windows.Visibility.Collapsed;
+            }
         }
 
         public void Dispose()

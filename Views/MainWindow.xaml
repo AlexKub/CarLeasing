@@ -268,13 +268,13 @@
                                                 <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
 
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <!-- квадратик для индикации "блокированных" -->
+                                                    <!--квадратик для индикации "блокированных"--> 
                                                     <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
-                                                    <!-- Иконка Занятости авто -->
+                                                    <!--Иконка Занятости авто--> 
                                                     <Image Style="{StaticResource Maintance}"
                                                         Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"/>
-                                                </StackPanel>
+                                                </StackPanel> 
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

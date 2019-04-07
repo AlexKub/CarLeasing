@@ -39,6 +39,8 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        public ItemInfo ItemInfo { get; private set; }
+
         private bool m_Blocked;
         /// <summary>
         /// Возвращает или задаёт Флаг, что авто снято с учёта
@@ -79,6 +81,16 @@ namespace CarLeasingViewer.Models
         /// Индекс строки
         /// </summary>
         public int RowIndex { get; set; }
+
+        public CarModel()
+        {
+
+        }
+
+        public CarModel(ItemInfo info)
+        {
+            ItemInfo = info;
+        }
 
         #region IIndexable
 
