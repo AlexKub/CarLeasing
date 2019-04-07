@@ -286,14 +286,15 @@ namespace CarLeasingViewer.Models
             var rowIndex = 0;
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance })
+            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, cb.InsuranceEnd })
             .Distinct()
             .Select(o =>
             new CarModel()
             {
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
-                IsMaintaining = o.Maintenance != null
+                IsMaintaining = o.Maintenance != null,
+                InsuranceVisibility = this.Include(o.InsuranceEnd) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed
             }).ToList();
 
             var ordered = SortManager.OrderByPrice(notOrdered).ToList();

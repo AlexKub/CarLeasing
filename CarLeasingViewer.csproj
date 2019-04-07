@@ -89,6 +89,7 @@
     <Compile Include="Controls\LeasingChartManagers\TooltipManager.cs" />
     <Compile Include="Converters\DBSearchTypeConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
+    <Compile Include="IconsInfo.cs" />
     <Compile Include="inclusively.cs" />
     <Compile Include="Interfaces\IDrawableBar.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
@@ -272,6 +273,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\maintenance.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\osago_kasko.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

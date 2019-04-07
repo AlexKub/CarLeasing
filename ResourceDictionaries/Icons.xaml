@@ -2,8 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CarLeasingViewer"
                     xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
-    <BitmapImage x:Key="Maintenance" 
-                 UriSource="{x:Static local:StaticResources.MaintenanceIconPath}" 
-                 PresentationOptions:Freeze="True"
-                 />
+    
+    <Style x:Key="Maintance" TargetType="Image">
+        <Setter Property="Source" Value="{x:Static local:IconsInfo.MaintenanceIconPath}"/>
+    </Style>
+    <Style x:Key="Insurance" TargetType="Image">
+        <Setter Property="Source" Value="{x:Static local:IconsInfo.InsuranceIconPath}"/>
+    </Style>
 </ResourceDictionary>

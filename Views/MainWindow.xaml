@@ -261,6 +261,10 @@
                                             MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" 
                                             PreviewMouseRightButtonUp="TextBlock_MouseRightButtonUp">
                                             <Grid >
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <Image Style="{StaticResource Insurance}" Visibility="{Binding InsuranceVisibility}"/>
+                                                </StackPanel>
+                                                
                                                 <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
 
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -268,9 +272,7 @@
                                                     <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
                                                     <!-- Иконка Занятости авто -->
-                                                    <Image Source="{StaticResource Maintenance}" 
-                                                        Width="{StaticResource StandartIconSize}" 
-                                                        Height="{StaticResource StandartIconSize}"
+                                                    <Image Style="{StaticResource Maintance}"
                                                         Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"/>
                                                 </StackPanel>
                                             </Grid>

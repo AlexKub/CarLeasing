@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 using CarLeasingViewer.Interfaces;
 
 namespace CarLeasingViewer.Models
@@ -62,6 +63,12 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int MonthOffset { get { return pv_MonthOffset; } set { pv_MonthOffset = value; OnPropertyChanged(); } }
 
+        private Visibility m_InsuranceVisibility;
+        /// <summary>
+        /// Возвращает или задаёт Видимоть предупрждения о страховке
+        /// </summary>
+        public Visibility InsuranceVisibility { get { return m_InsuranceVisibility; } set { m_InsuranceVisibility = value; OnPropertyChanged(); } }
+
         private CarPriceList pv_Price = CarPriceList.Default;
         /// <summary>
         /// Возвращает или задаёт Цену на машину
@@ -121,6 +128,9 @@ namespace CarLeasingViewer.Models
             newInstance.pv_HightlightBrush = pv_HightlightBrush;
             newInstance.pv_MonthOffset = pv_MonthOffset;
             newInstance.pv_Price = pv_Price;
+            newInstance.m_isMaintaining = m_isMaintaining;
+            newInstance.m_InsuranceVisibility = m_InsuranceVisibility;
+            newInstance.m_Blocked = m_Blocked;
 
             return newInstance;
         }
