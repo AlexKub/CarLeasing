@@ -36,13 +36,13 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public MaintenanceInfo Maintenance { get; set; }
         /// <summary>
-        /// Дата окончания страховки
+        /// Дата окончания ОСАГО
         /// </summary>
-        public DateTime InsuranceEnd { get; set; }
+        public DateTime OSAGO_END { get; set; }
         /// <summary>
-        /// Дата окончания страховки
+        /// Дата окончания КАСКО
         /// </summary>
-        public DateTime AddInsuranceEnd { get; set; }
+        public DateTime KASKO_END { get; set; }
 
         /// <summary>
         /// Количество аренд на текущий месяц

@@ -186,8 +186,8 @@ namespace CarLeasingViewer
                                 cb = new ItemInfo();
                                 cb.Monthes = Month.GetMonthes(start, end);
                                 cb.ID = (string)reader["No_"];
-                                cb.InsuranceEnd = (DateTime)reader["InsuranceEnd"];
-                                cb.AddInsuranceEnd = (DateTime)reader["AddInsuranceEnd"];
+                                cb.OSAGO_END = (DateTime)reader["InsuranceEnd"];
+                                cb.KASKO_END = (DateTime)reader["AddInsuranceEnd"];
                                 try
                                 {
                                     if (includeNotActive && IsMaintaining(reader))

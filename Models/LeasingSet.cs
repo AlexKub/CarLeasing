@@ -356,13 +356,13 @@ namespace CarLeasingViewer.Models
                                 RowIndex = rowIndex,
                             });
                     }
-                    if(this.Include(item.InsuranceEnd))
+                    if(this.Include(item.OSAGO_END))
                     {
                         leasingBarModels.Add(
                             new ImageBarModel(this)
                             {
                                 RowIndex = rowIndex,
-                                Date = item.InsuranceEnd,
+                                Date = item.OSAGO_END,
                                 Bitmap = insuranceIcon
                             });
                     }
@@ -509,9 +509,13 @@ namespace CarLeasingViewer.Models
             foreach (var carModel in CarModels)
             {
                 if (carModel.ItemInfo != null)
-                    if (carModel.ItemInfo.InsuranceEnd.Year > 2000)
+                    if (carModel.ItemInfo.OSAGO_END.Year > 2000)
                     {
-                        carModel.InsuranceVisibility = this.Include(carModel.ItemInfo.InsuranceEnd) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                        //проверяем наличие окончания страховки в текущем периоде.
+                        //есть - выводим оповещение.
+                        //ОСАГО встречается чаще
+                        bool visible = this.Include(carModel.ItemInfo.OSAGO_END) || this.Include(carModel.ItemInfo.KASKO_END);
+                        carModel.InsuranceVisibility = visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
                         continue;
                     }
 
