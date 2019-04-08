@@ -315,8 +315,9 @@ namespace CarLeasingViewer.Models
             var leasingBarModels = new List<IDrawableBar>();
 
             var index = 0;
-
+            var currentPeriod = Sorted ? new Period(DateStart, DateEnd) : new Period(Monthes.First().Month.FirstDate, Monthes.Last().Month.LastDate);
             var columnWidth = AppStyles.TotalColumnWidth;
+            var insuranceIcon = IconsInfo.InsuranceDay;
             foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
@@ -353,6 +354,16 @@ namespace CarLeasingViewer.Models
                             new MaintenanceBarModel(this, item)
                             {
                                 RowIndex = rowIndex,
+                            });
+                    }
+                    if(this.Include(item.InsuranceEnd))
+                    {
+                        leasingBarModels.Add(
+                            new ImageBarModel(this)
+                            {
+                                RowIndex = rowIndex,
+                                Date = item.InsuranceEnd,
+                                Bitmap = insuranceIcon
                             });
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using CarLeasingViewer.Controls.LeasingChartManagers;
 using CarLeasingViewer.Interfaces;
 using System;
+using System.Windows.Media.Imaging;
 
 namespace CarLeasingViewer.Models
 {
@@ -18,7 +19,7 @@ namespace CarLeasingViewer.Models
 
         public LeasingSet Set { get; private set; }
 
-        public System.Drawing.Bitmap Bitmap { get; set; }
+        public BitmapImage Bitmap { get; set; }
 
         public ImageBarModel(LeasingSet set)
         {
