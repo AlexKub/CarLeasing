@@ -105,5 +105,18 @@ namespace CarLeasingViewer
 
             return sb;
         }
+
+        /// <summary>
+        /// Подсчёт количества дней в Периоде
+        /// </summary>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public static int DaysCount(this IPeriod period)
+        {
+            if (period == null)
+                return 0;
+
+            return (period.DateEnd.Date - period.DateStart.Date).Days + 1;
+        }
     }
 }
