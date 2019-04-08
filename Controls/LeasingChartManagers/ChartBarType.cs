@@ -16,6 +16,10 @@
         /// <summary>
         /// Ремонт
         /// </summary>
-        Maintenance
+        Maintenance,
+        /// <summary>
+        /// Страховка
+        /// </summary>
+        Insurance
     }
 }

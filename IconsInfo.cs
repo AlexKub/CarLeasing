@@ -21,7 +21,12 @@ namespace CarLeasingViewer
         /// <summary>
         /// Иконка страховки
         /// </summary>
-        public static BitmapImage InsuranceIconPath { get { return LoadImage(Properties.Resources.osago_kasko); } }
+        public static BitmapImage InsuranceIconPath { get { return LoadImage(Properties.Resources.Insurance_left); } }
+
+        /// <summary>
+        /// Иконка страховки на грфике
+        /// </summary>
+        public static BitmapImage InsuranceDay { get { return LoadImage(Properties.Resources.Insurance_day); } }
 
         static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
         {

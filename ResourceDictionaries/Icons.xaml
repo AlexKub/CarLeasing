@@ -8,5 +8,6 @@
     </Style>
     <Style x:Key="Insurance" TargetType="Image">
         <Setter Property="Source" Value="{x:Static local:IconsInfo.InsuranceIconPath}"/>
+        <Setter Property="Height" Value="26"/>
     </Style>
 </ResourceDictionary>

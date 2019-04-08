@@ -277,5 +277,11 @@
   <ItemGroup>
     <None Include="Resources\osago_kasko.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Insurance_day.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Insurance_left.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
