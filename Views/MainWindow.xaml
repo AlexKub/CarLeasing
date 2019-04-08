@@ -272,8 +272,7 @@
                                                     <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта"
                                                        Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
                                                     <!--Иконка Занятости авто--> 
-                                                    <Image Style="{StaticResource Maintance}"
-                                                        Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"/>
+                                                    <Image Style="{StaticResource Maintance}" Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}" />
                                                 </StackPanel> 
                                             </Grid>
                                         </Border>

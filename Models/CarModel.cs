@@ -100,7 +100,7 @@ namespace CarLeasingViewer.Models
 
         #region IHightlightable
 
-        private Brush pv_HightlightBrush;
+        private Brush pv_HightlightBrush = Brushes.Transparent;
         /// <summary>
         /// Возвращает или задаёт кисть подсветки
         /// </summary>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Media.Imaging;
 
 namespace CarLeasingViewer
@@ -14,33 +16,33 @@ namespace CarLeasingViewer
         /// <summary>
         /// Иконка Ремонта
         /// </summary>
-        public static BitmapImage MaintenanceIconPath { get { return LoadImage("/Resources/maintenance.png", UriKind.Relative); } }
+        public static BitmapImage MaintenanceIconPath { get { return LoadImage(Properties.Resources.maintenance_image); } }
 
         /// <summary>
         /// Иконка страховки
         /// </summary>
-        public static BitmapImage InsuranceIconPath { get { return LoadImage("/Resources/osago_kasko.png", UriKind.Relative); } }
+        public static BitmapImage InsuranceIconPath { get { return LoadImage(Properties.Resources.osago_kasko); } }
 
-        static BitmapImage LoadImage(string path, UriKind pathType)
+        static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
         {
             //https://docs.microsoft.com/ru-ru/dotnet/framework/wpf/graphics-multimedia/how-to-use-a-bitmapimage
             try
             {
-                var image = new BitmapImage();
-                image.BeginInit();
+                var bitmapImage = new BitmapImage();
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    bitmap.Save(memory, ImageFormat.Png);
+                    memory.Position = 0;
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                }
 
-                image.UriSource = new Uri(path, pathType);
-
-                image.DecodePixelHeight = (int)StandartSize;
-                image.EndInit();
-
-                return image;
+                return bitmapImage;
             }
-            catch (Exception ex)
+            catch
             {
-                App.Loger.Log("Возникло исключение при загрузке изображения", ex,
-                    new LogParameter("Путь", path.LogValue())
-                    , new LogParameter("Тип", pathType.ToString()));
 
                 return null;
             }
