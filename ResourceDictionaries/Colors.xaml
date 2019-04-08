@@ -4,6 +4,9 @@
 
     <!-- Основной цвет заливки приложения -->
     <Color x:Key="LightBorderColor">#FFD3D3D3</Color>
+    
+    <!-- Прозрачный -->
+    <Color x:Key="TransparentColor">#00000000</Color>
 
     <!-- Основная кисть заливки приложения -->
     <SolidColorBrush x:Key="LightBorderBrush" Color="{StaticResource LightBorderColor}" PresentationOptions:Freeze="True" />
@@ -27,4 +30,11 @@
             <GradientStop Color="Gray" Offset="0.5"/>
         </RadialGradientBrush.GradientStops>
     </RadialGradientBrush>
+
+    <LinearGradientBrush MappingMode="Absolute" x:Key="HatchBrush"  StartPoint="0,0" EndPoint="4,4" SpreadMethod="Repeat">
+        <GradientStop Offset="0" Color="{StaticResource LightBorderColor}"/>
+        <GradientStop Offset="0.75" Color="{StaticResource LightBorderColor}"/>
+        <GradientStop Offset="0.75" Color="{StaticResource TransparentColor}"/>
+        <GradientStop Offset="1" Color="{StaticResource TransparentColor}"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

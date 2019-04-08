@@ -75,9 +75,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                 //простановка  отрисовки зеброй
                 m_MaintenancePen = new Pen(value, 3d);
-                var dStyle = DashStyles.Dash;
-                dStyle.Freeze();
-                m_MaintenancePen.DashStyle = dStyle;
                 m_MaintenancePen.Freeze();
             }
         }

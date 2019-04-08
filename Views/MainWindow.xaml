@@ -217,7 +217,7 @@
                                            FontSize="10"
                                            BarBrush="{StaticResource StandartBarBrush}"
                                            BlockeBarBrush="{StaticResource BlockedBarBrush}"
-                                               MaintenanceBrush="Gray"
+                                           MaintenanceBrush="{StaticResource HatchBrush}"
                                            MinHeight="200"
                                                HorizontalAlignment="Left">
 
