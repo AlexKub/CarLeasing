@@ -28,7 +28,7 @@ namespace CarLeasingViewer
         /// </summary>
         public static BitmapImage InsuranceDay { get { return LoadImage(Properties.Resources.Insurance_day); } }
 
-        static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
+        public static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
         {
             //https://docs.microsoft.com/ru-ru/dotnet/framework/wpf/graphics-multimedia/how-to-use-a-bitmapimage
             try

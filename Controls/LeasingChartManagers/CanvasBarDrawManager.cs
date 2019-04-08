@@ -300,6 +300,56 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dc.DrawGeometry(m_currentBrush, m_currentPen, g);
         }
 
+        void DrawImage(DrawingContext dc, BarData bd)
+        {
+            PathGeometry g = new PathGeometry();
+            PathFigure pf = new PathFigure();
+
+            bd.Model;
+            //левая нижняя точка
+            var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
+            //правая верхняя точка
+            var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
+
+            pf.StartPoint = start;
+            var s = new LineSegment(new Point(end.X, start.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+            s = left
+                ? new LineSegment(new Point(end.X, end.Y), true)
+                : new LineSegment(new Point(end.X - Canvas.DayColumnWidth, end.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+            s = left
+                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
+                : new LineSegment(new Point(start.X, end.Y), true);
+            s.Freeze();
+            s = left
+                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
+                : new LineSegment(new Point(start.X, end.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+            s = new LineSegment(new Point(start.X, start.Y), true);
+            s.Freeze();
+            pf.Segments.Add(s);
+
+            pf.Freeze();
+
+            g.Figures.Add(pf);
+            g.Freeze();
+
+            //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
+            GuidelineSet guidelines = new GuidelineSet();
+            guidelines.GuidelinesX.Add(start.X + m_halfPenWidth);
+            guidelines.GuidelinesX.Add(end.X + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(start.Y + m_halfPenWidth);
+            guidelines.GuidelinesY.Add(end.Y + m_halfPenWidth);
+
+            bd.Bar = g;
+            dc.PushGuidelineSet(guidelines);
+            dc.DrawGeometry(m_currentBrush, m_currentPen, g);
+        }
+
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
 
         public override void Dispose()
