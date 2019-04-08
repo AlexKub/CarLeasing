@@ -214,7 +214,7 @@
                                            DayColumnWidth="{x:Static local:AppStyles.TotalColumnWidth}"
                                            BarBorderBrush="{StaticResource GridBorderBrush}"
                                            FontFamily="Times New Roman"
-                                           FontSize="10"
+                                           FontSize="11"
                                            BarBrush="{StaticResource StandartBarBrush}"
                                            BlockeBarBrush="{StaticResource BlockedBarBrush}"
                                            MaintenanceBrush="{StaticResource HatchBrush}"
