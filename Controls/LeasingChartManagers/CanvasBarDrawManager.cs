@@ -156,27 +156,33 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             DrawPathType pathType = DrawPathType.Rectangle;
 
-            var set = bd?.Model?.Set;
-
-            if (set != null && set.Sorted)
-            {
-                //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
-                //в таком случае нужно показать, что машина занята частично и нарисовать скос
-                if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
-                    pathType = DrawPathType.Geometry_R;
-            }
+            if (bd.Model != null && bd.Model.BarType == ChartBarType.Insurance)
+                pathType = DrawPathType.Image;
             else
-                foreach (var item in Canvas.RowManager[bd.Index].Bars)
+            {
+
+                var set = bd?.Model?.Set;
+
+                if (set != null && set.Sorted)
                 {
-                    if (item.Model != null)
-                        if (item.Model.Period.DateEnd.Date == startDay)
-                        {
-                            //рисуем скос у накладывающихся друг на друга сроков аренды
-                            //когда машину сдают и берут в тот же день
-                            pathType = DrawPathType.Geometry_L;
-                            break;
-                        }
+                    //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
+                    //в таком случае нужно показать, что машина занята частично и нарисовать скос
+                    if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
+                        pathType = DrawPathType.Geometry_R;
                 }
+                else
+                    foreach (var item in Canvas.RowManager[bd.Index].Bars)
+                    {
+                        if (item.Model != null)
+                            if (item.Model.Period.DateEnd.Date == startDay)
+                            {
+                                //рисуем скос у накладывающихся друг на друга сроков аренды
+                                //когда машину сдают и берут в тот же день
+                                pathType = DrawPathType.Geometry_L;
+                                break;
+                            }
+                    }
+            }
 
             //задаём инструменты отрисовки
             SetDrawTools(bd.Model.BarType);
@@ -194,6 +200,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         break;
                     case DrawPathType.Geometry_R:
                         DrawGeometry(dc, bd, false); //обрезка справа
+                        break;
+                    case DrawPathType.Image:
+                        DrawImage(dc, bd);
                         break;
                 }
 
@@ -225,6 +234,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 case ChartBarType.Maintenance:
                     m_currentPen = m_MaintenancePen;
                     m_currentBrush = m_MaintenanceBrush;
+                    break;
+                case ChartBarType.Insurance:
                     break;
                 default:
                     throw new NotImplementedException($"Отрисовка для типа модели '{type.ToString()}' не реализована");
@@ -302,31 +313,31 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         void DrawImage(DrawingContext dc, BarData bd)
         {
-            PathGeometry g = new PathGeometry();
-            PathFigure pf = new PathFigure();
+            var image = bd.Model as ImageBarModel;
 
-            bd.Model;
+            if (image == null || image.Bitmap == null)
+                return;
+
+            /*PathGeometry g = new PathGeometry();
+            PathFigure pf = new PathFigure();*/
+
+            
             //левая нижняя точка
             var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
             //правая верхняя точка
             var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
+            var rect = new Rect(start, end);
 
-            pf.StartPoint = start;
+            /*pf.StartPoint = start;
             var s = new LineSegment(new Point(end.X, start.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = left
-                ? new LineSegment(new Point(end.X, end.Y), true)
-                : new LineSegment(new Point(end.X - Canvas.DayColumnWidth, end.Y), true);
+            s = new LineSegment(new Point(end.X, end.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = left
-                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
-                : new LineSegment(new Point(start.X, end.Y), true);
+            s = new LineSegment(new Point(start.X, end.Y), true);
             s.Freeze();
-            s = left
-                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
-                : new LineSegment(new Point(start.X, end.Y), true);
+            s = new LineSegment(new Point(start.X, end.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
             s = new LineSegment(new Point(start.X, start.Y), true);
@@ -336,7 +347,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             pf.Freeze();
 
             g.Figures.Add(pf);
-            g.Freeze();
+            g.Freeze();*/
 
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
             GuidelineSet guidelines = new GuidelineSet();
@@ -345,9 +356,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             guidelines.GuidelinesY.Add(start.Y + m_halfPenWidth);
             guidelines.GuidelinesY.Add(end.Y + m_halfPenWidth);
 
-            bd.Bar = g;
+            bd.Bar = rect;
             dc.PushGuidelineSet(guidelines);
-            dc.DrawGeometry(m_currentBrush, m_currentPen, g);
+            dc.DrawImage(image.Bitmap, rect);
         }
 
         public CanvasBarDrawManager(LeasingChart canvas) : base(canvas) { }
@@ -698,7 +709,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// <summary>
             /// Скос справа
             /// </summary>
-            Geometry_R
+            Geometry_R,
+            /// <summary>
+            /// Картинка
+            /// </summary>
+            Image
         }
 
     }
