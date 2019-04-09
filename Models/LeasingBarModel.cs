@@ -147,6 +147,8 @@ namespace CarLeasingViewer.Models
 
         LeasingSet IDrawableBar.Set => Set;
 
+        public int ZIndex => 0;
+
         string[] IDrawableBar.ToolTipRows
         {
             get

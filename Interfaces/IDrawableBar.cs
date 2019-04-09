@@ -11,7 +11,10 @@ namespace CarLeasingViewer.Interfaces
         /// Индекс строки
         /// </summary>
         int RowIndex { get; set; }
-
+        /// <summary>
+        /// Порядок отрисовки
+        /// </summary>
+        int ZIndex { get; }
         /// <summary>
         /// Отображаемый Период
         /// </summary>
@@ -41,5 +44,7 @@ namespace CarLeasingViewer.Interfaces
         /// <returns>Новая полная копия</returns>
         /// <remarks>Для генерации отсортированной коллекции</remarks>
         IDrawableBar Clone();
+
+        
     }
 }

@@ -22,6 +22,8 @@ namespace CarLeasingViewer.Models
 
         public BitmapImage Bitmap { get; set; }
 
+        public int ZIndex => 99; //последний
+
         public ImageBarModel(LeasingSet set)
         {
             Set = set;
