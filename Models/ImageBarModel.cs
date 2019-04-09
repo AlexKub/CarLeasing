@@ -48,9 +48,12 @@ namespace CarLeasingViewer.Models
             var rows = new List<string>();
             rows.Add(item.Name);
             rows.Add("ОКОНЧАНИЕ СТРАХОВКИ");
-            if (item.OSAGO_END > Set.DateStart)
+
+            var setPeriod = Set as IPeriod;
+            var dateStart = setPeriod.DateStart;
+            if (item.OSAGO_END > dateStart)
                 rows.Add("ОСАГО: " + item.OSAGO_END.ToShortDateString() + (item.OSAGO_Company != null ? (" " + item.OSAGO_Company) : ""));
-            if (item.KASKO_END > Set.DateStart)
+            if (item.KASKO_END > dateStart)
                 rows.Add("КАСКО: " + item.KASKO_END.ToShortDateString() + (item.KASKO_Company != null ? (" " + item.KASKO_Company) : ""));
 
             ToolTipRows = rows.ToArray();
