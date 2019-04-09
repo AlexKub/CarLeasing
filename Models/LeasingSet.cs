@@ -358,13 +358,16 @@ namespace CarLeasingViewer.Models
                     }
                     if(this.Include(item.OSAGO_END))
                     {
-                        leasingBarModels.Add(
-                            new ImageBarModel(this)
-                            {
-                                RowIndex = rowIndex,
-                                Date = item.OSAGO_END,
-                                Bitmap = insuranceIcon
-                            });
+                        var img = new ImageBarModel(this)
+                        {
+                            RowIndex = rowIndex,
+                            Date = item.OSAGO_END,
+                            Bitmap = insuranceIcon
+                        };
+
+                        img.SetTooltip(item);
+
+                        leasingBarModels.Add(img);
                     }
                 }
 

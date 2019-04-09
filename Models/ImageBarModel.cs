@@ -1,6 +1,7 @@
 ﻿using CarLeasingViewer.Controls.LeasingChartManagers;
 using CarLeasingViewer.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 
 namespace CarLeasingViewer.Models
@@ -26,7 +27,7 @@ namespace CarLeasingViewer.Models
             Set = set;
         }
 
-        public string[] ToolTipRows { get; set; }
+        public string[] ToolTipRows { get; private set; }
 
         public ChartBarType BarType => ChartBarType.Insurance;
 
@@ -38,6 +39,19 @@ namespace CarLeasingViewer.Models
             newModel.ToolTipRows = ToolTipRows;
 
             return newModel;
+        }
+
+        public void SetTooltip(ItemInfo item)
+        {
+            var rows = new List<string>();
+            rows.Add(item.Name);
+            rows.Add("ОКОНЧАНИЕ СТРАХОВКИ");
+            if (item.OSAGO_END > Set.DateStart)
+                rows.Add("ОСАГО: " + item.OSAGO_END.ToShortDateString() + (item.OSAGO_Company != null ? (" " + item.OSAGO_Company) : ""));
+            if (item.KASKO_END > Set.DateStart)
+                rows.Add("КАСКО: " + item.KASKO_END.ToShortDateString() + (item.KASKO_Company != null ? (" " + item.KASKO_Company) : ""));
+
+            ToolTipRows = rows.ToArray();
         }
     }
 }

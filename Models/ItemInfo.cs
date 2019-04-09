@@ -39,10 +39,12 @@ namespace CarLeasingViewer.Models
         /// Дата окончания ОСАГО
         /// </summary>
         public DateTime OSAGO_END { get; set; }
+        public string OSAGO_Company { get; set; }
         /// <summary>
         /// Дата окончания КАСКО
         /// </summary>
         public DateTime KASKO_END { get; set; }
+        public string KASKO_Company { get; set; }
 
         /// <summary>
         /// Количество аренд на текущий месяц
