@@ -289,7 +289,18 @@ namespace CarLeasingViewer.Controls
         /// <summary>
         /// Набор аренд авто
         /// </summary>
-        public IEnumerable<IDrawableBar> Leasings { get { return (IEnumerable<IDrawableBar>)GetValue(dp_Leasings); } set { SetValue(dp_Leasings, value); } }
+        public IEnumerable<IDrawableBar> Leasings
+        {
+            get { return (IEnumerable<IDrawableBar>)GetValue(dp_Leasings); }
+            set
+            {
+                if (value != null)
+                    //сортировка для послойной отрисовки
+                    value = new List<IDrawableBar>(value.OrderBy(b => b.ZIndex));
+
+                SetValue(dp_Leasings, value);
+            }
+        }
 
         LeasingSet m_set;
         /// <summary>
