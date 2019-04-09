@@ -16,17 +16,24 @@ namespace CarLeasingViewer
         /// <summary>
         /// Иконка Ремонта
         /// </summary>
-        public static BitmapImage MaintenanceIconPath { get { return LoadImage(Properties.Resources.maintenance_image); } }
+        public static BitmapImage MaintenanceIconPath { get; private set; }
 
         /// <summary>
         /// Иконка страховки
         /// </summary>
-        public static BitmapImage InsuranceIconPath { get { return LoadImage(Properties.Resources.Insurance_left); } }
+        public static BitmapImage InsuranceIconPath { get; private set; }
 
         /// <summary>
         /// Иконка страховки на грфике
         /// </summary>
-        public static BitmapImage InsuranceDay { get { return LoadImage(Properties.Resources.Insurance_day); } }
+        public static BitmapImage InsuranceDay { get; private set; }
+
+        static IconsInfo()
+        {
+            MaintenanceIconPath = LoadImage(Properties.Resources.maintenance_image);
+            InsuranceIconPath = LoadImage(Properties.Resources.Insurance_left);
+            InsuranceDay = LoadImage(Properties.Resources.Insurance_day);
+        }
 
         public static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
         {
