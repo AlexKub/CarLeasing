@@ -189,7 +189,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                                 pathType = DrawPathType.Geometry_R;
                         }
                         else
-                            foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && b.Model is LeasingBarModel))
+                            foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && !(b.Model is ImageBarModel)))
                             {
                                 if (item.Model.Period.DateEnd.Date == startDay)
                                 {
@@ -266,7 +266,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 case ChartBarType.Insurance:
                     break;
                 case ChartBarType.Storno:
-                    m_currentPen = m_StornoPen;
+                    m_currentPen = LeasingPen;
                     m_currentBrush = m_StornoBrush;
                     break;
                 default:
