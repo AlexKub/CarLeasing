@@ -29,11 +29,17 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public bool IncludeBlocked { get { return _IncludeBlocked; } set { _IncludeBlocked = value; OnPropertyChanged(); } }
 
-        private bool m_IncludeNotActive;
+        protected bool m_IncludeNotActive;
         /// <summary>
         /// Возвращает или задаёт флаг включение в выборку не активных
         /// </summary>
         public bool IncludeNotActive { get { return m_IncludeNotActive; } set { m_IncludeNotActive = value; OnPropertyChanged(); } }
+
+        protected bool m_DrawStorno;
+        /// <summary>
+        /// Возвращает или задаёт флаг включения в отрисовку сторнирования
+        /// </summary>
+        public bool DrawStorno { get { return m_DrawStorno; } set { m_DrawStorno = value; OnPropertyChanged(); } }
 
         protected bool _TestData;
         /// <summary>
@@ -56,6 +62,7 @@ namespace CarLeasingViewer.Models
             _TestData = settings.TestData;
             m_SelectedRegion = settings.SelectedRegion;
             m_IncludeNotActive = settings.IncludeNotActive;
+            m_DrawStorno = settings.DrawStorno;
         }
     }
 }

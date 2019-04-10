@@ -43,6 +43,8 @@ namespace CarLeasingViewer.Models
             _SelectedDBSearchType = (DBSearchType)Properties.Settings.Default.SearchTypeIndex;
             _TestData = Properties.Settings.Default.TestData;
             _IncludeBlocked = Properties.Settings.Default.IncludeBlocked;
+            m_IncludeNotActive = Properties.Settings.Default.IncludeNotActive;
+            m_DrawStorno = Properties.Settings.Default.DrawStorno;
 
             //не вызываем OnPropertyChanged лишний раз, т.к. вызовет перерисовку UI
         }
@@ -52,6 +54,8 @@ namespace CarLeasingViewer.Models
             Properties.Settings.Default.SearchTypeIndex = (int)_SelectedDBSearchType;
             Properties.Settings.Default.TestData = _TestData;
             Properties.Settings.Default.IncludeBlocked = _IncludeBlocked;
+            Properties.Settings.Default.IncludeNotActive = m_IncludeNotActive;
+            Properties.Settings.Default.DrawStorno = m_DrawStorno;
 
             Properties.Settings.Default.Save();
         }

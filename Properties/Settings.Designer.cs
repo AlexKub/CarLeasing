@@ -70,5 +70,29 @@ namespace CarLeasingViewer.Properties {
                 this["ConnectionString"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DrawStorno {
+            get {
+                return ((bool)(this["DrawStorno"]));
+            }
+            set {
+                this["DrawStorno"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IncludeNotActive {
+            get {
+                return ((bool)(this["IncludeNotActive"]));
+            }
+            set {
+                this["IncludeNotActive"] = value;
+            }
+        }
     }
 }
