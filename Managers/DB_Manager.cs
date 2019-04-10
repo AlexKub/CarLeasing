@@ -221,13 +221,13 @@ namespace CarLeasingViewer
 
                             buyer = (string)reader["Buyer"];
 
-                            bool isStorno = ((DateTime?)reader["StornoDocDate"] != null);
+                            bool isStorno = reader["StornoDocDate"] != DBNull.Value;
                             if (isStorno)
                             {
                                 var s = new Storno();
                                 s.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
                                 s.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["DateEnd"]).TimeOfDay);
-                                s.Comment = (string)reader["StornoComment"];
+                                s.Comment = (reader["StornoComment"] as string) ?? "";
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
                                 s.MonthCount = s.CalculateMonthCount();
                                 cb.Add(s);
