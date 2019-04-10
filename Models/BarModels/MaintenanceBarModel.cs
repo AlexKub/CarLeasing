@@ -16,7 +16,7 @@ namespace CarLeasingViewer.Models
 
         public LeasingSet Set { get; private set; }
 
-        public int ZIndex => 1;
+        public int ZIndex => 2;
 
         public string Text { get; private set; }
 
