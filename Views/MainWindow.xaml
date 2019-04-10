@@ -98,6 +98,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
                 <DockPanel Grid.Column="0" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
