@@ -348,36 +348,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (image == null || image.Bitmap == null)
                 return;
 
-            /*PathGeometry g = new PathGeometry();
-            PathFigure pf = new PathFigure();*/
-
-
             //левая нижняя точка
             var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
             //правая верхняя точка
             var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
             var rect = new Rect(start, end);
-
-            /*pf.StartPoint = start;
-            var s = new LineSegment(new Point(end.X, start.Y), true);
-            s.Freeze();
-            pf.Segments.Add(s);
-            s = new LineSegment(new Point(end.X, end.Y), true);
-            s.Freeze();
-            pf.Segments.Add(s);
-            s = new LineSegment(new Point(start.X, end.Y), true);
-            s.Freeze();
-            s = new LineSegment(new Point(start.X, end.Y), true);
-            s.Freeze();
-            pf.Segments.Add(s);
-            s = new LineSegment(new Point(start.X, start.Y), true);
-            s.Freeze();
-            pf.Segments.Add(s);
-
-            pf.Freeze();
-
-            g.Figures.Add(pf);
-            g.Freeze();*/
 
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
             GuidelineSet guidelines = new GuidelineSet();
