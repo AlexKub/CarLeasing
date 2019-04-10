@@ -270,8 +270,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             dc.PushGuidelineSet(guidelines);
 
-            var isMaintenance = bd.Model is MaintenanceBarModel;
-            var pen = isMaintenance ? m_MaintenancePen : Pen;
             dc.DrawRectangle(m_currentBrush, m_currentPen, rect);
             dc.Pop();
         }
