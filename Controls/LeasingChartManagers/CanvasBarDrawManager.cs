@@ -156,36 +156,46 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             DrawPathType pathType = DrawPathType.Rectangle;
 
-            if (bd.Model != null && bd.Model.BarType == ChartBarType.Insurance)
-                pathType = DrawPathType.Image;
-            else
+            if (bd.Model != null)
             {
-
-                var set = bd?.Model?.Set;
-
-                if (set != null && set.Sorted)
+                switch (bd.Model.BarType)
                 {
-                    //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
-                    //в таком случае нужно показать, что машина занята частично и нарисовать скос
-                    if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
-                        pathType = DrawPathType.Geometry_R;
-                }
-                else
-                    foreach (var item in Canvas.RowManager[bd.Index].Bars)
-                    {
-                        if (item.Model != null)
-                            if (item.Model.Period.DateEnd.Date == startDay)
-                            {
-                                //рисуем скос у накладывающихся друг на друга сроков аренды
-                                //когда машину сдают и берут в тот же день
-                                pathType = DrawPathType.Geometry_L;
-                                break;
-                            }
-                    }
-            }
+                    case ChartBarType.Leasing:
+                        var set = bd?.Model?.Set;
 
-            //задаём инструменты отрисовки
-            SetDrawTools(bd.Model.BarType);
+                        if (set != null && set.Sorted)
+                        {
+                            //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
+                            //в таком случае нужно показать, что машина занята частично и нарисовать скос
+                            if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
+                                pathType = DrawPathType.Geometry_R;
+                        }
+                        else
+                            foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && b.Model is LeasingBarModel))
+                            {
+                                if (item.Model.Period.DateEnd.Date == startDay)
+                                {
+                                    //рисуем скос у накладывающихся друг на друга сроков аренды
+                                    //когда машину сдают и берут в тот же день
+                                    pathType = DrawPathType.Geometry_L;
+                                    break;
+                                }
+                            }
+                        break;
+                    case ChartBarType.Insurance:
+                        pathType = DrawPathType.Image;
+                        break;
+                    case ChartBarType.Maintenance:
+                    case ChartBarType.Storno:
+                        pathType = DrawPathType.Rectangle;
+                        break;
+                    default:
+                        break;
+                }
+
+                //задаём инструменты отрисовки
+                SetDrawTools(bd.Model.BarType);
+            }
 
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
@@ -236,6 +246,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     m_currentBrush = m_MaintenanceBrush;
                     break;
                 case ChartBarType.Insurance:
+                    break;
+                case ChartBarType.Storno:
+                    m_currentPen = m_MaintenancePen;
+                    m_currentBrush = BackgroundBrush;
                     break;
                 default:
                     throw new NotImplementedException($"Отрисовка для типа модели '{type.ToString()}' не реализована");
@@ -321,7 +335,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /*PathGeometry g = new PathGeometry();
             PathFigure pf = new PathFigure();*/
 
-            
+
             //левая нижняя точка
             var start = new Point(bd.HorizontalOffset, bd.VerticalOffset + RowHeight);
             //правая верхняя точка
