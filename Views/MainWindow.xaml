@@ -122,6 +122,9 @@
                 <CheckBox Grid.Column="4" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" 
                           IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
                           Checked="OnSearchSettingsChanged"/>
+                <CheckBox Grid.Column="5" Content="Отрисовка Сторно" Margin="3 0 3 0" VerticalAlignment="Center" 
+                          IsChecked="{Binding DrawStorno, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
+                          Checked="OnSearchSettingsChanged"/>
             </Grid>
         </Grid>
 
