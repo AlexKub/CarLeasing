@@ -27,6 +27,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         Brush m_currentBrush;
 
         Pen m_MaintenancePen;
+        Pen m_StornoPen;
+        Brush m_StornoBrush;
 
         Brush m_brush;
         /// <summary>
@@ -38,21 +40,37 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             set
             {
                 m_brush = value;
-                Pen = new Pen(value, AppStyles.GridLineWidth);
-                m_halfPenWidth = Pen.Thickness / 2d;
-                Pen.Freeze();
+                LeasingPen = new Pen(value, AppStyles.GridLineWidth);
+                m_halfPenWidth = LeasingPen.Thickness / 2d;
+                LeasingPen.Freeze();
             }
         }
 
         /// <summary>
         /// Основная кисть
         /// </summary>
-        public Pen Pen { get; private set; }
+        public Pen LeasingPen { get; private set; }
 
+        Brush m_LeasingBrush;
         /// <summary>
         /// Кисть для заливки фона полосок
         /// </summary>
-        public Brush BackgroundBrush { get; set; }
+        public Brush LeasingBrush
+        {
+            get { return m_LeasingBrush; }
+            set
+            {
+                m_LeasingBrush = value;
+                m_LeasingBrush.Freeze();
+
+                if (value != null)
+                {
+                    m_StornoBrush = GetHatchBrush((value as SolidColorBrush).Color);
+                    m_StornoPen = new Pen(m_StornoBrush, 3d);
+                    m_StornoPen.Freeze();
+                }
+            }
+        }
 
         /// <summary>
         /// Кисть для заливки заблокированных полосок
@@ -237,8 +255,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 //отрисовка панелек Занятости
                 case ChartBarType.Leasing:
-                    m_currentPen = Pen;
-                    m_currentBrush = BackgroundBrush;
+                    m_currentPen = LeasingPen;
+                    m_currentBrush = LeasingBrush;
                     break;
                 //отрисовка панелек Ремонта
                 case ChartBarType.Maintenance:
@@ -248,8 +266,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 case ChartBarType.Insurance:
                     break;
                 case ChartBarType.Storno:
-                    m_currentPen = m_MaintenancePen;
-                    m_currentBrush = BackgroundBrush;
+                    m_currentPen = m_StornoPen;
+                    m_currentBrush = m_StornoBrush;
                     break;
                 default:
                     throw new NotImplementedException($"Отрисовка для типа модели '{type.ToString()}' не реализована");
@@ -459,6 +477,29 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             #endregion
 
             return DayColumnWidth * dayCount;
+        }
+
+        /// <summary>
+        /// Полосатая кисть
+        /// </summary>
+        /// <returns>Возвращает кисть с выбранным цветом</returns>
+        Brush GetHatchBrush(Color color)
+        {
+            return new LinearGradientBrush()
+            {
+                MappingMode = BrushMappingMode.Absolute,
+                StartPoint = new Point(4, 4),
+                EndPoint = new Point(0, 0),
+                SpreadMethod = GradientSpreadMethod.Repeat,
+
+                GradientStops = new GradientStopCollection()
+                {
+                      new GradientStop() { Offset = 0d, Color = color }
+                    , new GradientStop() { Offset = 0.6d, Color = color }
+                    , new GradientStop() { Offset = 0.6d, Color = Colors.Transparent }
+                    , new GradientStop() { Offset = 1d, Color = Colors.Transparent }
+                }
+            };
         }
 
         /// <summary>

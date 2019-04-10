@@ -158,7 +158,7 @@ namespace CarLeasingViewer.Controls
                 if (_this.m_barM == null)
                     return;
 
-                _this.m_barM.BackgroundBrush = e.NewValue as Brush;
+                _this.m_barM.LeasingBrush = e.NewValue as Brush;
             }
         });
         /// <summary>
