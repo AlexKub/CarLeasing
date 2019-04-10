@@ -113,6 +113,16 @@ namespace CarLeasingViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap not_accounting {
+            get {
+                object obj = ResourceManager.GetObject("not_accounting", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap osago_kasko {
             get {
                 object obj = ResourceManager.GetObject("osago_kasko", resourceCulture);
