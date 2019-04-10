@@ -13,11 +13,11 @@ namespace CarLeasingViewer.Models
 
         public int ZIndex => 1;
 
-        public IPeriod Period { get; set; }
+        public IPeriod Period { get; private set; }
 
-        public LeasingSet Set { get; set; }
+        public LeasingSet Set { get; private set; }
 
-        public string[] ToolTipRows { get; set; }
+        public string[] ToolTipRows { get; private set; }
 
         public ChartBarType BarType => ChartBarType.Storno;
 

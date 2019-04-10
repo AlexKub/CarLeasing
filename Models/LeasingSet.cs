@@ -349,7 +349,9 @@ namespace CarLeasingViewer.Models
 
                     if(item.Stornos.Count > 0)
                     {
-                        leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s)));
+                        leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s) {
+                            RowIndex = rowIndex
+                        }));
                     }
 
                     //отрисовка ремонта
