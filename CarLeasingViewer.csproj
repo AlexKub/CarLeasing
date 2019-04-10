@@ -138,6 +138,7 @@
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
     <Compile Include="Models\Storno.cs" />
+    <Compile Include="Models\BarModels\StornoBarModel.cs" />
     <Compile Include="StaticResources.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />

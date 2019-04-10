@@ -20,6 +20,10 @@
         /// <summary>
         /// Страховка
         /// </summary>
-        Insurance
+        Insurance,
+        /// <summary>
+        /// Сторно
+        /// </summary>
+        Storno
     }
 }
