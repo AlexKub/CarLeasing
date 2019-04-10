@@ -11,6 +11,7 @@ namespace CarLeasingViewer.Models
     public class ItemInfo : ViewModelBase
     {
         List<Leasing> m_businesses = new List<Leasing>();
+        List<Storno> m_stornos = new List<Storno>();
 
         /// <summary>
         /// ID позиции (колонка No_ в Items)
@@ -24,6 +25,10 @@ namespace CarLeasingViewer.Models
         /// Аренды
         /// </summary>
         public IList<Leasing> Leasings { get { return m_businesses; } }
+        /// <summary>
+        /// Сторно
+        /// </summary>
+        public IReadOnlyList<Storno> Stornos { get { return m_stornos; } }
         /// <summary>
         /// Месяц, в контексте которого рассаматриваем текущий жкземпляр
         /// </summary>
@@ -88,6 +93,10 @@ namespace CarLeasingViewer.Models
         public void Add(Leasing b)
         {
             m_businesses.Add(b);
+        }
+        public void Add(Storno s)
+        {
+            m_stornos.Add(s);
         }
     }
 }

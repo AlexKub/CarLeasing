@@ -221,17 +221,30 @@ namespace CarLeasingViewer
 
                             buyer = (string)reader["Buyer"];
 
-                            var b = new Leasing();
-                            b.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
-                            b.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
-                            b.Title = buyer;
-                            b.Type = BusinessType.Leasing;
-                            b.Comment = (string)reader["Comment"];
-                            b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
-                            b.Saler = (string)reader["Saler"];
-                            b.Blocked = ((byte)reader["Blocked"]) > 0;
+                            bool isStorno = ((DateTime?)reader["StornoDocDate"] != null);
+                            if (isStorno)
+                            {
+                                var s = new Storno();
+                                s.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
+                                s.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["DateEnd"]).TimeOfDay);
+                                s.Comment = (string)reader["StornoComment"];
+                                s.DocumentDate = (DateTime)reader["StornoDocDate"];
+                                s.MonthCount = s.CalculateMonthCount();
+                            }
+                            else
+                            {
+                                var b = new Leasing();
+                                b.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
+                                b.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["TimeEnd"]).TimeOfDay);
+                                b.Title = buyer;
+                                b.Type = BusinessType.Leasing;
+                                b.Comment = (string)reader["Comment"];
+                                b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
+                                b.Saler = (string)reader["Saler"];
+                                b.Blocked = ((byte)reader["Blocked"]) > 0;
 
-                            cb.Add(b);
+                                cb.Add(b);
+                            }
                         }
                     }
                 }
