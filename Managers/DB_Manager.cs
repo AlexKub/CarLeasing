@@ -230,6 +230,7 @@ namespace CarLeasingViewer
                                 s.Comment = (string)reader["StornoComment"];
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
                                 s.MonthCount = s.CalculateMonthCount();
+                                cb.Add(s);
                             }
                             else
                             {

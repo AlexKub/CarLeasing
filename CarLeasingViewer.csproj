@@ -127,10 +127,10 @@
     <Compile Include="Interfaces\IIndexable.cs" />
     <Compile Include="Models\CarCommentModel.cs" />
     <Compile Include="Models\CarModel.cs" />
-    <Compile Include="Models\ImageBarModel.cs" />
-    <Compile Include="Models\LeasingBarModel.cs" />
+    <Compile Include="Models\BarModels\ImageBarModel.cs" />
+    <Compile Include="Models\BarModels\LeasingBarModel.cs" />
     <Compile Include="Models\LeasingSet.cs" />
-    <Compile Include="Models\MaintenanceBarModel.cs" />
+    <Compile Include="Models\BarModels\MaintenanceBarModel.cs" />
     <Compile Include="Models\MaintenanceInfo.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
