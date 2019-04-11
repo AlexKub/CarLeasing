@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static CarLeasingViewer.Controls.LeasingChartManagers.RowManager;
 
 namespace CarLeasingViewer.Models
@@ -51,13 +50,37 @@ namespace CarLeasingViewer.Models
 
             var items = new List<StatisticItemModel>();
 
-            //выбираем только аренды авто
+            //аренды
             var leasings = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<LeasingBarModel>();
             var leasingCount = leasings.Sum(l => l.DaysCount);
-            var loadPercent = (double)(set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
+
+            //сторнирование
+            var stornos = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<StornoBarModel>();
+            var stornosCount = stornos.Sum(s => s.Period.DaysCount());
+
+            //ремонт
+            var maintenances = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<MaintenanceBarModel>();
+            var maintenancesCount = maintenances.Sum(m => m.Period.DaysCount());
+
+            var loadPercent = (set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
-            items.Add(new StatisticItemModel("Общее время аренды", leasingCount.ToString() + " дн."));
-            items.Add(new StatisticItemModel("% загрузки", Math.Round((leasingCount / loadPercent), 2).ToString() + " %"));
+
+            var stornedCount = 0;
+            foreach (var l in leasings)
+            {
+                if (l.Leasing != null)
+                    foreach (var s in stornos)
+                    {
+                        if (s.Period != null)
+                            stornedCount += s.Period.CrossDaysCount(l.Leasing);
+                    }
+            }
+
+            var realLeasingCount = leasingCount - stornedCount;
+            items.Add(new StatisticItemModel("Общее время аренды", (realLeasingCount).ToString() + " дн."));
+            items.Add(new StatisticItemModel("Сторнированное время", (realLeasingCount).ToString() + " дн."));
+            items.Add(new StatisticItemModel("Время ремонта", (maintenancesCount).ToString() + " дн."));
+            items.Add(new StatisticItemModel("% загрузки", Math.Round((realLeasingCount / loadPercent), 2).ToString() + " %"));
 
             var model = row.Car;
 

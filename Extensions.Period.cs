@@ -67,8 +67,40 @@ namespace CarLeasingViewer
         /// <returns></returns>
         public static bool Cross(this IPeriod this_period, IPeriod period)
         {
-            return !((this_period.DateStart > period.DateEnd) || (this_period.DateEnd < period.DateStart));
+            return this_period.DayIndexStart < period.DayIndexStart
+                        ? period.DayIndexStart >= this_period.DayIndexEnd
+                        : this_period.DayIndexStart >= period.DayIndexEnd; 
         }
+
+        /// <summary>
+        /// Количество пересекаемых дней
+        /// </summary>
+        /// <param name="period">Основной период</param>
+        /// <param name="start">Сравниваемый период</param>
+        /// <returns></returns>
+        public static int CrossDaysCount(this IPeriod this_period, IPeriod period)
+        {
+            int crossStart = 0;
+            int crossEnd = 0;
+
+            if (this_period.DayIndexStart < period.DayIndexStart)
+            {
+                crossStart = period.DayIndexStart;
+                crossEnd = this_period.DayIndexEnd;
+            }
+            else
+            {
+                crossStart = this_period.DayIndexStart;
+                crossEnd = period.DayIndexEnd;
+            }
+
+            var count = crossEnd - crossStart;
+            if (count < 0)
+                return 0;
+
+            return count;
+        }
+
 
         public static string TooltipRow(this IPeriod period)
         {
