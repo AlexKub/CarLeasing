@@ -381,9 +381,10 @@ namespace CarLeasingViewer.Controls
             if (m_barM != null && m_textM != null)
             {
                 if (Leasings == null)
-                    App.Loger.Log("Пустая ссылка на анбор аренд авто. Отрисовка пропущена.");
+                    App.Loger.Log("Пустая ссылка на набор аренд авто. Отрисовка пропущена.");
                 else
                 {
+                    //сортировка для корректного наложения при отрисовке
                     var sorted = from bar in Leasings
                                  orderby bar.ZIndex, bar.RowIndex, bar.Period.DayIndexStart
                                  select bar;
