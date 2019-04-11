@@ -18,6 +18,7 @@ namespace CarLeasingViewer.Models
             {
                 m_dateStart = value;
                 DayIndexStart = value.DayIndex();
+                MonthCount = this.CalculateMonthCount();
             }
         }
         DateTime m_DateEnd;
@@ -28,6 +29,7 @@ namespace CarLeasingViewer.Models
             {
                 m_DateEnd = value;
                 DayIndexEnd = value.DayIndex();
+                MonthCount = this.CalculateMonthCount();
             }
         }
 
@@ -57,33 +59,7 @@ namespace CarLeasingViewer.Models
             return !((DateStart > end) || (DateEnd < start));
         }
 
-        public int MonthCount
-        {
-            get
-            {
-                //если есть разница в годе (взята в одном году,а возвращается в другом)
-                if (DateStart.Year != DateEnd.Year)
-                {
-                    var monthCount = DateEnd.Month; //количество месяцев в крайнем году
-
-                    int yearCount = DateEnd.Year - DateStart.Year;
-                    int curentYear = DateStart.Year;
-                    for (int y = 0; y < yearCount; y++)
-                    {
-                        if (curentYear == DateStart.Year) //если сейчас начальный год
-                            monthCount += ((12 - DateStart.Month) + 1); //добавляем количество месяцев в текущем году, за вычетом прошедших
-                        else
-                            monthCount += 12; //добавляем все 12 месяцев, если мышина взята на период более 2 лет О_о
-
-                        curentYear++;
-                    }
-
-                    return monthCount;
-                }
-                else
-                    return (DateEnd.Month - DateStart.Month) + 1;
-            }
-        }
+        public int MonthCount { get; private set; }
 
         public int DayIndexStart { get; private set; }
 

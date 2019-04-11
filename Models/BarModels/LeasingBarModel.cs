@@ -135,6 +135,34 @@ namespace CarLeasingViewer.Models
             Set = set;
         }
 
+        /// <summary>
+        /// Сторнирование (усечение) аренды
+        /// </summary>
+        /// <param name="storno">Период сторнирования</param>
+        public void Storning(IPeriod storno)
+        {
+            if (storno == null)
+                return;
+            if (pv_Leasing == null)
+                return;
+
+            //получаем пересечение периодов
+            var storned = storno.CrossPeriod(pv_Leasing);
+
+            if (storned.IsZero)
+                return;
+
+            //если сторнирующий начался раньше или одновременно с текущим
+            if (storned.DayIndexStart >= pv_Leasing.DayIndexStart)
+                //меняем дату начала
+                Leasing.DateStart = storned.DateEnd;
+
+            //если сторнирующий начался после текущего
+            else
+                //меняем дату окончания
+                Leasing.DateEnd = storned.DateStart;
+        }
+
         #region IIndexable
 
         int IIndexable.Index { get => pv_RowIndex; set => pv_RowIndex = value; }
@@ -213,6 +241,10 @@ namespace CarLeasingViewer.Models
 
         #endregion
 
+
+        #region private
+
+        
         void CalculateParams()
         {
             CalculateOffset(pv_Leasing);
@@ -373,6 +405,6 @@ namespace CarLeasingViewer.Models
                 + " | " + CarName == null ? "NO CAR" : CarName;
         }
 
-        
+        #endregion
     }
 }
