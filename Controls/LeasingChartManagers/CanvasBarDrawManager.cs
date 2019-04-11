@@ -178,6 +178,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 switch (bd.Model.BarType)
                 {
+                    case ChartBarType.Storno:
+                        draw = App.SearchSettings.DrawStorno;
+                        goto case ChartBarType.Leasing;
+                    case ChartBarType.Maintenance:
                     case ChartBarType.Leasing:
                         var set = bd?.Model?.Set;
 
@@ -202,13 +206,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         break;
                     case ChartBarType.Insurance:
                         pathType = DrawPathType.Image;
-                        break;
-                    case ChartBarType.Maintenance:
-                        pathType = DrawPathType.Rectangle;
-                        break;
-                    case ChartBarType.Storno:
-                        pathType = DrawPathType.Rectangle;
-                        draw = App.SearchSettings.DrawStorno;
                         break;
                     default:
                         break;
