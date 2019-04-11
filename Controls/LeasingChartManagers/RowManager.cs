@@ -140,14 +140,15 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             Row row = GetRow(bar.Index);
 
             //проставляем z-index для наслаивающихся друг на друга полосок
-            if(row.Bars.Count > 0)
-            {
-                foreach (var b in row.Bars)
+            if (bar.Visible)
+                if (row.Bars.Count > 0)
                 {
-                    if (b.Bar.IntersectsWith(bar.Bar))
-                        bar.ZIndex++;
+                    foreach (var b in row.Bars)
+                    {
+                        if (b.Bar.IntersectsWith(bar.Bar))
+                            bar.ZIndex++;
+                    }
                 }
-            }
 
             //добавляем прямоугольник к текущей строке
             row.Add(bar);

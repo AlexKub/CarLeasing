@@ -59,7 +59,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 CanvasBarDrawManager.BarData maxZ = null;
                 foreach (var b in row.Bars)
                 {
-                    if (b.Bar != null)
+                    if (b.Visible)
                         if (b.Bar.Contains(point))
                             if (maxZ == null)
                                 maxZ = b;

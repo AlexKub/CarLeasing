@@ -109,7 +109,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
              * 
              */
             var border = Canvas.BarManager[bd.Model];
-            if (border != null)
+            if (border != null && border.Visible)
             {
                 bd.Border = border.Bar;
                 bd.HorizontalOffset = border.HorizontalOffset;

@@ -180,7 +180,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                     case ChartBarType.Storno:
                         draw = App.SearchSettings.DrawStorno;
-                        goto case ChartBarType.Leasing;
+                        if (draw)
+                            goto case ChartBarType.Leasing;
+                        else
+                            break;
                     case ChartBarType.Maintenance:
                     case ChartBarType.Leasing:
                         var set = bd?.Model?.Set;
@@ -475,8 +478,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                       new GradientStop() { Offset = 0d, Color = color }
                     , new GradientStop() { Offset = 0.6d, Color = color }
-                    , new GradientStop() { Offset = 0.6d, Color = Colors.Transparent }
-                    , new GradientStop() { Offset = 1d, Color = Colors.Transparent }
+                    , new GradientStop() { Offset = 0.6d, Color = Colors.White }
+                    , new GradientStop() { Offset = 1d, Color = Colors.White }
                 }
             };
         }
@@ -565,18 +568,22 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             /// Отрисованный прямоугольник на графике
             /// </summary>
             public Figure Bar { get; set; }
-
+            /// <summary>
+            /// Модель
+            /// </summary>
             public IDrawableBar Model { get; set; }
-
             /// <summary>
             /// Индекс видимости
             /// </summary>
             public int ZIndex { get; set; } //для случаев, когда в БД пересекаются даты по непонятным причинам
-
             /// <summary>
             /// Флаг отрисовки линии
             /// </summary>
             public bool Drawed { get; set; }
+            /// <summary>
+            /// Видимость
+            /// </summary>
+            public bool Visible => Bar != null;
 
             /// <summary>
             /// Флаг отрисовки текста для данной полоски
