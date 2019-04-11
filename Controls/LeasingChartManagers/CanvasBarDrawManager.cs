@@ -65,7 +65,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
                 if (value != null)
                 {
-                    m_StornoBrush = GetHatchBrush((value as SolidColorBrush).Color);
+                    m_StornoBrush = GetStornoBrush((value as SolidColorBrush).Color);
                     m_StornoPen = new Pen(m_StornoBrush, 3d);
                     m_StornoPen.Freeze();
                 }
@@ -267,7 +267,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     break;
                 //отрисовка панелек Ремонта
                 case ChartBarType.Maintenance:
-                    m_currentPen = m_MaintenancePen;
+                    m_currentPen = LeasingPen;
                     m_currentBrush = m_MaintenanceBrush;
                     break;
                 case ChartBarType.Insurance:
@@ -465,7 +465,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Полосатая кисть
         /// </summary>
         /// <returns>Возвращает кисть с выбранным цветом</returns>
-        Brush GetHatchBrush(Color color)
+        Brush GetStornoBrush(Color color)
         {
             return new LinearGradientBrush()
             {

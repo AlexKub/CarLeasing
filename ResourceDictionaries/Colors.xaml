@@ -34,7 +34,7 @@
     <LinearGradientBrush MappingMode="Absolute" x:Key="HatchBrush"  StartPoint="0,0" EndPoint="4,4" SpreadMethod="Repeat">
         <GradientStop Offset="0" Color="{StaticResource LightBorderColor}"/>
         <GradientStop Offset="0.75" Color="{StaticResource LightBorderColor}"/>
-        <GradientStop Offset="0.75" Color="{StaticResource TransparentColor}"/>
-        <GradientStop Offset="1" Color="{StaticResource TransparentColor}"/>
+        <GradientStop Offset="0.75" Color="White"/>
+        <GradientStop Offset="1" Color="White"/>
     </LinearGradientBrush>
 </ResourceDictionary>
