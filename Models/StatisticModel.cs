@@ -12,8 +12,6 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class StatisticModel : ViewModels.ViewModelBase, IReadOnlyList<StatisticItemModel>
     {
-        Period SetPeriod;
-
         private IReadOnlyList<StatisticItemModel> pv_Items = new List<StatisticItemModel>();
         /// <summary>
         /// Возвращает или задаёт набор позиций статистики
@@ -39,7 +37,6 @@ namespace CarLeasingViewer.Models
             items.Add(new StatisticItemModel("Всего машин", set.CarModels.Count.ToString()));
 
             Items = items;
-            SetPeriod = new Period(set);
         }
 
         /// <summary>
@@ -55,15 +52,15 @@ namespace CarLeasingViewer.Models
 
             //аренды
             var leasings = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<LeasingBarModel>();
-            var leasingCount = leasings.Sum(l => SetPeriod.CrossDaysCount(l.Leasing));
+            var leasingCount = leasings.Sum(l => set.CrossDaysCount(l.Leasing));
 
             //сторнирование
             var stornos = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<StornoBarModel>();
-            var stornosCount = stornos.Sum(s => SetPeriod.CrossDaysCount(s.Period));
+            var stornosCount = stornos.Sum(s => set.CrossDaysCount(s.Period));
 
             //ремонт
             var maintenances = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<MaintenanceBarModel>();
-            var maintenancesCount = maintenances.Sum(m => SetPeriod.CrossDaysCount(m.Period));
+            var maintenancesCount = maintenances.Sum(m => set.CrossDaysCount(m.Period));
 
             var loadPercent = (set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
@@ -77,8 +74,8 @@ namespace CarLeasingViewer.Models
                     {
                         if (s.Period != null)
                         {
-                            var real_l = SetPeriod.CrossDaysCount(l.Leasing);
-                            var real_s = SetPeriod.CrossDaysCount(s.Period);
+                            var real_l = set.CrossDaysCount(l.Leasing);
+                            var real_s = set.CrossDaysCount(s.Period);
                             var res = real_l - real_s;
                             if (res > 0)
                                 stornedCount += res;
@@ -89,8 +86,10 @@ namespace CarLeasingViewer.Models
 
             var realLeasingCount = leasingCount - stornedCount;
             items.Add(new StatisticItemModel("Общее время аренды", (realLeasingCount).ToString() + " дн."));
-            items.Add(new StatisticItemModel("Сторнированное время", (stornedCount).ToString() + " дн."));
-            items.Add(new StatisticItemModel("Время ремонта", (maintenancesCount).ToString() + " дн."));
+            if (stornedCount > 0)
+                items.Add(new StatisticItemModel("Сторнированное время", (stornedCount).ToString() + " дн."));
+            if (maintenancesCount > 0)
+                items.Add(new StatisticItemModel("Время ремонта", (maintenancesCount).ToString() + " дн."));
             items.Add(new StatisticItemModel("% загрузки", Math.Round((realLeasingCount / loadPercent), 2).ToString() + " %"));
 
             var model = row.Car;

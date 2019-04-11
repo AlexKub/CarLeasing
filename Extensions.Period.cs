@@ -68,8 +68,8 @@ namespace CarLeasingViewer
         public static bool Cross(this IPeriod this_period, IPeriod period)
         {
             return this_period.DayIndexStart < period.DayIndexStart
-                        ? period.DayIndexStart >= this_period.DayIndexEnd
-                        : this_period.DayIndexStart >= period.DayIndexEnd; 
+                        ? period.DayIndexStart <= this_period.DayIndexEnd
+                        : this_period.DayIndexStart <= period.DayIndexEnd; 
         }
 
         /// <summary>
