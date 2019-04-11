@@ -10,9 +10,26 @@ namespace CarLeasingViewer.Models
     {
         public string Title { get; set; }
 
-        public DateTime DateStart { get; set; }
-
-        public DateTime DateEnd { get; set; }
+        DateTime m_dateStart;
+        public DateTime DateStart
+        {
+            get { return m_dateStart; }
+            set
+            {
+                m_dateStart = value;
+                DayIndexStart = value.DayIndex();
+            }
+        }
+        DateTime m_DateEnd;
+        public DateTime DateEnd
+        {
+            get { return m_DateEnd; }
+            set
+            {
+                m_DateEnd = value;
+                DayIndexEnd = value.DayIndex();
+            }
+        }
 
         public string Comment { get; set; }
 
@@ -67,6 +84,10 @@ namespace CarLeasingViewer.Models
                     return (DateEnd.Month - DateStart.Month) + 1;
             }
         }
+
+        public int DayIndexStart { get; private set; }
+
+        public int DayIndexEnd { get; private set; }
 
         string DebugDisplay()
         {

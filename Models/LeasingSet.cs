@@ -612,9 +612,17 @@ namespace CarLeasingViewer.Models
             }
         }
 
+        #region IPeriod
+
         DateTime IPeriod.DateStart { get { return Sorted ? DateStart : ((Monthes.FirstOrDefault()?.Month?.FirstDate) ?? DateTime.MinValue); } }
 
         DateTime IPeriod.DateEnd { get { return Sorted ? DateEnd : ((Monthes.LastOrDefault()?.Month?.LastDate) ?? DateTime.MinValue); } }
+
+        int IPeriod.DayIndexStart => (this as IPeriod).DateStart.DayIndex();
+
+        int IPeriod.DayIndexEnd => (this as IPeriod).DateEnd.DayIndex();
+
+        #endregion
 
         /// <summary>
         /// Базовый, не отсортированный набор

@@ -8,6 +8,8 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class MaintenanceInfo : IPeriod
     {
+
+
         DateTime m_DateStart;
         /// <summary>
         /// Дата начала
@@ -19,6 +21,7 @@ namespace CarLeasingViewer.Models
             {
                 m_DateStart = value;
                 MonthCount = this.CalculateMonthCount();
+                DayIndexStart = value.DayIndex();
             }
         }
 
@@ -33,6 +36,7 @@ namespace CarLeasingViewer.Models
             {
                 m_DateEnd = value;
                 MonthCount = this.CalculateMonthCount();
+                DayIndexEnd = value.DayIndex();
             }
         }
 
@@ -45,6 +49,10 @@ namespace CarLeasingViewer.Models
         /// Описание
         /// </summary>
         public string Description { get; set; }
+
+        public int DayIndexStart { get; private set; }
+
+        public int DayIndexEnd { get; private set; }
 
         string DebugDisplay()
         {

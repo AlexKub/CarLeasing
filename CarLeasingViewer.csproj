@@ -89,6 +89,7 @@
     <Compile Include="Controls\LeasingChartManagers\TooltipManager.cs" />
     <Compile Include="Converters\DBSearchTypeConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
+    <Compile Include="Extensions.DateTime.cs" />
     <Compile Include="IconsInfo.cs" />
     <Compile Include="inclusively.cs" />
     <Compile Include="Interfaces\IDrawableBar.cs" />

@@ -20,11 +20,21 @@ namespace CarLeasingViewer.Models
         /// Количество месяцев
         /// </summary>
         public int MonthCount { get; private set; }
+        /// <summary>
+        /// Индекс начального дня
+        /// </summary>
+        public int DayIndexStart { get; private set; }
+        /// <summary>
+        /// Индекс конечного дня
+        /// </summary>
+        public int DayIndexEnd { get; private set; }
 
         public Period(DateTime start, DateTime end)
         {
             DateStart = start;
             DateEnd = end;
+            DayIndexStart = start.DayIndex();
+            DayIndexEnd = end.DayIndex();
             MonthCount = this.CalculateMonthCount();
         }
 
