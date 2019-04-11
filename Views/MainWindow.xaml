@@ -141,9 +141,6 @@
                         <Setter Property="FontFamily" Value="Times New Roman"/>
                         <Setter Property="TextAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
-                        <!--<EventSetter Event="MouseMove" Handler="TextBlock_MouseMove"/>-->
-                        <!--<EventSetter Event="MouseLeftButtonDown" Handler="TextBlock_MouseLeftButtonDown"/>-->
-                        <!--<EventSetter Event="MouseRightButtonDown" Handler="TextBlock_MouseRightButtonUp"/>-->
                     </Style>
 
                     <!-- Стили границ у элементов в коллекциях Машин и Комментариев -->
@@ -265,19 +262,25 @@
                                             MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" 
                                             PreviewMouseRightButtonUp="TextBlock_MouseRightButtonUp">
                                             <Grid >
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                    <Image Style="{StaticResource Insurance}" Visibility="{Binding InsuranceVisibility}"/>
-                                                </StackPanel>
-                                                
+                                                <!-- иконка страховки -->
+                                                <Image Style="{StaticResource BaseCarIconStyle}" 
+                                                           Visibility="{Binding InsuranceVisibility}"
+                                                           Source="{x:Static local:IconsInfo.InsuranceIconPath}"
+                                                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
                                                 <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
 
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <!--квадратик для индикации "блокированных"--> 
-                                                    <Rectangle Grid.Column="0" Fill="Coral" Height="13" Width="13" ToolTip="Снята с учёта"
-                                                       Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"/>
-                                                    <!--Иконка Занятости авто--> 
-                                                    <Image Style="{StaticResource Maintance}" Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}" />
-                                                </StackPanel> 
+                                                    <!--квадратик для индикации "блокированных"-->
+                                                    <Image Style="{StaticResource BaseCarIconStyle}" 
+                                                           ToolTip="Снята с учёта"
+                                                           Visibility="{Binding Blocked, Converter={StaticResource CommonVisibilityConverter}}"
+                                                           Source="{x:Static local:IconsInfo.NotAccounting}"/>
+                                                    <!--Иконка Занятости авто-->
+                                                    <Image Style="{StaticResource BaseCarIconStyle}" 
+                                                           Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"
+                                                           Source="{x:Static local:IconsInfo.MaintenanceIconPath}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
