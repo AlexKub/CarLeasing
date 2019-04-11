@@ -60,6 +60,12 @@
         <Style x:Key="TitleBox" TargetType="TextBlock" BasedOn="{StaticResource CenteredTextBlock}">
             <Setter Property="Padding" Value="3"/>
         </Style>
+
+        <Style x:Key="SettingsCheckboxStyle" TargetType="CheckBox">
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <EventSetter Event="Checked" Handler="OnSearchSettingsChanged"/>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="10 0 10 0">
@@ -77,9 +83,12 @@
         </Menu>
         <!-- Настройки выборки -->
         <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition MinWidth="450"/>
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <!--Выбор срока/периода просмотра-->
@@ -91,42 +100,36 @@
                                      ShowAction="{Binding SortPeriodCommand}"/>
 
             <!-- настройки выборки -->
-            <Grid Grid.Column="1" HorizontalAlignment="Right" DataContext="{x:Static local:App.SearchSettings}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+            <WrapPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{x:Static local:App.SearchSettings}">
 
-                <DockPanel Grid.Column="0" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
-                    <TextBlock Text="Регион" VerticalAlignment="Center" />
-                    <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{x:Static local:App.Regions}" VerticalAlignment="Center" SelectedItem="{Binding SelectedRegion}"
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <DockPanel Margin="3 0 3 0"  DataContext="{x:Static local:App.SearchSettings}">
+                        <TextBlock Text="Регион" VerticalAlignment="Center" />
+                        <ComboBox Margin="3 0 3 0" SelectedIndex="0" ItemsSource="{x:Static local:App.Regions}" VerticalAlignment="Center" SelectedItem="{Binding SelectedRegion}"
                               DisplayMemberPath="DisplayName"/>
-                </DockPanel>
+                    </DockPanel>
 
-                <DockPanel Grid.Column="1" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
-                    <TextBlock Text="Поиск по" VerticalAlignment="Center" />
-                    <ComboBox Margin="3 0 3 0" SelectedIndex="0" VerticalAlignment="Center" 
+                    <DockPanel Grid.Column="1" Margin="3 0 3 0" DataContext="{x:Static local:App.SearchSettings}">
+                        <TextBlock Text="Поиск по" VerticalAlignment="Center" />
+                        <ComboBox Margin="3 0 3 0" SelectedIndex="0" VerticalAlignment="Center" 
                               ItemsSource="{Binding DBSearchTypes}"
                               SelectedItem="{Binding SelectedDBSearchType, Converter={StaticResource SearchTypeConverter}}"/>
-                </DockPanel>
-                <CheckBox Grid.Column="2" Content="Случайные данные" Margin="3 0 3 0" VerticalAlignment="Center" 
+                    </DockPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Случайные данные"
                           IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
-                          Checked="OnSearchSettingsChanged"
                           Visibility="{Binding Source={x:Static local:App.TestMode}, Converter={StaticResource CommonVisibilityConverter}}"/>
-                <CheckBox Grid.Column="3" Content="Включая не активные" Margin="3 0 3 0" VerticalAlignment="Center" 
-                          IsChecked="{Binding IncludeNotActive, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
-                          Checked="OnSearchSettingsChanged"/>
-                <CheckBox Grid.Column="4" Content="Включая снятые с учёта" Margin="3 0 3 0" VerticalAlignment="Center" 
-                          IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
-                          Checked="OnSearchSettingsChanged"/>
-                <CheckBox Grid.Column="5" Content="Отрисовка Сторно" Margin="3 0 3 0" VerticalAlignment="Center" 
-                          IsChecked="{Binding DrawStorno, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
-                          Checked="OnSearchSettingsChanged"/>
-            </Grid>
+                    <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Включая не активные" 
+                          IsChecked="{Binding IncludeNotActive, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
+                    <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Включая снятые с учёта" 
+                          IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
+                    <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Отрисовка Сторно"  
+                          IsChecked="{Binding DrawStorno, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
+                </StackPanel>
+                
+            </WrapPanel>
         </Grid>
 
         <!-- Основной график лизинга -->
