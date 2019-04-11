@@ -24,10 +24,9 @@ namespace CarLeasingViewer.Models
 
         public int ZIndex => 99; //последний
 
-        public ImageBarModel(LeasingSet set)
-        {
-            Set = set;
-        }
+        public ImageBarModel(LeasingSet set) { Set = set; }
+
+        private ImageBarModel() { } //конструктор при клонировании
 
         public string[] ToolTipRows { get; private set; }
 
@@ -35,12 +34,15 @@ namespace CarLeasingViewer.Models
 
         public IDrawableBar Clone()
         {
-            var newModel = new ImageBarModel(Set);
-            newModel.RowIndex = RowIndex;
-            newModel.Date = Date;
-            newModel.ToolTipRows = ToolTipRows;
+            var clone = new ImageBarModel();
+            clone.RowIndex = RowIndex;
+            clone.Period = Period;
+            clone.Date = Date;
+            clone.Set = Set;
+            clone.Bitmap = Bitmap;
+            clone.ToolTipRows = ToolTipRows;
 
-            return newModel;
+            return clone;
         }
 
         public void SetTooltip(ItemInfo item)
