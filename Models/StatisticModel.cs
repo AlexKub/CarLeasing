@@ -12,6 +12,8 @@ namespace CarLeasingViewer.Models
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
     public class StatisticModel : ViewModels.ViewModelBase, IReadOnlyList<StatisticItemModel>
     {
+        Period SetPeriod;
+
         private IReadOnlyList<StatisticItemModel> pv_Items = new List<StatisticItemModel>();
         /// <summary>
         /// Возвращает или задаёт набор позиций статистики
@@ -37,6 +39,7 @@ namespace CarLeasingViewer.Models
             items.Add(new StatisticItemModel("Всего машин", set.CarModels.Count.ToString()));
 
             Items = items;
+            SetPeriod = new Period(set);
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace CarLeasingViewer.Models
 
             var realLeasingCount = leasingCount - stornedCount;
             items.Add(new StatisticItemModel("Общее время аренды", (realLeasingCount).ToString() + " дн."));
-            items.Add(new StatisticItemModel("Сторнированное время", (realLeasingCount).ToString() + " дн."));
+            items.Add(new StatisticItemModel("Сторнированное время", (stornedCount).ToString() + " дн."));
             items.Add(new StatisticItemModel("Время ремонта", (maintenancesCount).ToString() + " дн."));
             items.Add(new StatisticItemModel("% загрузки", Math.Round((realLeasingCount / loadPercent), 2).ToString() + " %"));
 

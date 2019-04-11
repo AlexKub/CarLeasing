@@ -86,15 +86,19 @@ namespace CarLeasingViewer
             if (this_period.DayIndexStart < period.DayIndexStart)
             {
                 crossStart = period.DayIndexStart;
-                crossEnd = this_period.DayIndexEnd;
+                crossEnd = this_period.DayIndexEnd > period.DayIndexEnd 
+                    ? period.DayIndexEnd
+                    : this_period.DayIndexEnd;
             }
             else
             {
                 crossStart = this_period.DayIndexStart;
-                crossEnd = period.DayIndexEnd;
+                crossEnd = period.DayIndexEnd > this_period.DayIndexEnd
+                    ? this_period.DayIndexEnd
+                    : period.DayIndexEnd;
             }
 
-            var count = crossEnd - crossStart;
+            var count = crossEnd - crossStart + 1;
             if (count < 0)
                 return 0;
 

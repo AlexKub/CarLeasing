@@ -38,6 +38,8 @@ namespace CarLeasingViewer.Models
             MonthCount = this.CalculateMonthCount();
         }
 
+        public Period(IPeriod period) : this(period.DateStart, period.DateEnd) { }
+
         string DebugDisplay()
         {
             return $"{DateStart.ToString()} - {DateEnd.ToString()}";
