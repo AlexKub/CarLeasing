@@ -28,11 +28,17 @@ namespace CarLeasingViewer
         /// </summary>
         public static BitmapImage InsuranceDay { get; private set; }
 
+        /// <summary>
+        /// Снята с учёта
+        /// </summary>
+        public static BitmapImage NotAccounting { get; private set; }
+
         static IconsInfo()
         {
             MaintenanceIconPath = LoadImage(Properties.Resources.maintenance_image);
             InsuranceIconPath = LoadImage(Properties.Resources.Insurance_left);
             InsuranceDay = LoadImage(Properties.Resources.Insurance_day);
+            NotAccounting = LoadImage(Properties.Resources.not_accounting);
         }
 
         public static BitmapImage LoadImage(System.Drawing.Bitmap bitmap)
