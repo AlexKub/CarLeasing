@@ -1,6 +1,4 @@
-﻿using CarLeasingViewer.Models;
-using System;
-using System.Text;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -61,11 +59,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 CanvasBarDrawManager.BarData maxZ = null;
                 foreach (var b in row.Bars)
                 {
-                    if (b.Bar.Contains(point))
-                        if (maxZ == null)
-                            maxZ = b;
-                        else
-                            maxZ = maxZ.ZIndex > b.ZIndex ? maxZ : b;
+                    if (b.Bar != null)
+                        if (b.Bar.Contains(point))
+                            if (maxZ == null)
+                                maxZ = b;
+                            else
+                                maxZ = maxZ.ZIndex > b.ZIndex ? maxZ : b;
                 }
 
                 //если пересечение с точкой найдено

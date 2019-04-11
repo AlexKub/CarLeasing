@@ -9,6 +9,15 @@ namespace CarLeasingViewer.Models
     public class Period : IPeriod
     {
         /// <summary>
+        /// Нулевой период
+        /// </summary>
+        public static Period Zero = new Period() { IsZero = true };
+
+        /// <summary>
+        /// Нулевой период
+        /// </summary>
+        public bool IsZero { get; private set; }
+        /// <summary>
         /// Дата начала
         /// </summary>
         public DateTime DateStart { get; private set; }
@@ -37,6 +46,7 @@ namespace CarLeasingViewer.Models
             DayIndexEnd = end.DayIndex();
             MonthCount = this.CalculateMonthCount();
         }
+        private Period() { }
 
         public Period(IPeriod period) : this(period.DateStart, period.DateEnd) { }
 

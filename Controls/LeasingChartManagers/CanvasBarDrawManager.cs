@@ -173,7 +173,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var startDay = bd.Model.Period.DateStart.Date;
 
             DrawPathType pathType = DrawPathType.Rectangle;
-
+            bool draw = true;
             if (bd.Model != null)
             {
                 switch (bd.Model.BarType)
@@ -204,8 +204,11 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         pathType = DrawPathType.Image;
                         break;
                     case ChartBarType.Maintenance:
+                        pathType = DrawPathType.Rectangle;
+                        break;
                     case ChartBarType.Storno:
                         pathType = DrawPathType.Rectangle;
+                        draw = App.SearchSettings.DrawStorno;
                         break;
                     default:
                         break;
@@ -215,27 +218,31 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 SetDrawTools(bd.Model.BarType);
             }
 
-            var dv = new DrawingVisual();
-            using (var dc = dv.RenderOpen())
+            DrawingVisual dv = null;
+            if (draw)
             {
-                switch (pathType) //выбор геометрии полоски
+                dv = new DrawingVisual();
+                using (var dc = dv.RenderOpen())
                 {
-                    case DrawPathType.Rectangle:
-                        DrawRect(dc, bd); //обычный прямоугольник
-                        break;
-                    case DrawPathType.Geometry_L:
-                        DrawGeometry(dc, bd, true); //обрезка слева
-                        break;
-                    case DrawPathType.Geometry_R:
-                        DrawGeometry(dc, bd, false); //обрезка справа
-                        break;
-                    case DrawPathType.Image:
-                        DrawImage(dc, bd);
-                        break;
-                }
+                    switch (pathType) //выбор геометрии полоски
+                    {
+                        case DrawPathType.Rectangle:
+                            DrawRect(dc, bd); //обычный прямоугольник
+                            break;
+                        case DrawPathType.Geometry_L:
+                            DrawGeometry(dc, bd, true); //обрезка слева
+                            break;
+                        case DrawPathType.Geometry_R:
+                            DrawGeometry(dc, bd, false); //обрезка справа
+                            break;
+                        case DrawPathType.Image:
+                            DrawImage(dc, bd);
+                            break;
+                    }
 
-                bd.Bar.PathType = pathType;
-                dc.Close();
+                    bd.Bar.PathType = pathType;
+                    dc.Close();
+                }
             }
 
             bd.Drawed = true;
@@ -649,6 +656,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 /// <returns>Возвращает true, если описывающие прямоугольники пересекаются</returns>
                 public bool IntersectsWith(Figure f)
                 {
+                    if (f == null)
+                        return false;
+
                     switch (Type)
                     {
                         case FigureType.Rect:

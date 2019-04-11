@@ -347,7 +347,7 @@ namespace CarLeasingViewer.Models
                             return model;
                         }));
 
-                    if (item.Stornos.Count > 0 && App.SearchSettings.DrawStorno)
+                    if (item.Stornos.Count > 0)
                     {
                         leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s)
                         {

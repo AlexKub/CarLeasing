@@ -105,6 +105,32 @@ namespace CarLeasingViewer
             return count;
         }
 
+        /// <summary>
+        /// Количество пересекаемых дней
+        /// </summary>
+        /// <param name="period">Основной период</param>
+        /// <param name="start">Сравниваемый период</param>
+        /// <returns></returns>
+        public static Models.Period CrossPeriod(this IPeriod this_period, IPeriod period)
+        {
+            if (!this_period.Cross(period))
+                return Models.Period.Zero;
+
+            if (this_period.DayIndexStart < period.DayIndexStart)
+            {
+                return new Models.Period(period.DateStart, 
+                    this_period.DayIndexEnd > period.DayIndexEnd
+                        ? period.DateEnd
+                        : this_period.DateEnd);
+            }
+            else
+            {
+                return new Models.Period(this_period.DateStart,
+                    period.DayIndexEnd > this_period.DayIndexEnd
+                        ? this_period.DateEnd
+                        : period.DateEnd);
+            }
+        }
 
         public static string TooltipRow(this IPeriod period)
         {

@@ -74,9 +74,8 @@ namespace CarLeasingViewer.Models
                     {
                         if (s.Period != null)
                         {
-                            var real_l = set.CrossDaysCount(l.Leasing);
-                            var real_s = set.CrossDaysCount(s.Period);
-                            var res = real_l - real_s;
+                            var cross = l.Leasing.CrossPeriod(s.Period);
+                            var res = set.CrossDaysCount(cross);
                             if (res > 0)
                                 stornedCount += res;
                         }
