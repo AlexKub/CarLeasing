@@ -347,9 +347,10 @@ namespace CarLeasingViewer.Models
                             return model;
                         }));
 
-                    if(item.Stornos.Count > 0 && App.SearchSettings.DrawStorno)
+                    if (item.Stornos.Count > 0 && App.SearchSettings.DrawStorno)
                     {
-                        leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s) {
+                        leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s)
+                        {
                             RowIndex = rowIndex
                         }));
                     }
@@ -357,13 +358,14 @@ namespace CarLeasingViewer.Models
                     //отрисовка ремонта
                     if (item.Maintenance != null)
                     {
-                        leasingBarModels.Add(
-                            new MaintenanceBarModel(this, item)
-                            {
-                                RowIndex = rowIndex,
-                            });
+                        if (this.Cross(item.Maintenance))
+                            leasingBarModels.Add(
+                                new MaintenanceBarModel(this, item)
+                                {
+                                    RowIndex = rowIndex,
+                                });
                     }
-                    if(this.Include(item.OSAGO_END))
+                    if (this.Include(item.OSAGO_END))
                     {
                         var img = new ImageBarModel(this)
                         {
