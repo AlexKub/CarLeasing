@@ -55,15 +55,15 @@ namespace CarLeasingViewer.Models
 
             //аренды
             var leasings = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<LeasingBarModel>();
-            var leasingCount = leasings.Sum(l => l.DaysCount);
+            var leasingCount = leasings.Sum(l => SetPeriod.CrossDaysCount(l.Leasing));
 
             //сторнирование
             var stornos = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<StornoBarModel>();
-            var stornosCount = stornos.Sum(s => s.Period.DaysCount());
+            var stornosCount = stornos.Sum(s => SetPeriod.CrossDaysCount(s.Period));
 
             //ремонт
             var maintenances = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<MaintenanceBarModel>();
-            var maintenancesCount = maintenances.Sum(m => m.Period.DaysCount());
+            var maintenancesCount = maintenances.Sum(m => SetPeriod.CrossDaysCount(m.Period));
 
             var loadPercent = (set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
@@ -72,11 +72,19 @@ namespace CarLeasingViewer.Models
             foreach (var l in leasings)
             {
                 if (l.Leasing != null)
+                {
                     foreach (var s in stornos)
                     {
                         if (s.Period != null)
-                            stornedCount += s.Period.CrossDaysCount(l.Leasing);
+                        {
+                            var real_l = SetPeriod.CrossDaysCount(l.Leasing);
+                            var real_s = SetPeriod.CrossDaysCount(s.Period);
+                            var res = real_l - real_s;
+                            if (res > 0)
+                                stornedCount += res;
+                        }
                     }
+                }
             }
 
             var realLeasingCount = leasingCount - stornedCount;
