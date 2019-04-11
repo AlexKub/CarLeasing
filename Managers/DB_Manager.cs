@@ -605,6 +605,7 @@ namespace CarLeasingViewer
                         , u.[Time End] as MaintainanceEndTime
                         , u.[Description] as MaintainanceDescription
                         , s.[Comment Text] as StornoComment
+                        , s.[Document Date] as StornoDocDate
                         , CASE WHEN (sl.[No_] = i.[No_]) THEN 1 ELSE 0 END AS IsStorno
                          FROM Carlson$Item i
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
