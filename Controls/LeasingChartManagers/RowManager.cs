@@ -145,8 +145,9 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 {
                     foreach (var b in row.Bars)
                     {
-                        if (b.Bar.IntersectsWith(bar.Bar))
-                            bar.ZIndex++;
+                        if (b.Visible)
+                            if (b.Bar.IntersectsWith(bar.Bar))
+                                bar.ZIndex++;
                     }
                 }
 
