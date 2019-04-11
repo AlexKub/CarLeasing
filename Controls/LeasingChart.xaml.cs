@@ -295,8 +295,9 @@ namespace CarLeasingViewer.Controls
             set
             {
                 if (value != null)
-                    //сортировка для послойной отрисовки
-                    value = new List<IDrawableBar>(value.OrderBy(b => b.ZIndex));
+                {
+                    value = new List<IDrawableBar>(value);
+                }
 
                 SetValue(dp_Leasings, value);
             }
@@ -383,7 +384,11 @@ namespace CarLeasingViewer.Controls
                     App.Loger.Log("Пустая ссылка на анбор аренд авто. Отрисовка пропущена.");
                 else
                 {
-                    foreach (var bm in Leasings)
+                    var sorted = from bar in Leasings
+                                 orderby bar.ZIndex, bar.RowIndex, bar.Period.DayIndexStart
+                                 select bar;
+
+                    foreach (var bm in sorted)
                     {
                         if (!Valid(bm))
                             continue;

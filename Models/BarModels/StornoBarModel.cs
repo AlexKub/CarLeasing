@@ -11,7 +11,7 @@ namespace CarLeasingViewer.Models
     {
         public int RowIndex { get; set; }
 
-        public int ZIndex => 1;
+        public int ZIndex => 0;
 
         public IPeriod Period { get; private set; }
 
