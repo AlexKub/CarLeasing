@@ -39,7 +39,7 @@ namespace CarLeasingViewer.Models
             Set = set;
             Period = item.Maintenance;
             Comment = item.Maintenance.Description;
-
+            VisibleDaysCount = set.CrossDaysCount(Period);
             SetTooolTip(item);
         }
         private MaintenanceBarModel()

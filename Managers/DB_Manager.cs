@@ -229,6 +229,7 @@ namespace CarLeasingViewer
                                 s.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["DateEnd"]).TimeOfDay);
                                 s.Comment = (reader["StornoComment"] as string) ?? "";
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
+                                s.DocNumber = (string)reader["DocNumber"];
                                 s.MonthCount = s.CalculateMonthCount();
                                 cb.Add(s);
                             }
@@ -242,6 +243,7 @@ namespace CarLeasingViewer
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
                                 b.Saler = (string)reader["Saler"];
+                                b.DocNumber = (string)reader["DocNumber"];
                                 b.Blocked = ((byte)reader["Blocked"]) > 0;
 
                                 cb.Add(b);
@@ -585,7 +587,7 @@ namespace CarLeasingViewer
                         , i.[Insurance Company Name] as InsuranceCompany
                         , i.[Venicle Add_Insurance Date End] as AddInsuranceEnd
                         , i.[Add_Insurance Company Name] as AddInsuranceCompany
-                        , l.[Document No_]
+                        , l.[Document No_] as DocNumber
 	                    , h.[Salesperson Code] as Saler
 	                    , h.[Bal_ Account No_]
 	                    , h.[Sell-to Customer Name] as Buyer

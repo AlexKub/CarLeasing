@@ -318,13 +318,14 @@ namespace CarLeasingViewer.Models
             var currentPeriod = Sorted ? new Period(DateStart, DateEnd) : new Period(Monthes.First().Month.FirstDate, Monthes.Last().Month.LastDate);
             var columnWidth = AppStyles.TotalColumnWidth;
             var insuranceIcon = IconsInfo.InsuranceDay;
+            object modelsLock = new object();
             foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
                 {
                     var car = m_CarModels.FirstOrDefault(c => c.Text.Equals(item.Name));
                     var rowIndex = 0;
-                    leasingBarModels.AddRange(item.Leasings.Select(
+                    var leasingModels = item.Leasings.Select(
                         b =>
                         {
                             rowIndex = car == null ? 0 : car.RowIndex;
@@ -345,25 +346,51 @@ namespace CarLeasingViewer.Models
                                 model.Monthes = this.Monthes.Where(m => b.Monthes.Any(bm => bm.Equals(m.Month))).ToArray();
 
                             return model;
-                        }));
+                        }).ToList();
+
+                    lock (modelsLock)
+                        leasingBarModels.AddRange(leasingModels);
 
                     if (item.Stornos.Count > 0)
                     {
-                        leasingBarModels.AddRange(item.Stornos.Select(s => new StornoBarModel(this, s)
+                        var stornoModels = item.Stornos.Select(s => new StornoBarModel(this, s) { RowIndex = rowIndex }).ToList();
+                        lock (modelsLock)
+                            leasingBarModels.AddRange(stornoModels);
+                        System.Threading.Tasks.Task.Run(() =>
                         {
-                            RowIndex = rowIndex
-                        }));
+                            var stornos = stornoModels;
+                            var leasings = leasingModels;
+                            foreach (var storno in stornos)
+                            {
+                                var leasing = leasings.FirstOrDefault(l => l.Leasing.DocNumber.Equals(storno.Period.DocNumber));
+
+                                if (leasing != null)
+                                {
+                                    leasing.Storning(storno.Period);
+
+                                    if (leasing.Leasing.DateEnd - leasing.Leasing.DateStart < TimeSpan.FromHours(1d))
+                                    {
+                                        lock (modelsLock)
+                                            leasingBarModels.Remove(leasing);
+                                    }
+                                }
+                            }
+                        });
                     }
 
                     //отрисовка ремонта
                     if (item.Maintenance != null)
                     {
                         if (this.Cross(item.Maintenance))
-                            leasingBarModels.Add(
-                                new MaintenanceBarModel(this, item)
-                                {
-                                    RowIndex = rowIndex,
-                                });
+                        {
+                            var m = new MaintenanceBarModel(this, item)
+                            {
+                                RowIndex = rowIndex,
+                            };
+
+                            lock (modelsLock)
+                                leasingBarModels.Add(m);
+                        }
                     }
                     if (this.Include(item.OSAGO_END))
                     {
@@ -376,7 +403,8 @@ namespace CarLeasingViewer.Models
 
                         img.SetTooltip(item);
 
-                        leasingBarModels.Add(img);
+                        lock (modelsLock)
+                            leasingBarModels.Add(img);
                     }
                 }
 

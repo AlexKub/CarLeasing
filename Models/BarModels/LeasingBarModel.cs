@@ -1,4 +1,5 @@
 ﻿using CarLeasingViewer.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -161,6 +162,12 @@ namespace CarLeasingViewer.Models
             else
                 //меняем дату окончания
                 Leasing.DateEnd = storned.DateStart;
+
+            if (Leasing.DateEnd - Leasing.DateStart > TimeSpan.FromHours(1d))
+            {
+                pv_DaysCount = Leasing.DaysCount();
+                VisibleDaysCount = Set.CrossDaysCount(Leasing);
+            }
         }
 
         #region IIndexable
@@ -244,7 +251,7 @@ namespace CarLeasingViewer.Models
 
         #region private
 
-        
+
         void CalculateParams()
         {
             CalculateOffset(pv_Leasing);

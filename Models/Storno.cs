@@ -19,6 +19,8 @@ namespace CarLeasingViewer.Models
 
         public string Comment { get; set; }
 
+        public string DocNumber { get; set; }
+
         public int DayIndexStart { get; private set; }
 
         public int DayIndexEnd { get; private set; }

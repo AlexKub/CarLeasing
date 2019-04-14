@@ -47,6 +47,8 @@ namespace CarLeasingViewer.Models
 
         public string Saler { get; set; }
 
+        public string DocNumber { get; set; }
+
         public bool Blocked { get; set; }
 
         public bool Include(DateTime date)
