@@ -652,6 +652,8 @@ namespace CarLeasingViewer.Models
 
         int IPeriod.DayIndexEnd => (this as IPeriod).DateEnd.DayIndex();
 
+        double IPeriod.DayCount => (this as IPeriod).DaysCount();
+
         #endregion
 
         /// <summary>

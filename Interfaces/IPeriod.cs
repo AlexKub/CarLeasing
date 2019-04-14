@@ -27,5 +27,9 @@ namespace CarLeasingViewer
         /// Количество месяцев
         /// </summary>
         int MonthCount { get; }
+        /// <summary>
+        /// Количество дней
+        /// </summary>
+        double DayCount { get; }
     }
 }

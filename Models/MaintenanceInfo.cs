@@ -22,6 +22,7 @@ namespace CarLeasingViewer.Models
                 m_DateStart = value;
                 MonthCount = this.CalculateMonthCount();
                 DayIndexStart = value.DayIndex();
+                DayCount = this.DaysCount();
             }
         }
 
@@ -37,6 +38,7 @@ namespace CarLeasingViewer.Models
                 m_DateEnd = value;
                 MonthCount = this.CalculateMonthCount();
                 DayIndexEnd = value.DayIndex();
+                DayCount = this.DaysCount();
             }
         }
 
@@ -53,6 +55,8 @@ namespace CarLeasingViewer.Models
         public int DayIndexStart { get; private set; }
 
         public int DayIndexEnd { get; private set; }
+
+        public double DayCount { get; private set; }
 
         string DebugDisplay()
         {

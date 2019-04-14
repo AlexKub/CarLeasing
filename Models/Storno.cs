@@ -24,5 +24,7 @@ namespace CarLeasingViewer.Models
         public int DayIndexStart { get; private set; }
 
         public int DayIndexEnd { get; private set; }
+
+        public double DayCount { get; set; }
     }
 }

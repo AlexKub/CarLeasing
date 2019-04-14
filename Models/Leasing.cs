@@ -67,6 +67,8 @@ namespace CarLeasingViewer.Models
 
         public int DayIndexEnd { get; private set; }
 
+        public double DayCount { get; set; }
+
         string DebugDisplay()
         {
             return string.IsNullOrEmpty(Title) ? "EMPTY TITLE" : Title;
