@@ -231,7 +231,7 @@ namespace CarLeasingViewer
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
                                 s.DocNumber = (string)reader["DocNumber"];
                                 s.MonthCount = s.CalculateMonthCount();
-                                s.DayCount = (double)reader["StornoDayCount"];
+                                s.DayCount = (decimal)reader["StornoDayCount"];
                                 cb.Add(s);
                             }
                             else
@@ -246,7 +246,7 @@ namespace CarLeasingViewer
                                 b.Saler = (string)reader["Saler"];
                                 b.DocNumber = (string)reader["DocNumber"];
                                 b.Blocked = ((byte)reader["Blocked"]) > 0;
-                                b.DayCount = (double)reader["DayCount"];
+                                b.DayCount = (decimal)reader["DayCount"];
 
                                 cb.Add(b);
                             }
@@ -589,7 +589,7 @@ namespace CarLeasingViewer
                         , i.[Insurance Company Name] as InsuranceCompany
                         , i.[Venicle Add_Insurance Date End] as AddInsuranceEnd
                         , i.[Add_Insurance Company Name] as AddInsuranceCompany
-                        , i.[Quantity] as DayCount
+                        , l.[Quantity] as DayCount
                         , l.[Document No_] as DocNumber
 	                    , h.[Salesperson Code] as Saler
 	                    , h.[Bal_ Account No_]
@@ -611,7 +611,7 @@ namespace CarLeasingViewer
                         , u.[Description] as MaintainanceDescription
                         , s.[Comment Text] as StornoComment
                         , s.[Document Date] as StornoDocDate
-                        , i.[Quantity] as StornoDayCount
+                        , sl.[Quantity] as StornoDayCount
                         , CASE WHEN (sl.[No_] = i.[No_]) THEN 1 ELSE 0 END AS IsStorno
                          FROM Carlson$Item i
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_

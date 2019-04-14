@@ -38,16 +38,16 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int DayIndexEnd { get; private set; }
 
-        public double DayCount { get; private set; }
+        public decimal DayCount { get; private set; }
 
-        public Period(DateTime start, DateTime end, double dayCount = 0d)
+        public Period(DateTime start, DateTime end, decimal dayCount = 0m)
         {
             DateStart = start;
             DateEnd = end;
             DayIndexStart = start.DayIndex();
             DayIndexEnd = end.DayIndex();
             MonthCount = this.CalculateMonthCount();
-            DayCount = dayCount > 0d ? dayCount : this.DaysCount();
+            DayCount = dayCount > 0m ? dayCount : this.DaysCount();
         }
         private Period() { }
 

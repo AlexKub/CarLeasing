@@ -163,6 +163,15 @@ namespace CarLeasingViewer.Models
                 //меняем дату окончания
                 Leasing.DateEnd = storned.DateStart;
 
+            var stornedCount = Leasing.DayCount - storno.DayCount;
+
+
+            if(stornedCount <= 0m)
+            {
+                stornedCount = 0;
+                VisibleDaysCount = 0;
+            }
+
             if (Leasing.DateEnd - Leasing.DateStart > TimeSpan.FromHours(1d))
             {
                 pv_DaysCount = Leasing.DaysCount();

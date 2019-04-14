@@ -67,7 +67,7 @@ namespace CarLeasingViewer.Models
 
         public int DayIndexEnd { get; private set; }
 
-        public double DayCount { get; set; }
+        public decimal DayCount { get; set; }
 
         string DebugDisplay()
         {

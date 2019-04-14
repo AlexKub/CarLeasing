@@ -30,6 +30,6 @@ namespace CarLeasingViewer
         /// <summary>
         /// Количество дней
         /// </summary>
-        double DayCount { get; }
+        decimal DayCount { get; }
     }
 }

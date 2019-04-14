@@ -368,7 +368,7 @@ namespace CarLeasingViewer.Models
                                 {
                                     leasing.Storning(storno.Period);
 
-                                    if (leasing.Leasing.DateEnd - leasing.Leasing.DateStart < TimeSpan.FromHours(1d))
+                                    if (leasing.VisibleDaysCount == 0)
                                     {
                                         lock (modelsLock)
                                             leasingBarModels.Remove(leasing);
@@ -652,7 +652,7 @@ namespace CarLeasingViewer.Models
 
         int IPeriod.DayIndexEnd => (this as IPeriod).DateEnd.DayIndex();
 
-        double IPeriod.DayCount => (this as IPeriod).DaysCount();
+        decimal IPeriod.DayCount => (this as IPeriod).DaysCount();
 
         #endregion
 
