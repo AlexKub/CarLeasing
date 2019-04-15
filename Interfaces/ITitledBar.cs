@@ -9,10 +9,5 @@
         /// Описание
         /// </summary>
         string Title { get; }
-
-        /// <summary>
-        /// Количество видимых дней на Графике
-        /// </summary>
-        int VisibleDaysCount { get; }
     }
 }

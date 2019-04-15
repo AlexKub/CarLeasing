@@ -32,8 +32,6 @@ namespace CarLeasingViewer.Models
 
         public string Title => Comment;
 
-        public int VisibleDaysCount { get; private set; }
-
         #endregion
 
         public MaintenanceBarModel(LeasingSet set, ItemInfo item)
@@ -41,7 +39,6 @@ namespace CarLeasingViewer.Models
             Set = set;
             Period = item.Maintenance;
             Comment = item.Maintenance.Description;
-            VisibleDaysCount = set.CrossDaysCount(Period);
             SetTooolTip(item);
         }
         private MaintenanceBarModel() { }
@@ -58,39 +55,6 @@ namespace CarLeasingViewer.Models
                 period,
                 Comment
             };
-        }
-
-        void SetVisibleCount()
-        {
-            //определение длины полоски аренды
-            //для расчёта сколько букв поместится
-
-                var lMonthes = Set?.Monthes;
-                if (lMonthes != null && lMonthes.Count > 1)
-                {
-                    var setMonthes = Set?.Monthes;
-                    if (setMonthes != null && setMonthes.Count > 0)
-                    {
-                        var firstVisibleMonth = setMonthes.FirstOrDefault()?.Month;
-
-                        if (firstVisibleMonth != null)
-                            if (Period.DateStart.GetMonth() < firstVisibleMonth)
-                            {
-                                //считаем видимую часть арены для случая, когда аренда началась в прошлом
-                                //например, выборка с февраля по март, а текущая машина арендована с января(!) по февраль
-                                //реальный срок аренды: 2 мес. (январь февраль); 
-                                //видимый срок аренды: 1 мес. (февраль) <-- интересует это, т.к. параметр используется при расчёте отрисовки текста на полосках
-                                //видимый срок аренды - длина полоски, которую видит пользователь (сколько букв поместится).
-                                VisibleDaysCount = (Period.DateEnd.Date - firstVisibleMonth.FirstDate).Days + 1;
-
-                                //возвращаемся, чтобы не сбросить полученное значение
-                                return;
-                            }
-                    }
-                }
-            
-
-            VisibleDaysCount = Period.DaysCount();
         }
 
         public IDrawableBar Clone()

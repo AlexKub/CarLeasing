@@ -59,8 +59,6 @@ namespace CarLeasingViewer.Models
 #else
                     CalculateParams();
 #endif
-                    VisibleDaysCount = (int)value.DayCount;
-
                     OnPropertyChanged();
                 }
             }
@@ -108,11 +106,6 @@ namespace CarLeasingViewer.Models
         public string CarName { get { return pv_CarName; } set { if (pv_CarName != value) { pv_CarName = value; OnPropertyChanged(); } } }
 
         #endregion
-
-        /// <summary>
-        /// Вовзращает видимое количество дней
-        /// </summary>
-        public int VisibleDaysCount { get; private set; }
 
 #if Test
 
@@ -163,12 +156,10 @@ namespace CarLeasingViewer.Models
             if (stornedCount <= 0m)
             {
                 stornedCount = 0;
-                VisibleDaysCount = 0;
             }
             else
             {
                 var visibleCount = Set.CrossDaysCount(Leasing);
-                VisibleDaysCount = (int)(visibleCount < stornedCount ? visibleCount : stornedCount);
             }
         }
 
@@ -180,7 +171,10 @@ namespace CarLeasingViewer.Models
 
         #region IDrawableBar
 
-        bool IDrawableBar.Visible => VisibleDaysCount > 0;
+        /// <summary>
+        /// Видимость полоски
+        /// </summary>
+        public bool Visible { get; set; } = true;
 
         IPeriod IDrawableBar.Period => pv_Leasing;
 
@@ -244,7 +238,6 @@ namespace CarLeasingViewer.Models
             newInstance.pv_DayOffset = pv_DayOffset;
             newInstance.pv_Leasing = pv_Leasing;
             newInstance.pv_Monthes = pv_Monthes;
-            newInstance.VisibleDaysCount = VisibleDaysCount;
 
             return newInstance;
         }
