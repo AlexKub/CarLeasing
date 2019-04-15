@@ -23,6 +23,8 @@ namespace CarLeasingViewer.Models
 
         IPeriod IDrawableBar.Period => this.Period;
 
+        public bool Visible => App.SearchSettings.DrawStorno;
+
         public StornoBarModel(LeasingSet set, Storno s)
         {
             Set = set;

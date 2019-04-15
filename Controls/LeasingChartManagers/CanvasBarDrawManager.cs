@@ -179,33 +179,32 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 switch (bd.Model.BarType)
                 {
                     case ChartBarType.Storno:
-                        draw = App.SearchSettings.DrawStorno;
-                        if (draw)
-                            goto case ChartBarType.Leasing;
-                        else
-                            break;
                     case ChartBarType.Maintenance:
                     case ChartBarType.Leasing:
-                        var set = bd?.Model?.Set;
-
-                        if (set != null && set.Sorted)
+                        draw = bd.Model.Visible;
+                        if (draw)
                         {
-                            //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
-                            //в таком случае нужно показать, что машина занята частично и нарисовать скос
-                            if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
-                                pathType = DrawPathType.Geometry_R;
-                        }
-                        else
-                            foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && !(b.Model is ImageBarModel)))
+                            var set = bd?.Model?.Set;
+
+                            if (set != null && set.Sorted)
                             {
-                                if (item.Model.Period.DateEnd.Date == startDay)
-                                {
-                                    //рисуем скос у накладывающихся друг на друга сроков аренды
-                                    //когда машину сдают и берут в тот же день
-                                    pathType = DrawPathType.Geometry_L;
-                                    break;
-                                }
+                                //при сортировке возникает ситуация, что аренда может заканчиваться в интересующий человека день
+                                //в таком случае нужно показать, что машина занята частично и нарисовать скос
+                                if (set.DateStart.Date == bd.Model.Period.DateEnd.Date)
+                                    pathType = DrawPathType.Geometry_R;
                             }
+                            else
+                                foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && !(b.Model is ImageBarModel)))
+                                {
+                                    if (item.Model.Period.DateEnd.Date == startDay)
+                                    {
+                                        //рисуем скос у накладывающихся друг на друга сроков аренды
+                                        //когда машину сдают и берут в тот же день
+                                        pathType = DrawPathType.Geometry_L;
+                                        break;
+                                    }
+                                }
+                        }
                         break;
                     case ChartBarType.Insurance:
                         pathType = DrawPathType.Image;

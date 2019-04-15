@@ -44,7 +44,9 @@ namespace CarLeasingViewer.Interfaces
         /// <returns>Новая полная копия</returns>
         /// <remarks>Для генерации отсортированной коллекции</remarks>
         IDrawableBar Clone();
-
-        
+        /// <summary>
+        /// Флаг видимости панели
+        /// </summary>
+        bool Visible { get; }
     }
 }

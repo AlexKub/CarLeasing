@@ -59,18 +59,12 @@ namespace CarLeasingViewer.Models
 #else
                     CalculateParams();
 #endif
-
+                    VisibleDaysCount = (int)value.DayCount;
 
                     OnPropertyChanged();
                 }
             }
         }
-
-        private int pv_DaysCount;
-        /// <summary>
-        /// Возвращает или задаёт Количество дней в аренде
-        /// </summary>
-        public int DaysCount { get { return pv_DaysCount; } set { pv_DaysCount = value; OnPropertyChanged(); } }
 
         private int pv_RowIndex;
         /// <summary>
@@ -166,16 +160,15 @@ namespace CarLeasingViewer.Models
             var stornedCount = Leasing.DayCount - storno.DayCount;
 
 
-            if(stornedCount <= 0m)
+            if (stornedCount <= 0m)
             {
                 stornedCount = 0;
                 VisibleDaysCount = 0;
             }
-
-            if (Leasing.DateEnd - Leasing.DateStart > TimeSpan.FromHours(1d))
+            else
             {
-                pv_DaysCount = Leasing.DaysCount();
-                VisibleDaysCount = Set.CrossDaysCount(Leasing);
+                var visibleCount = Set.CrossDaysCount(Leasing);
+                VisibleDaysCount = (int)(visibleCount < stornedCount ? visibleCount : stornedCount);
             }
         }
 
@@ -186,6 +179,8 @@ namespace CarLeasingViewer.Models
         #endregion
 
         #region IDrawableBar
+
+        bool IDrawableBar.Visible => VisibleDaysCount > 0;
 
         IPeriod IDrawableBar.Period => pv_Leasing;
 
@@ -248,7 +243,6 @@ namespace CarLeasingViewer.Models
             newInstance.pv_DayColumnWidth = pv_DayColumnWidth;
             newInstance.pv_DayOffset = pv_DayOffset;
             newInstance.pv_Leasing = pv_Leasing;
-            newInstance.pv_DaysCount = pv_DaysCount;
             newInstance.pv_Monthes = pv_Monthes;
             newInstance.VisibleDaysCount = VisibleDaysCount;
 
@@ -265,50 +259,6 @@ namespace CarLeasingViewer.Models
         {
             CalculateOffset(pv_Leasing);
             CalculateWidth(pv_Leasing);
-
-            if (Leasing != null)
-                DaysCount = (Leasing.DateEnd.Date - Leasing.DateStart.Date).Days + 1;
-            else
-                DaysCount = 0;
-
-            if (DaysCount < 0)
-                DaysCount = 0;
-
-            SetVisibleCount();
-        }
-
-        void SetVisibleCount()
-        {
-            //определение длины полоски аренды
-            //для расчёта сколько букв поместится
-            if (DaysCount != 0)
-            {
-                var lMonthes = Leasing?.Monthes;
-                if (lMonthes != null && lMonthes.Length > 1)
-                {
-                    var setMonthes = Set?.Monthes;
-                    if (setMonthes != null && setMonthes.Count > 0)
-                    {
-                        var firstVisibleMonth = setMonthes.FirstOrDefault()?.Month;
-
-                        if (firstVisibleMonth != null)
-                            if (Leasing.DateStart.GetMonth() < firstVisibleMonth)
-                            {
-                                //считаем видимую часть арены для случая, когда аренда началась в прошлом
-                                //например, выборка с февраля по март, а текущая машина арендована с января(!) по февраль
-                                //реальный срок аренды: 2 мес. (январь февраль); 
-                                //видимый срок аренды: 1 мес. (февраль) <-- интересует это, т.к. параметр используется при расчёте отрисовки текста на полосках
-                                //видимый срок аренды - длина полоски, которую видит пользователь (сколько букв поместится).
-                                VisibleDaysCount = (Leasing.DateEnd.Date - firstVisibleMonth.FirstDate).Days + 1;
-
-                                //возвращаемся, чтобы не сбросить полученное значение
-                                return;
-                            }
-                    }
-                }
-            }
-
-            VisibleDaysCount = DaysCount;
         }
 
         void CalculateOffset(Leasing b)

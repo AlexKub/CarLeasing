@@ -367,12 +367,6 @@ namespace CarLeasingViewer.Models
                                 if (leasing != null)
                                 {
                                     leasing.Storning(storno.Period);
-
-                                    if (leasing.VisibleDaysCount == 0)
-                                    {
-                                        lock (modelsLock)
-                                            leasingBarModels.Remove(leasing);
-                                    }
                                 }
                             }
                         });

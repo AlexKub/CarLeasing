@@ -26,6 +26,8 @@ namespace CarLeasingViewer.Models
 
         public string Comment { get; private set; }
 
+        public bool Visible => App.SearchSettings.IncludeNotActive;
+
         #region ITitled
 
         public string Title => Comment;
@@ -42,10 +44,7 @@ namespace CarLeasingViewer.Models
             VisibleDaysCount = set.CrossDaysCount(Period);
             SetTooolTip(item);
         }
-        private MaintenanceBarModel()
-        {
-
-        }
+        private MaintenanceBarModel() { }
 
         void SetTooolTip(ItemInfo item)
         {

@@ -30,6 +30,8 @@ namespace CarLeasingViewer.Models
 
         public string[] ToolTipRows { get; private set; }
 
+        public bool Visible => true;
+
         public ChartBarType BarType => ChartBarType.Insurance;
 
         public IDrawableBar Clone()
