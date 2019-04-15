@@ -216,7 +216,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         if (period.DayIndexStart >= (bd.Model.Set as IPeriod).DayIndexStart)
                             pathType = DrawPathType.Geometry_L;
                     }
-                    if (period.DateEnd.Hour <= 12)
+                    if (period.DateEnd.Hour > 0 && period.DateEnd.Hour <= 12)
                     {
                         pathType |= DrawPathType.Geometry_R;
                     }

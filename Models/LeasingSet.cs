@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CarLeasingViewer.Models
 {
@@ -319,6 +320,7 @@ namespace CarLeasingViewer.Models
             var columnWidth = AppStyles.TotalColumnWidth;
             var insuranceIcon = IconsInfo.InsuranceDay;
             object modelsLock = new object();
+            var stornoTasks = new List<Task>();
             foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
@@ -356,20 +358,41 @@ namespace CarLeasingViewer.Models
                         var stornoModels = item.Stornos.Select(s => new StornoBarModel(this, s) { RowIndex = rowIndex }).ToList();
                         lock (modelsLock)
                             leasingBarModels.AddRange(stornoModels);
-                        System.Threading.Tasks.Task.Run(() =>
+
+                        var stornoTask = Task.Run(() =>
                         {
                             var stornos = stornoModels;
                             var leasings = leasingModels;
                             foreach (var storno in stornos)
                             {
-                                var leasing = leasings.FirstOrDefault(l => l.Leasing.DocNumber.Equals(storno.Period.DocNumber));
+                                var barModel = leasings.FirstOrDefault(l => l.Leasing.DocNumber.Equals(storno.Period.DocNumber));
 
-                                if (leasing != null)
+                                if (barModel != null)
                                 {
-                                    leasing.Storning(storno.Period);
+                                    if (barModel.Leasing.DayCount - storno.Period.DayCount <= 0)
+                                    {
+                                        lock (modelsLock)
+                                            leasingBarModels.Remove(barModel);
+                                    }
+                                    else
+                                    {
+                                        var storned = storno.Period.CrossPeriod(barModel.Leasing);
+
+                                        //если сторнирующий начался раньше или одновременно с текущим
+                                        if (storned.DayIndexStart >= barModel.Leasing.DayIndexStart)
+                                            //меняем дату начала
+                                            barModel.Leasing.DateStart = storned.DateEnd;
+
+                                        //если сторнирующий начался после текущего
+                                        else
+                                            //меняем дату окончания
+                                            barModel.Leasing.DateEnd = storned.DateStart;
+                                    }
                                 }
                             }
                         });
+
+                        stornoTasks.Add(stornoTask);
                     }
 
                     //отрисовка ремонта
@@ -404,6 +427,8 @@ namespace CarLeasingViewer.Models
 
                 index++;
             }
+
+            Task.WaitAll(stornoTasks.ToArray());
 
             return leasingBarModels;
         }
