@@ -126,14 +126,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         public DrawingVisual DrawText(ITitledBar model)
         {
-            //проверяем инициализацию для интерфейса шрифта
-            //инициализирован при заполнении шрифта (this.FontFamily)
-            //if (m_glyphType == null)
-            //    m_glyphType = GetGlyphTypeface();
-            //
-
-
-
             BarData bd = null;
             DrawingVisual dv = null;
 
