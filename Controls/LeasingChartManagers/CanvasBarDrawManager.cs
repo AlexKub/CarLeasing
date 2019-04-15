@@ -311,24 +311,24 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var end = new Point(start.X + GetWidth(bd.Model), bd.VerticalOffset);
 
             pf.StartPoint = start;
-            var s = new LineSegment(new Point(end.X, start.Y), true);
+            //правая нижняя
+            var s = (path & DrawPathType.Geometry_R) > 0
+                ? new LineSegment(new Point(end.X - Canvas.DayColumnWidth, start.Y), true)
+                : new LineSegment(new Point(end.X, start.Y), true);
             s.Freeze();
             pf.Segments.Add(s);
-            s = (path & DrawPathType.Geometry_R) > 0
-                ? new LineSegment(new Point(end.X + Canvas.DayColumnWidth, end.Y), true)
-                : new LineSegment(new Point(end.X, end.Y), true);
+            //правая верхняя
+            s = new LineSegment(end, true);
             s.Freeze();
             pf.Segments.Add(s);
+            //левая верхняя
             s = (path & DrawPathType.Geometry_L) > 0
                 ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
                 : new LineSegment(new Point(start.X, end.Y), true);
             s.Freeze();
-            s = (path & DrawPathType.Geometry_L) > 0
-                ? new LineSegment(new Point(start.X + Canvas.DayColumnWidth, end.Y), true)
-                : new LineSegment(new Point(start.X, end.Y), true);
-            s.Freeze();
             pf.Segments.Add(s);
-            s = new LineSegment(new Point(start.X, start.Y), true);
+            //левая нижняя
+            s = new LineSegment(start, true);
             s.Freeze();
             pf.Segments.Add(s);
 
