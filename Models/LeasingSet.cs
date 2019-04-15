@@ -423,6 +423,20 @@ namespace CarLeasingViewer.Models
                         lock (modelsLock)
                             leasingBarModels.Add(img);
                     }
+                    if (this.Include(item.KASKO_END))
+                    {
+                        var img = new ImageBarModel(this)
+                        {
+                            RowIndex = rowIndex,
+                            Date = item.KASKO_END,
+                            Bitmap = insuranceIcon
+                        };
+
+                        img.SetTooltip(item);
+
+                        lock (modelsLock)
+                            leasingBarModels.Add(img);
+                    }
                 }
 
                 index++;
