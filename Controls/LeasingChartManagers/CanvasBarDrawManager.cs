@@ -170,64 +170,21 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawBorder(BarData bd)
         {
-            var startDay = bd.Model.Period.DateStart.Date;
-
-            DrawPathType pathType = DrawPathType.Rectangle;
-            bool draw = true;
-            if (bd.Model != null)
-            {
-                switch (bd.Model.BarType)
-                {
-                    case ChartBarType.Storno:
-                    case ChartBarType.Maintenance:
-                    case ChartBarType.Leasing:
-                        draw = bd.Model.Visible;
-                        if (draw)
-                        {
-                            var period = bd.Model.Period;
-                            if (period.DateStart.Hour >= 12)
-                            {
-                                pathType = DrawPathType.Geometry_L;
-                            }
-                            if (period.DateEnd.Hour >= 12)
-                            {
-                                pathType |= DrawPathType.Geometry_R;
-                            }
-                            if (pathType == DrawPathType.Rectangle)
-                            {
-                                foreach (var item in Canvas.RowManager[bd.Index].Bars.Where(b => b.Model != null && !(b.Model is ImageBarModel)))
-                                {
-                                    if (item.Model.Period.DateEnd.Date == startDay)
-                                    {
-                                        //рисуем скос у накладывающихся друг на друга сроков аренды
-                                        //когда машину сдают и берут в тот же день
-                                        pathType = DrawPathType.Geometry_L;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case ChartBarType.Insurance:
-                        pathType = DrawPathType.Image;
-                        break;
-                    default:
-                        break;
-                }
-
-                //задаём инструменты отрисовки
-                SetDrawTools(bd.Model.BarType);
-            }
-
             DrawingVisual dv = null;
-            if (draw)
+            
+            if (bd.Model != null && bd.Model.Visible)
             {
+                //тип отрисовываемой фигуры
+                var pathType = ChoosePathType(bd);
+                //инструменты отрисовки
+                SetDrawTools(bd.Model.BarType);
+
                 dv = new DrawingVisual();
                 using (var dc = dv.RenderOpen())
                 {
-                    if((pathType & DrawPathType.Rectangle) > 0)
+                    if ((pathType & DrawPathType.Rectangle) > 0)
                         DrawRect(dc, bd);
-                    else if((pathType & DrawPathType.Image) > 0)
+                    else if ((pathType & DrawPathType.Image) > 0)
                         DrawImage(dc, bd);
                     else
                         DrawGeometry(dc, bd, pathType);
@@ -235,13 +192,65 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     bd.Bar.PathType = pathType;
                     dc.Close();
                 }
-            }
 
-            bd.Drawed = true;
+                bd.Drawed = true;
+            }
 
             BarAdded?.Invoke(bd);
 
             return dv;
+        }
+
+        DrawPathType ChoosePathType(BarData bd)
+        {
+            DrawPathType pathType = DrawPathType.UnKnown;
+
+            switch (bd.Model.BarType)
+            {
+                case ChartBarType.Storno:
+                case ChartBarType.Maintenance:
+                case ChartBarType.Leasing:
+                    var period = bd.Model.Period;
+                    if (period.DateStart.Hour >= 12)
+                    {
+                        if (period.DayIndexStart >= (bd.Model.Set as IPeriod).DayIndexStart)
+                            pathType = DrawPathType.Geometry_L;
+                    }
+                    if (period.DateEnd.Hour <= 12)
+                    {
+                        pathType |= DrawPathType.Geometry_R;
+                    }
+
+                    //если левого скоса ещё нет
+                    if ((pathType & DrawPathType.Geometry_L) == 0)
+                    {
+                        var startDay = period.DateStart.Date;
+
+                        //если у какой-то панели дата окончания совпадает
+                        //с датой начала у этой панели
+                        var hasPredecessor = Canvas.RowManager[bd.Index].Bars
+                            .Any(b => b.Visible 
+                                && b.Bar.PathType != DrawPathType.Image 
+                                && b.Model.Period.DateEnd.Date == startDay);
+
+                        if(hasPredecessor)
+                            //рисуем скос у накладывающихся друг на друга сроков аренды
+                            pathType |= DrawPathType.Geometry_L;
+                    }
+
+                    //если скосов нет - делаем прямоугольник
+                    if (pathType == DrawPathType.UnKnown)
+                        pathType = DrawPathType.Rectangle;
+
+                    break;
+                case ChartBarType.Insurance:
+                    pathType = DrawPathType.Image;
+                    break;
+                default:
+                    break;
+            }
+
+            return pathType;
         }
 
         /// <summary>
@@ -733,6 +742,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         [Flags]
         public enum DrawPathType
         {
+            /// <summary>
+            /// Не определён (по умолчанию)
+            /// </summary>
+            UnKnown = 0,
             /// <summary>
             /// Прямоугольник
             /// </summary>

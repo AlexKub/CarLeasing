@@ -151,7 +151,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 SetOffset(bd);
 
             //нет смысла в отрисовке текста без отрисованного прямоугольника
-            if (bd.BorderDrawed)
+            if (bd.BorderDrawed && bd.Model.Visible)
             {
                 dv = DrawText(bd);
                 bd.TextDrawed = true;
@@ -168,27 +168,21 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         DrawingVisual DrawText(BarData bd)
         {
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
-            string text = bd?.Model?.Title ?? "NO TITLE";
+            string text = string.Empty; //bd?.Model?.Title ?? "NO TITLE";
+            double fontSize = m_FontSize;
 
-            //обрезаем ООО для компаний, т.к. информация бессмысленная
-            //в tooltip'e и так видно абревиатуру ЮЛ, а при аренде на пару дней видно только ООО
-            text = text.Replace("ООО ", "");
-            double fontSize = FontSize;
-
-            ushort[] glyphIndexes = new ushort[text.Length];
-            double[] advanceWidths = new double[text.Length];
-
-            double totalWidth = 0;
-
-            for (int n = 0; n < text.Length; n++)
+            //флаг аренды на часть дня. 
+            //Будет использован дважды, поэтому проверяем один раз тут
+            bool halfDayLeasing = bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry;
+            if (halfDayLeasing)
+                text = "...";
+            else
             {
-                ushort glyphIndex = m_glyphType.CharacterToGlyphMap[text[n]];
-                glyphIndexes[n] = glyphIndex;
+                text = bd?.Model?.Title ?? "NO TITLE";
 
-                double width = m_glyphType.AdvanceWidths[glyphIndex] * fontSize;
-                advanceWidths[n] = width;
-
-                totalWidth += width;
+                //обрезаем ООО для компаний, т.к. информация бессмысленная
+                //в tooltip'e и так видно абревиатуру ЮЛ, а при аренде на пару дней видно только ООО
+                text = text.Replace("ООО ", "");
             }
 
             //рамка текста (ширина/высота)
@@ -198,22 +192,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             //получаем размеры пустой области для текста на полоске
             //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
-            var emptySpace = bd.Border.Type == Figure.FigureType.Rect
-                ? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
-                : bd.Border.Width - 4d - DayColumnWidth; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
+            var emptySpace = bd.Border.Width - 4d;
+                //? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
+                //: bd.Border.Width - 4d; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
 
-            //флаг аренды на часть дня. 
-            //Будет использован дважды, поэтому проверяем один раз тут
-            bool halfDayLeasing = bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry;
             if (emptySpace < ft.Width)
             {
                 var cuttedText = string.Empty;
 
                 //если аренда на часть дня - места совсем нет
-                //просто добаявляем точки
-                if (bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
+                //просто добавляем точки
+                if (halfDayLeasing)
                     cuttedText = "...";
-
                 else
                 {
                     var cutChars = 3 * bd.Model.VisibleDaysCount;
@@ -253,6 +243,27 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
+        double GetTextWidth(string text)
+        {
+            ushort[] glyphIndexes = new ushort[text.Length];
+            double[] advanceWidths = new double[text.Length];
+
+            double totalWidth = 0;
+
+            for (int n = 0; n < text.Length; n++)
+            {
+                ushort glyphIndex = m_glyphType.CharacterToGlyphMap[text[n]];
+                glyphIndexes[n] = glyphIndex;
+
+                double width = m_glyphType.AdvanceWidths[glyphIndex] * m_FontSize;
+                advanceWidths[n] = width;
+
+                totalWidth += width;
+            }
+
+            return totalWidth;
+        }
+
         double GetHorizontalOffset(BarData bd, FormattedText ft)
         {
             var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
@@ -278,10 +289,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         {
             var midle = ((bd.Border.Width - textRect.Width) / 2d);
             var offset = ((bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
-                        ? 3d //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
+                        ? 2d //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
                         : m_halfColumnWidth); //если место есть, смещаем немного правее, чтобы буквы не вылезали
 
-            return bd.Border.PathType == CanvasBarDrawManager.DrawPathType.Geometry_R
+            return (bd.Border.PathType & CanvasBarDrawManager.DrawPathType.Geometry_R) > 0
                 ? midle - offset
                 : midle + offset;
         }
