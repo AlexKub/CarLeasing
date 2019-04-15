@@ -193,8 +193,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //получаем размеры пустой области для текста на полоске
             //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
             var emptySpace = bd.Border.Width - 4d;
-                //? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
-                //: bd.Border.Width - 4d; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
+            //? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
+            //: bd.Border.Width - 4d; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
 
             if (emptySpace < ft.Width)
             {
@@ -288,13 +288,34 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         double GetGeometryOffset(BarData bd, Size textRect)
         {
             var midle = ((bd.Border.Width - textRect.Width) / 2d);
-            var offset = ((bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry)
-                        ? 2d //смещаем чуть-чуть только, т.к. места и так нет. Тут должно быть троеточие
-                        : m_halfColumnWidth); //если место есть, смещаем немного правее, чтобы буквы не вылезали
 
-            return (bd.Border.PathType & CanvasBarDrawManager.DrawPathType.Geometry_R) > 0
-                ? midle - offset
-                : midle + offset;
+            //если усечённая геометрия
+            if (bd.Border.Type == Figure.FigureType.Geometry
+                //и усечение одно: только с лева или справа
+                && bd.Border.PathType != (CanvasBarDrawManager.DrawPathType.Geometry_L | CanvasBarDrawManager.DrawPathType.Geometry_R))
+            {
+                /*
+                 * добавляем небольшое смещение
+                 * т.к. из-за скоса текст может вылезать
+                 * когда ширина его близка к ширине фигуры
+                 * 
+                 */
+
+                var offset = 0d;
+
+                //для периодов в 1 день места совсем нет
+                //по этому для них добавляем пару пикселей
+                offset = bd.Model.VisibleDaysCount == 1 ? 2d : m_halfColumnWidth;
+
+                //если скос справа - вычитаем смещение (инверитруем)
+                //сдвигая текст чуть левее
+                if ((bd.Border.PathType & CanvasBarDrawManager.DrawPathType.Geometry_R) > 0)
+                    offset = offset * -1d;
+
+                return midle + offset;
+            }
+
+            return midle;
         }
 
         GlyphTypeface GetGlyphTypeface()
