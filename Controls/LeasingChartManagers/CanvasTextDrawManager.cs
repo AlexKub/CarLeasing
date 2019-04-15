@@ -73,7 +73,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             set
             {
                 m_DayColumnWidth = value;
-                m_halfColumnWidth = value / 2;
+                m_halfColumnWidth = value / 3;
             }
         }
 
@@ -170,10 +170,13 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //взято из https://smellegantcode.wordpress.com/2008/07/03/glyphrun-and-so-forth/
             string text = string.Empty; //bd?.Model?.Title ?? "NO TITLE";
             double fontSize = m_FontSize;
+            int visibleDaysCount = GetVisibleDaysCount(bd);
+            //для обрезанных нужны доп. подсчёты
+            bool cuttedBar = bd.Border.Type == Figure.FigureType.Geometry;
 
             //флаг аренды на часть дня. 
-            //Будет использован дважды, поэтому проверяем один раз тут
-            bool halfDayLeasing = bd.Model.VisibleDaysCount == 1 && bd.Border.Type == Figure.FigureType.Geometry;
+            bool halfDayLeasing = visibleDaysCount == 1 && cuttedBar;
+            
             if (halfDayLeasing)
                 text = "...";
             else
@@ -192,9 +195,12 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             //получаем размеры пустой области для текста на полоске
             //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
-            var emptySpace = bd.Border.Width - 4d;
+            var emptySpace = visibleDaysCount * m_DayColumnWidth - 4d;
             //? bd.Border.Width - 4d //для прямоугольников вычитаем по 2 пикселя с каждой стороны
             //: bd.Border.Width - 4d; //для усечённых прямоугольников вычитаем ещё половину ширины одной колонки
+
+            if (cuttedBar)
+                emptySpace -= m_halfColumnWidth;
 
             if (emptySpace < ft.Width)
             {
@@ -206,28 +212,38 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     cuttedText = "...";
                 else
                 {
-                    var cutChars = 3 * bd.Model.VisibleDaysCount;
+                    var cutChars = 3 * visibleDaysCount;
 
-                    //отрезаем пару букв справа для усечённых
-                    //т.к. для них текст будет немного смещён вправо
-                    if (bd.Border.Type == Figure.FigureType.Geometry)
-                    {
-                        if (cutChars > 3)
-                            cutChars = cutChars - 2;
-                    }
+                    
                     if (text.Length <= cutChars)
                         cuttedText = text;
                     else
+                    {
+                        //отрезаем пару букв справа для усечённых
+                        //т.к. для них текст будет немного смещён вправо
+
+                        if (cuttedBar)
+                        {
+                            if (cutChars > 3)
+                                cutChars = cutChars - 1;
+                        }
+
                         cuttedText = text.Substring(0, cutChars);
+                    }
                 }
 
                 ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
             }
 
-            //отступ по горизонтали (дни)
-            var x = GetHorizontalOffset(bd, ft);
+            //отступ по горизонтали
+            var x = bd.HorizontalOffset + ((bd.Border.Width - ft.Width) / 2d);
+            if(cuttedBar)
+            {
+                x += GetGeometryOffset(bd, visibleDaysCount == 1);
+            }
 
-            var y = bd.VerticalOffset //отступ по вертикали (строки)
+            //отступ по вертикали
+            var y = bd.VerticalOffset 
                 + (Canvas.RowHeight > FontSize ? ((Canvas.RowHeight - FontSize) / 2d) : 0d); //центровка текста по вертикали
 
             //точные координаты начала текста на Canvas
@@ -241,6 +257,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             dc.Close();
 
             return dv;
+        }
+
+        int GetVisibleDaysCount(BarData bd)
+        {
+            if (!bd.Model.Visible)
+                return 0;
+
+            return bd.Model.Set.CrossDaysCount(bd.Model.Period);
         }
 
         double GetTextWidth(string text)
@@ -264,58 +288,38 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return totalWidth;
         }
 
-        double GetHorizontalOffset(BarData bd, FormattedText ft)
-        {
-            var textRect = new Size(ft.Width, ft.Height); //System.Windows.Forms.TextRenderer.MeasureText(text, m_drawingFont); 
-
-            if (bd.Border.Type == Figure.FigureType.Rect)
-                //для обычных прямоугольников располагаем по центру
-                return bd.HorizontalOffset + ((bd.Border.Width - textRect.Width) / 2d);
-
-            //для усечённых прямоугольников
-            else
-            {
-                //для обрезанных слева - двигаем вправо
-                return bd.HorizontalOffset + GetGeometryOffset(bd, textRect);
-            }
-        }
         /// <summary>
         /// Получение смещения текста для усеченных прямоугольников
         /// </summary>
         /// <param name="bd">Данные отрисованно полоски</param>
         /// <param name="textRect">Геометрия отрисовываемого текста</param>
         /// <returns></returns>
-        double GetGeometryOffset(BarData bd, Size textRect)
+        double GetGeometryOffset(BarData bd, bool oneDay)
         {
-            var midle = ((bd.Border.Width - textRect.Width) / 2d);
-
-            //если усечённая геометрия
-            if (bd.Border.Type == Figure.FigureType.Geometry
-                //и усечение одно: только с лева или справа
-                && bd.Border.PathType != (CanvasBarDrawManager.DrawPathType.Geometry_L | CanvasBarDrawManager.DrawPathType.Geometry_R))
+            var offset = 0d;
+            var pathType = bd.Border.PathType;
+            //если усечение одно: только с лева или справа
+            if (pathType != (CanvasBarDrawManager.DrawPathType.Geometry_L | CanvasBarDrawManager.DrawPathType.Geometry_R))
             {
                 /*
+                 * 
                  * добавляем небольшое смещение
                  * т.к. из-за скоса текст может вылезать
                  * когда ширина его близка к ширине фигуры
                  * 
                  */
 
-                var offset = 0d;
-
                 //для периодов в 1 день места совсем нет
                 //по этому для них добавляем пару пикселей
-                offset = bd.Model.VisibleDaysCount == 1 ? 2d : m_halfColumnWidth;
+                offset = oneDay ? 2d : m_halfColumnWidth;
 
                 //если скос справа - вычитаем смещение (инверитруем)
                 //сдвигая текст чуть левее
-                if ((bd.Border.PathType & CanvasBarDrawManager.DrawPathType.Geometry_R) > 0)
+                if ((pathType & CanvasBarDrawManager.DrawPathType.Geometry_R) > 0)
                     offset = offset * -1d;
-
-                return midle + offset;
             }
 
-            return midle;
+            return offset;
         }
 
         GlyphTypeface GetGlyphTypeface()
