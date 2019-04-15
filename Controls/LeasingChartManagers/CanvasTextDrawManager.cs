@@ -204,7 +204,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     cuttedText = "...";
                 else
                 {
-                    var cutChars = 3 * visibleDaysCount;
+                    var cutChars = 3 * (cuttedBar ? visibleDaysCount - 1 : visibleDaysCount);
 
                     
                     if (text.Length <= cutChars)
@@ -217,7 +217,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                         if (cuttedBar)
                         {
                             if (cutChars > 3)
-                                cutChars = cutChars - 1;
+                                cutChars = cutChars - 2;
                         }
 
                         cuttedText = text.Substring(0, cutChars);
