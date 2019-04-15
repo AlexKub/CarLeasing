@@ -663,9 +663,9 @@ namespace CarLeasingViewer.Models
 
         #region IPeriod
 
-        DateTime IPeriod.DateStart { get { return Sorted ? DateStart : ((Monthes.FirstOrDefault()?.Month?.FirstDate) ?? DateTime.MinValue); } }
+        DateTime IPeriod.DateStart { get { return (Monthes.FirstOrDefault()?.Month?.FirstDate) ?? DateTime.MinValue; } }
 
-        DateTime IPeriod.DateEnd { get { return Sorted ? DateEnd : ((Monthes.LastOrDefault()?.Month?.LastDate) ?? DateTime.MinValue); } }
+        DateTime IPeriod.DateEnd { get { return (Monthes.LastOrDefault()?.Month?.LastDate) ?? DateTime.MinValue; } }
 
         int IPeriod.DayIndexStart => (this as IPeriod).DateStart.DayIndex();
 
