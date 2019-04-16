@@ -169,8 +169,6 @@ namespace CarLeasingViewer.Models
 
                         //простановка индекса колонок для Grid'а
                         GridIndexHelper.SetIndexes(value);
-
-                        SetInsurance();
                     }
 
                     if (MonthesChanged != null)
@@ -267,12 +265,13 @@ namespace CarLeasingViewer.Models
         /// <param name="businesses">Набор занятости авто из БД или тестовый</param>
         public void ReMapBussinesses(IEnumerable<MonthBusiness> businesses)
         {
+            Monthes = GetMonthes(businesses);
+
             var cars = GetCarModels(businesses);
             CarModels = cars;
             var comments = GetComments(CarModels);
             Comments = comments;
 
-            Monthes = GetMonthes(businesses);
             //!!зависит от заполнения CarModels
             var leasings = GetLeasingModels(businesses);
             Leasings = leasings;
@@ -288,7 +287,7 @@ namespace CarLeasingViewer.Models
             var rowIndex = 0;
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, Data = cb })
+            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, Data = cb, Tooltip = GetInsuranceTooltip(cb), IsInsure = GetInsurance(cb) })
             .Distinct()
             .Select(o =>
             new CarModel(o.Data)
@@ -296,6 +295,8 @@ namespace CarLeasingViewer.Models
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
                 IsMaintaining = o.Maintenance != null,
+                Tooltip = o.Tooltip,
+                InsuranceVisibility = o.IsInsure
             }).ToList();
 
             var ordered = SortManager.OrderByPrice(notOrdered).ToList();
@@ -496,8 +497,6 @@ namespace CarLeasingViewer.Models
             DateStart = period.DateStart.Date;
             DateEnd = period.DateEnd;
 
-            SetInsurance();
-
             if (sorted.Count == 0)
                 SetEmpty();
             else
@@ -573,27 +572,9 @@ namespace CarLeasingViewer.Models
             Chart.Draw();
         }
 
-        void SetInsurance()
+        System.Windows.Visibility GetInsurance(ItemInfo item)
         {
-            /*
-             * простановка видимости Окончания страховки
-             * 
-             */
-            foreach (var carModel in CarModels)
-            {
-                if (carModel.ItemInfo != null)
-                    if (carModel.ItemInfo.OSAGO_END.Year > 2000)
-                    {
-                        //проверяем наличие окончания страховки в текущем периоде.
-                        //есть - выводим оповещение.
-                        //ОСАГО встречается чаще
-                        bool visible = this.Include(carModel.ItemInfo.OSAGO_END) || this.Include(carModel.ItemInfo.KASKO_END);
-                        carModel.InsuranceVisibility = visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                        continue;
-                    }
-
-                carModel.InsuranceVisibility = System.Windows.Visibility.Collapsed;
-            }
+            return this.Include(item.OSAGO_END) || this.Include(item.KASKO_END) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
         }
 
         public void Dispose()
@@ -673,6 +654,24 @@ namespace CarLeasingViewer.Models
 
                 Chart.Draw();
             }
+        }
+
+        string[] GetInsuranceTooltip(ItemInfo item)
+        {
+            if (item == null)
+                return new string[] { "NULL ITEM" };
+
+            var rows = new List<string>();
+            rows.Add("ОКОНЧАНИЕ СТРАХОВКИ");
+
+            var setPeriod = this as IPeriod;
+            var dateStart = setPeriod.DateStart;
+            if (setPeriod.Include(item.OSAGO_END))
+                rows.Add("ОСАГО: " + item.OSAGO_END.ToShortDateString() + (item.OSAGO_Company != null ? (" " + item.OSAGO_Company) : ""));
+            if (setPeriod.Include(item.KASKO_END))
+                rows.Add("КАСКО: " + item.KASKO_END.ToShortDateString() + (item.KASKO_Company != null ? (" " + item.KASKO_Company) : ""));
+
+            return rows.ToArray();
         }
 
         #region IPeriod

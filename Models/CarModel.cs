@@ -77,6 +77,12 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public CarPriceList Price { get { return pv_Price; } set { pv_Price = value; OnPropertyChanged(); } }
 
+        private string[] m_Tooltip = new string[] { "NO INFO" };
+        /// <summary>
+        /// Возвращает или задаёт Всплывающую подсказку
+        /// </summary>
+        public string[] Tooltip { get { return m_Tooltip; } set { m_Tooltip = value; OnPropertyChanged(); } }
+
         /// <summary>
         /// Индекс строки
         /// </summary>

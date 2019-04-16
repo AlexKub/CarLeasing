@@ -55,9 +55,9 @@ namespace CarLeasingViewer.Models
 
             var setPeriod = Set as IPeriod;
             var dateStart = setPeriod.DateStart;
-            if (item.OSAGO_END > dateStart)
+            if (item.OSAGO_END >= dateStart)
                 rows.Add("ОСАГО: " + item.OSAGO_END.ToShortDateString() + (item.OSAGO_Company != null ? (" " + item.OSAGO_Company) : ""));
-            if (item.KASKO_END > dateStart)
+            if (item.KASKO_END >= dateStart)
                 rows.Add("КАСКО: " + item.KASKO_END.ToShortDateString() + (item.KASKO_Company != null ? (" " + item.KASKO_Company) : ""));
 
             ToolTipRows = rows.ToArray();

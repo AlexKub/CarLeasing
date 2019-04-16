@@ -66,6 +66,15 @@
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <EventSetter Event="Checked" Handler="OnSearchSettingsChanged"/>
         </Style>
+
+        <ItemsControl x:Key="InsuranceTooltip" ItemsSource="{Binding Tooltip}">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical"/>
+            </ItemsPanelTemplate>
+            <ItemContainerTemplate>
+                <TextBlock Text="{Binding}" Margin="3"/>
+            </ItemContainerTemplate>
+        </ItemsControl>
     </Window.Resources>
 
     <Grid Margin="10 0 10 0">
@@ -128,7 +137,7 @@
                     <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Отрисовка Сторно"  
                           IsChecked="{Binding DrawStorno, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
                 </StackPanel>
-                
+
             </WrapPanel>
         </Grid>
 
@@ -223,7 +232,7 @@
                                            BlockeBarBrush="{StaticResource BlockedBarBrush}"
                                            MaintenanceBrush="{StaticResource HatchBrush}"
                                            MinHeight="200"
-                                               HorizontalAlignment="Left">
+                                           HorizontalAlignment="Left">
 
                         </controls:LeasingChart>
                     </ScrollViewer>
@@ -265,14 +274,32 @@
                                             MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" 
                                             PreviewMouseRightButtonUp="TextBlock_MouseRightButtonUp">
                                             <Grid >
+                                                <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
+
                                                 <!-- иконка страховки -->
+                                                <!-- располагаем после TextBlock'a, чтобы не перекрывал -->
                                                 <Image Style="{StaticResource BaseCarIconStyle}" 
                                                            Visibility="{Binding InsuranceVisibility}"
                                                            Source="{x:Static local:IconsInfo.InsuranceIconPath}"
-                                                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-                                                <TextBlock Text="{Binding Text}" Style="{StaticResource ItemTextBlockStyle}"/>
-
+                                                           HorizontalAlignment="Left" 
+                                                       VerticalAlignment="Center"
+                                                       >
+                                                    <Image.ToolTip>
+                                                        <ItemsControl ItemsSource="{Binding Tooltip}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Vertical"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding}" Margin="3"/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </Image.ToolTip>
+                                                </Image>
+                                                
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                                     <!--квадратик для индикации "блокированных"-->
                                                     <Image Style="{StaticResource BaseCarIconStyle}" 
@@ -281,6 +308,7 @@
                                                            Source="{x:Static local:IconsInfo.NotAccounting}"/>
                                                     <!--Иконка Занятости авто-->
                                                     <Image Style="{StaticResource BaseCarIconStyle}" 
+                                                           ToolTip="Не активен / в ремонте"
                                                            Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"
                                                            Source="{x:Static local:IconsInfo.MaintenanceIconPath}"/>
                                                 </StackPanel>
