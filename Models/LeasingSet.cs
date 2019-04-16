@@ -289,7 +289,8 @@ namespace CarLeasingViewer.Models
             string[] defaultTooltip = new string[0];
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new {
+            .Select(cb => new
+            {
                 cb.Name,
                 cb.ID,
                 cb.Maintenance,
@@ -376,28 +377,18 @@ namespace CarLeasingViewer.Models
                             var leasings = leasingModels;
                             foreach (var storno in stornos)
                             {
-                                var barModel = leasings.FirstOrDefault(l => l.Leasing.DocNumber.Equals(storno.Period.DocNumber));
+                                var s = storno.Period;
+                                var barModel = leasings.FirstOrDefault(l => l.Leasing.DocNumber.Equals(s.DocNumber));
 
                                 if (barModel != null)
                                 {
-                                    if (barModel.Leasing.DayCount - storno.Period.DayCount <= 0)
+                                    var l = barModel.Leasing;
+                                    if (l.DayCount - s.DayCount <= 0)
                                     {
-                                        lock (modelsLock)
-                                            leasingBarModels.Remove(barModel);
-                                    }
-                                    else
-                                    {
-                                        var storned = storno.Period.CrossPeriod(barModel.Leasing);
-
-                                        //если сторнирующий начался раньше или одновременно с текущим
-                                        if (storned.DayIndexStart >= barModel.Leasing.DayIndexStart)
-                                            //меняем дату начала
-                                            barModel.Leasing.DateStart = storned.DateEnd;
-
-                                        //если сторнирующий начался после текущего
-                                        else
-                                            //меняем дату окончания
-                                            barModel.Leasing.DateEnd = storned.DateStart;
+                                        l.DateEnd = l.DateEnd.AddDays(((int)s.DayCount) * -1);
+                                        if (l.DayIndexStart == l.DayIndexEnd
+                                        && l.DateStart.Hour == l.DateEnd.Hour)
+                                            barModel.Visible = false;
                                     }
                                 }
                             }

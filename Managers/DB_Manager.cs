@@ -225,13 +225,14 @@ namespace CarLeasingViewer
                             if (isStorno)
                             {
                                 var s = new Storno();
-                                s.DateStart = ((DateTime)reader["DateStart"]).Add(((DateTime)reader["TimeStart"]).TimeOfDay);
+                                s.DayCount = (decimal)reader["StornoDayCount"];
                                 s.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["DateEnd"]).TimeOfDay);
+                                s.DateStart = s.DateEnd.AddDays(((int)s.DayCount) * -1);
                                 s.Comment = (reader["StornoComment"] as string) ?? "";
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
                                 s.DocNumber = (string)reader["DocNumber"];
                                 s.MonthCount = s.CalculateMonthCount();
-                                s.DayCount = (decimal)reader["StornoDayCount"];
+                                
                                 cb.Add(s);
                             }
                             else

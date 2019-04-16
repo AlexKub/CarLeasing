@@ -23,12 +23,18 @@ namespace CarLeasingViewer.Models
 
         IPeriod IDrawableBar.Period => this.Period;
 
-        public bool Visible => App.SearchSettings.DrawStorno;
+        public bool Visible { get; private set; }
 
         public StornoBarModel(LeasingSet set, Storno s)
         {
             Set = set;
             Period = s;
+            Visible = App.SearchSettings.DrawStorno;
+            if (Visible 
+                && s.DayIndexStart == s.DayIndexEnd
+                && s.DateStart.Hour == s.DateEnd.Hour)
+                Visible = false;
+
             var rows = new List<string>() {
                 "СТОРНО"
                 , "от " + s.DocumentDate.ToString()
