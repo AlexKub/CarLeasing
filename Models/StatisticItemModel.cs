@@ -21,7 +21,7 @@
             Value = value;
         }
 
-        public string Text
+        public virtual string Text
         {
             get
             {

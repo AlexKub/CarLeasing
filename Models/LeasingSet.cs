@@ -386,7 +386,7 @@ namespace CarLeasingViewer.Models
 
                                     l.DateEnd = l.DateEnd.AddDays(((int)s.DayCount) * -1);
                                     //если старнирован полностью - скрываем полоску
-                                    if (l.DayIndexStart == l.DayIndexEnd
+                                    if (l.DayIndexStart >= l.DayIndexEnd
                                         && l.DateStart.Hour == l.DateEnd.Hour)
                                             barModel.Visible = false;
                                 }

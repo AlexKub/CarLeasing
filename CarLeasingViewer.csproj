@@ -136,6 +136,7 @@
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
     <Compile Include="Models\Period.cs" />
+    <Compile Include="Models\StatisticItemLabel.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
     <Compile Include="Models\Storno.cs" />

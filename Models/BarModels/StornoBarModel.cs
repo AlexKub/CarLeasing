@@ -30,10 +30,6 @@ namespace CarLeasingViewer.Models
             Set = set;
             Period = s;
             Visible = App.SearchSettings.DrawStorno;
-            if (Visible 
-                && s.DayIndexStart == s.DayIndexEnd
-                && s.DateStart.Hour == s.DateEnd.Hour)
-                Visible = false;
 
             var rows = new List<string>() {
                 "СТОРНО"

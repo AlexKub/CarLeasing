@@ -227,7 +227,7 @@ namespace CarLeasingViewer
                                 var s = new Storno();
                                 s.DayCount = (decimal)reader["StornoDayCount"];
                                 s.DateEnd = ((DateTime)reader["DateEnd"]).Add(((DateTime)reader["DateEnd"]).TimeOfDay);
-                                s.DateStart = s.DateEnd.AddDays(((int)s.DayCount) * -1);
+                                s.DateStart = s.DateEnd.AddDays((((int)s.DayCount) - 1) * -1);
                                 s.Comment = (reader["StornoComment"] as string) ?? "";
                                 s.DocumentDate = (DateTime)reader["StornoDocDate"];
                                 s.DocNumber = (string)reader["DocNumber"];

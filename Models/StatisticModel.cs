@@ -50,27 +50,36 @@ namespace CarLeasingViewer.Models
 
             var items = new List<StatisticItemModel>();
 
+            var visibleModels = row.Bars.Where(b => b.Model != null && b.Model.Visible).Select(b => b.Model);
             //аренды
-            var leasings = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<LeasingBarModel>();
+            var leasings = visibleModels.OfType<LeasingBarModel>();
             var leasingCount = leasings.Sum(l => set.CrossDaysCount(l.Leasing));
 
             //сторнирование
-            var stornos = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<StornoBarModel>();
-            var stornosCount = stornos.Sum(s => set.CrossDaysCount(s.Period));
+            var stornos = visibleModels.OfType<StornoBarModel>();
+            var stornosCount = (int)stornos.Sum(s => s.Period.DayCount);
 
             //ремонт
-            var maintenances = row.Bars.Where(b => b.Model != null).Select(b => b.Model).OfType<MaintenanceBarModel>();
+            var maintenances = visibleModels.OfType<MaintenanceBarModel>();
             var maintenancesCount = maintenances.Sum(m => set.CrossDaysCount(m.Period));
 
             var loadPercent = (set.Monthes.Last().Month.LastDate - set.Monthes.First().Month.FirstDate).Days / 100d;
+            var id = row.Car?.Car?.ID;
+            if (!string.IsNullOrEmpty(id))
+                items.Add(new StatisticItemLabel(id));
+
             items.Add(new StatisticItemModel("Авто", row.Car == null ? "NULL" : row.Car.Text));
 
-            items.Add(new StatisticItemModel("Общее время аренды", (leasingCount).ToString() + " дн."));
+            items.Add(new StatisticItemModel("Время аренды", (leasingCount).ToString() + " дн."));
             if (stornosCount > 0)
-                items.Add(new StatisticItemModel("Сторнированное время", (stornosCount).ToString() + " дн."));
+                items.Add(new StatisticItemModel("Сторнированно", (stornosCount).ToString() + " дн."));
             if (maintenancesCount > 0)
-                items.Add(new StatisticItemModel("Время ремонта", (maintenancesCount).ToString() + " дн."));
+                items.Add(new StatisticItemModel("Ремонт", (maintenancesCount).ToString() + " дн."));
             items.Add(new StatisticItemModel("% загрузки", Math.Round((leasingCount / loadPercent), 2).ToString() + " %"));
+            if (stornosCount > 0)
+                items.Add(new StatisticItemModel("сторно", Math.Round((stornosCount / loadPercent), 2).ToString() + " %"));
+            if (maintenancesCount > 0)
+                items.Add(new StatisticItemModel("ремонт", Math.Round((maintenancesCount / loadPercent), 2).ToString() + " %"));
 
             var model = row.Car;
 
@@ -79,6 +88,7 @@ namespace CarLeasingViewer.Models
                 //получаем свежую цену из БД
                 model.UpdatePrice();
 
+                items.Add(new StatisticItemLabel("| Стоимость:"));
                 //если указана цена
                 if (!(model?.Price.IsNullOrEmpty() ?? false))
                 {

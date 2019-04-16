@@ -198,6 +198,7 @@ namespace CarLeasingViewer.Models
                 if (!string.IsNullOrEmpty(comment))
                     rows.Add(comment);
 
+                rows.Add(pv_Leasing.DocNumber);
                 return rows.ToArray();
             }
         }
