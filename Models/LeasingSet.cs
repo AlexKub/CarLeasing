@@ -383,13 +383,12 @@ namespace CarLeasingViewer.Models
                                 if (barModel != null)
                                 {
                                     var l = barModel.Leasing;
-                                    if (l.DayCount - s.DayCount <= 0)
-                                    {
-                                        l.DateEnd = l.DateEnd.AddDays(((int)s.DayCount) * -1);
-                                        if (l.DayIndexStart == l.DayIndexEnd
+
+                                    l.DateEnd = l.DateEnd.AddDays(((int)s.DayCount) * -1);
+                                    //если старнирован полностью - скрываем полоску
+                                    if (l.DayIndexStart == l.DayIndexEnd
                                         && l.DateStart.Hour == l.DateEnd.Hour)
                                             barModel.Visible = false;
-                                    }
                                 }
                             }
                         });
