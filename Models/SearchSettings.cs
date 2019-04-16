@@ -41,6 +41,12 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public bool DrawStorno { get { return m_DrawStorno; } set { m_DrawStorno = value; OnPropertyChanged(); } }
 
+        protected bool m_ShowInsurance;
+        /// <summary>
+        /// Возвращает или задаёт Видимость страховки
+        /// </summary>
+        public bool ShowInsurance { get { return m_ShowInsurance; } set { m_ShowInsurance = value; OnPropertyChanged(); } }
+
         protected bool _TestData;
         /// <summary>
         /// Возвращает или задаёт Флаг использования случайных данных
@@ -63,6 +69,7 @@ namespace CarLeasingViewer.Models
             m_SelectedRegion = settings.SelectedRegion;
             m_IncludeNotActive = settings.IncludeNotActive;
             m_DrawStorno = settings.DrawStorno;
+            m_ShowInsurance = settings.ShowInsurance;
         }
     }
 }

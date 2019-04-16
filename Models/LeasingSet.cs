@@ -285,9 +285,18 @@ namespace CarLeasingViewer.Models
         List<CarModel> GetCarModels(IEnumerable<MonthBusiness> data)
         {
             var rowIndex = 0;
+            bool insuranceHidden = !App.SearchSettings.ShowInsurance;
+            string[] defaultTooltip = new string[0];
             var notOrdered = data
                 .SelectMany(mb => mb.CarBusiness)
-            .Select(cb => new { cb.Name, cb.ID, cb.Maintenance, Data = cb, Tooltip = GetInsuranceTooltip(cb), IsInsure = GetInsurance(cb) })
+            .Select(cb => new {
+                cb.Name,
+                cb.ID,
+                cb.Maintenance,
+                Data = cb,
+                Tooltip = insuranceHidden ? defaultTooltip : GetInsuranceTooltip(cb),
+                IsInsure = insuranceHidden ? System.Windows.Visibility.Collapsed : GetInsurance(cb)
+            })
             .Distinct()
             .Select(o =>
             new CarModel(o.Data)
@@ -322,6 +331,7 @@ namespace CarLeasingViewer.Models
             var insuranceIcon = IconsInfo.InsuranceDay;
             object modelsLock = new object();
             var stornoTasks = new List<Task>();
+            bool showInsurance = App.SearchSettings.ShowInsurance;
             foreach (var business in monthBuisnesses)
             {
                 foreach (var item in business.CarBusiness)
@@ -410,7 +420,7 @@ namespace CarLeasingViewer.Models
                                 leasingBarModels.Add(m);
                         }
                     }
-                    if (this.Include(item.OSAGO_END))
+                    if (showInsurance && this.Include(item.OSAGO_END))
                     {
                         var img = new ImageBarModel(this)
                         {
@@ -424,7 +434,7 @@ namespace CarLeasingViewer.Models
                         lock (modelsLock)
                             leasingBarModels.Add(img);
                     }
-                    if (this.Include(item.KASKO_END))
+                    if (showInsurance && this.Include(item.KASKO_END))
                     {
                         var img = new ImageBarModel(this)
                         {

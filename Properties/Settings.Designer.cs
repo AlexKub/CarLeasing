@@ -94,5 +94,17 @@ namespace CarLeasingViewer.Properties {
                 this["IncludeNotActive"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowInsurance {
+            get {
+                return ((bool)(this["ShowInsurance"]));
+            }
+            set {
+                this["ShowInsurance"] = value;
+            }
+        }
     }
 }

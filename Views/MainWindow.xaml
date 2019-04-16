@@ -80,7 +80,7 @@
     <Grid Margin="10 0 10 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="*" MaxHeight="70"/>
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -93,7 +93,7 @@
         <!-- Настройки выборки -->
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="450"/>
@@ -126,7 +126,7 @@
                     </DockPanel>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
+                <WrapPanel Orientation="Horizontal">
                     <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Случайные данные"
                           IsChecked="{Binding TestData, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" 
                           Visibility="{Binding Source={x:Static local:App.TestMode}, Converter={StaticResource CommonVisibilityConverter}}"/>
@@ -136,7 +136,9 @@
                           IsChecked="{Binding IncludeBlocked, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
                     <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Отрисовка Сторно"  
                           IsChecked="{Binding DrawStorno, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
-                </StackPanel>
+                    <CheckBox Style="{StaticResource SettingsCheckboxStyle}" Content="Отрисовка страховки"  
+                          IsChecked="{Binding ShowInsurance, Mode=TwoWay, Converter={StaticResource NullableBoolConverter}}" />
+                </WrapPanel>
 
             </WrapPanel>
         </Grid>

@@ -45,6 +45,7 @@ namespace CarLeasingViewer.Models
             _IncludeBlocked = Properties.Settings.Default.IncludeBlocked;
             m_IncludeNotActive = Properties.Settings.Default.IncludeNotActive;
             m_DrawStorno = Properties.Settings.Default.DrawStorno;
+            m_ShowInsurance = Properties.Settings.Default.ShowInsurance;
 
             //не вызываем OnPropertyChanged лишний раз, т.к. вызовет перерисовку UI
         }
@@ -56,6 +57,7 @@ namespace CarLeasingViewer.Models
             Properties.Settings.Default.IncludeBlocked = _IncludeBlocked;
             Properties.Settings.Default.IncludeNotActive = m_IncludeNotActive;
             Properties.Settings.Default.DrawStorno = m_DrawStorno;
+            Properties.Settings.Default.ShowInsurance = m_ShowInsurance;
 
             Properties.Settings.Default.Save();
         }
