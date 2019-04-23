@@ -618,8 +618,8 @@ namespace CarLeasingViewer
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Line] l ON l.No_ = i.No_
                         	LEFT JOIN [Carlson$Sales {(settings.SelectedDBSearchType == DBSearchType.Curent ? string.Empty : invoice)}Header] h ON h.No_ = l.[Document No_]
                             LEFT JOIN [Carlson$Venicle Temp_ UnAvail_] u ON u.[Item No_] = i.No_
-                            LEFT JOIN [CARLSON_01032019].[dbo].[Carlson$Sales Cr_Memo Header] s ON s.[Source Document No_] = h.No_
-                            LEFT JOIN [CARLSON_01032019].[dbo].[Carlson$Sales Cr_Memo Line] sl ON sl.[Document No_] = s.[No_]
+                            LEFT JOIN [Carlson$Sales Cr_Memo Header] s ON s.[Source Document No_] = h.No_
+                            LEFT JOIN [Carlson$Sales Cr_Memo Line] sl ON sl.[Document No_] = s.[No_]
                         
                         WHERE 1 = 1
                             {(settings.IncludeBlocked ? string.Empty : "AND i.Blocked = 0")}
