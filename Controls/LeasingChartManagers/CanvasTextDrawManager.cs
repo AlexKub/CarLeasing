@@ -17,6 +17,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         Typeface m_Typeface;
 
+        Brush m_whiteBrush = Brushes.WhiteSmoke;
+
         /// <summary>
         /// Половина ширины колонки для расчёта
         /// </summary>
@@ -183,7 +185,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             //рамка текста (ширина/высота)
             //расчитываем ширину / высоту перед отрисовкой для центровки текста
             var culture = System.Globalization.CultureInfo.CurrentCulture;
-            FormattedText ft = new FormattedText(text, culture, FlowDirection.LeftToRight, m_Typeface, fontSize, TextBrush);
+            var textBrush = bd.Model.BarType == ChartBarType.Maintenance ? m_whiteBrush : TextBrush;
+            FormattedText ft = new FormattedText(text, culture, FlowDirection.LeftToRight, m_Typeface, fontSize, textBrush);
 
             //получаем размеры пустой области для текста на полоске
             //вычитая несколько пикселей из ширины полоски для отступа текста от краёв
@@ -224,7 +227,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     }
                 }
 
-                ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, TextBrush);
+                ft = new FormattedText(cuttedText, culture, ft.FlowDirection, m_Typeface, fontSize, textBrush);
             }
 
             //отступ по горизонтали

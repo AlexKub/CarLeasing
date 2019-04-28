@@ -35,7 +35,7 @@ namespace CarLeasingViewer
 
         static IconsInfo()
         {
-            MaintenanceIconPath = LoadImage(Properties.Resources.maintenance_image);
+            MaintenanceIconPath = LoadImage(Properties.Resources.maintenance_key);
             InsuranceIconPath = LoadImage(Properties.Resources.Insurance_left);
             InsuranceDay = LoadImage(Properties.Resources.Insurance_day);
             NotAccounting = LoadImage(Properties.Resources.not_accounting);
