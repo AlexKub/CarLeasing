@@ -75,6 +75,23 @@
                 <TextBlock Text="{Binding}" Margin="3"/>
             </ItemContainerTemplate>
         </ItemsControl>
+
+        <Style x:Key="ResourceImageTooltip" TargetType="ItemsControl">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Margin="3"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="10 0 10 0">
@@ -287,18 +304,7 @@
                                                        VerticalAlignment="Center"
                                                        >
                                                     <Image.ToolTip>
-                                                        <ItemsControl ItemsSource="{Binding Tooltip}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Vertical"/>
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <TextBlock Text="{Binding}" Margin="3"/>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
+                                                        <ItemsControl Style="{StaticResource ResourceImageTooltip}" ItemsSource="{Binding Tooltip}"/>
                                                     </Image.ToolTip>
                                                 </Image>
                                                 
