@@ -301,8 +301,7 @@
                                                            Visibility="{Binding InsuranceVisibility}"
                                                            Source="{x:Static local:IconsInfo.InsuranceIconPath}"
                                                            HorizontalAlignment="Left" 
-                                                       VerticalAlignment="Center"
-                                                       >
+                                                       VerticalAlignment="Center">
                                                     <Image.ToolTip>
                                                         <ItemsControl Style="{StaticResource ResourceImageTooltip}" ItemsSource="{Binding Tooltip}"/>
                                                     </Image.ToolTip>

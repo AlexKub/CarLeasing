@@ -295,7 +295,10 @@ namespace CarLeasingViewer.Models
                 cb.ID,
                 cb.Maintenance,
                 Data = cb,
-                Tooltip = insuranceHidden ? defaultTooltip : GetInsuranceTooltip(cb),
+                Tooltips = new ResourceTooltipsModel() {
+                    Insurance = insuranceHidden ? defaultTooltip : GetInsuranceTooltip(cb),
+                    Maintenance = cb.Maintenance == null ? new string[] { "NO DATA" } : GetMaintenanceTooltip(cb)
+                },
                 IsInsure = insuranceHidden ? System.Windows.Visibility.Collapsed : GetInsurance(cb)
             })
             .Distinct()
@@ -305,7 +308,7 @@ namespace CarLeasingViewer.Models
                 Text = o.Name,
                 Car = App.Cars.FirstOrDefault(c => c.ID.Equals(o.ID)),
                 IsMaintaining = o.Maintenance != null,
-                Tooltip = o.Tooltip,
+                Tooltips = o.Tooltips,
                 InsuranceVisibility = o.IsInsure
             }).ToList();
 
@@ -670,6 +673,25 @@ namespace CarLeasingViewer.Models
                 rows.Add("ОСАГО: " + item.OSAGO_END.ToShortDateString() + (item.OSAGO_Company != null ? (" " + item.OSAGO_Company) : ""));
             if (setPeriod.Include(item.KASKO_END))
                 rows.Add("КАСКО: " + item.KASKO_END.ToShortDateString() + (item.KASKO_Company != null ? (" " + item.KASKO_Company) : ""));
+
+            return rows.ToArray();
+        }
+
+        string[] GetMaintenanceTooltip(ItemInfo item)
+        {
+            if (item == null)
+                return new string[] { "NULL ITEM" };
+
+            var rows = new List<string>();
+            rows.Add("ВРЕМЕННО НЕДОСТУПЕН");
+
+            var setPeriod = this as IPeriod;
+            var dateStart = setPeriod.DateStart;
+            rows.Add(item.Maintenance.TooltipRow());
+
+            var description = item.Maintenance.Description;
+            if (!string.IsNullOrWhiteSpace(description))
+                rows.Add(description);
 
             return rows.ToArray();
         }

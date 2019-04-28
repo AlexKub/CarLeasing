@@ -40,6 +40,10 @@ namespace CarLeasingViewer.Models
         }
 
         public ItemInfo ItemInfo { get; private set; }
+        /// <summary>
+        /// Вплывающие подсказки
+        /// </summary>
+        public ResourceTooltipsModel Tooltips { get; set; }
 
         private bool m_Blocked;
         /// <summary>
