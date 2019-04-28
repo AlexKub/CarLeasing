@@ -31,7 +31,12 @@
         </RadialGradientBrush.GradientStops>
     </RadialGradientBrush>
 
-    <LinearGradientBrush MappingMode="Absolute" x:Key="HatchBrush"  StartPoint="0,0" EndPoint="4,4" SpreadMethod="Repeat">
+    <SolidColorBrush x:Key="HatchBrush" PresentationOptions:Freeze="True" >
+        <SolidColorBrush.Color>
+            <Color A="255" R="0" G="112" B="192"/>
+        </SolidColorBrush.Color>
+    </SolidColorBrush>
+    <LinearGradientBrush MappingMode="Absolute" x:Key="HatchBrush1"  StartPoint="0,0" EndPoint="4,4" SpreadMethod="Repeat">
         <GradientStop Offset="0" Color="{StaticResource LightBorderColor}"/>
         <GradientStop Offset="0.75" Color="{StaticResource LightBorderColor}"/>
         <GradientStop Offset="0.75" Color="White"/>

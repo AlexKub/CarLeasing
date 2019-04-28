@@ -303,7 +303,7 @@
                                                            HorizontalAlignment="Left" 
                                                        VerticalAlignment="Center">
                                                     <Image.ToolTip>
-                                                        <ItemsControl Style="{StaticResource ResourceImageTooltip}" ItemsSource="{Binding Tooltip}"/>
+                                                        <ItemsControl Style="{StaticResource ResourceImageTooltip}" ItemsSource="{Binding Tooltips.Insurance}"/>
                                                     </Image.ToolTip>
                                                 </Image>
                                                 
@@ -315,9 +315,12 @@
                                                            Source="{x:Static local:IconsInfo.NotAccounting}"/>
                                                     <!--Иконка Занятости авто-->
                                                     <Image Style="{StaticResource BaseCarIconStyle}" 
-                                                           ToolTip="Не активен / в ремонте"
                                                            Visibility="{Binding IsMaintaining, Converter={StaticResource CommonVisibilityConverter}}"
-                                                           Source="{x:Static local:IconsInfo.MaintenanceIconPath}"/>
+                                                           Source="{x:Static local:IconsInfo.MaintenanceIconPath}">
+                                                        <Image.ToolTip>
+                                                            <ItemsControl Style="{StaticResource ResourceImageTooltip}" ItemsSource="{Binding Tooltips.Maintenance}"/>
+                                                        </Image.ToolTip>
+                                                    </Image>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
