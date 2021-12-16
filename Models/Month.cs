@@ -91,7 +91,7 @@ namespace CarLeasingViewer.Models
             {
                 var list = new List<int>();
 
-                var dayCount = GetDayCount(Value) + 1;
+                var dayCount = GetDayCount(Value, Year) + 1;
                 for (int i = 1; i < dayCount; i++)
                     list.Add(i);
 
@@ -107,7 +107,7 @@ namespace CarLeasingViewer.Models
 
                 string name = string.Empty;
                 int dayIndex = 0;
-                var dayCount = GetDayCount(Value);
+                var dayCount = GetDayCount(Value, Year);
 
                 for (int i = 0; i < dayCount; i++)
                 {
@@ -140,7 +140,7 @@ namespace CarLeasingViewer.Models
             Name = GetRussianName(month);
             Value = month;
             Index = (int)month;
-            DayCount = GetDayCount(month);
+            DayCount = GetDayCount(month, year);
             m_days = GetDays().ToList();
         }
         public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
@@ -151,14 +151,21 @@ namespace CarLeasingViewer.Models
         /// ПОлучение количества дней в конкретном месяце
         /// </summary>
         /// <param name="month">Месяц</param>
+        /// <param name="year">Год. Опционально, для определения високосности</param>
         /// <returns>Возвращает количество дней в переданном месяце</returns>
-        public static int GetDayCount(Monthes month)
+        public static int GetDayCount(Monthes month, int? year)
         {
             switch (month)
             {
                 case Monthes.January:
                     return 31;
                 case Monthes.February:
+                    if (year.HasValue)
+                    {
+                        if (DateTime.IsLeapYear(year.Value))
+                            return 29;
+                    }
+
                     return 28;
                 case Monthes.March:
                     return 31;
