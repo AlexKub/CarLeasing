@@ -142,55 +142,6 @@
                                Visibility="{Binding CarBusiness, Converter={StaticResource EmptyMessageVisibilityConverter}}"/>
                 </Grid>
             </ScrollViewer>
-            <!--<ListView Grid.Row="2" ItemsSource="{Binding CarBusiness}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate >
-                        <DockPanel d:DataContext="{d:DesignInstance Type=models:CarBusiness}" LastChildFill="True" Height="23" >
-                            <TextBlock Text="{Binding Name}" Style="{StaticResource LeftColumnTextBlock}" DockPanel.Dock="Left" Margin="0"
-                                   Padding="{StaticResource ListItemCarPadding}"
-                                       ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                                   />
-                            -->
-            <!--this shoud to get the Width-->
-            <!--Nested_2 DataContext Model_3-->
-            <!--
-                            <ItemsControl ItemsSource="{Binding Business}" Style="{StaticResource HorizontalItemsControl}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <Grid />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <controls:BusinessTextBlock d:DataContext="{d:DesignInstance Type=models:Business}" Business="{Binding}" 
-                                                                    ColumnWidth="21" 
-                                                                    HorizontalAlignment="Left" 
-                                                                    VerticalAlignment="Center"
-                                                                    Padding="{StaticResource ListItemBusinessPadding}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </DockPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ListView>
-            <ItemsControl Grid.Row="2" ItemsSource="{Binding CarBusiness}" Margin="0 5 0 0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Line StrokeThickness="1" Stroke="LightGray"  
-                        X1="0" 
-                        Y1="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineXConverter}}" 
-                        X2="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl, Mode=FindAncestor}, Path=ActualWidth}" 
-                        Y2="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineXConverter}}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>-->
-            <!--<mahaps:ProgressRing Grid.Row="2" Foreground="Gray" />-->
         </Grid>
     </Border>
 </UserControl>
