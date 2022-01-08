@@ -51,7 +51,7 @@ namespace CarLeasingViewer.Controls
             var startDay = b.DateStart.Day;
 
             //если начало в текущем месяце
-            if (b.MonthCount == 1 || b.DateStart.Month == b.CurrentMonth.Index)
+            if (b.MonthCount == 1 || b.DateStart.Month == b.CurrentMonth.Number)
             {
                 if (startDay > 1)
                 {
@@ -82,7 +82,7 @@ namespace CarLeasingViewer.Controls
             //если машина занята несколько месяцев
             else
             {
-                var currentMonth = b.CurrentMonth.Index;
+                var currentMonth = b.CurrentMonth.Number;
 
                 //для месяца, в котором начали съём
                 if (b.DateStart.Month == currentMonth)

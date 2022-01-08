@@ -345,7 +345,7 @@ namespace CarLeasingViewer
                                 previosCar = curentCar;
 
                                 cb = new CarBusiness();
-                                cb.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+                                cb.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Number, 1), new DateTime(end.Year, end.Number, 1));
                                 cb.ItemNo = (string)reader["No_"];
                                 carBusinesses.Add(cb);
 
@@ -391,7 +391,7 @@ namespace CarLeasingViewer
             }
 
             var monthBusiness = new MonthBusiness(carBusinesses);
-            monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Index, 1), new DateTime(end.Year, end.Index, 1));
+            monthBusiness.Monthes = Month.GetMonthes(new DateTime(start.Year, start.Number, 1), new DateTime(end.Year, end.Number, 1));
 
             return monthBusiness;
         }

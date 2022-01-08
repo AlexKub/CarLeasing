@@ -23,7 +23,7 @@ namespace CarLeasingViewer.Controls
 
         IEnumerable<CarBusiness> m_baseCollection;
         Task<IEnumerable<CarBusiness>> m_pausedSearchTask;
-        List<int> m_selectingDays = new List<int>();
+        List<WeekDay> m_selectingDays = new List<WeekDay>();
         int m_selectingStartDay = 0;
         Dictionary<string, CancellationTokenSource> m_searchTasks = new Dictionary<string, CancellationTokenSource>();
 
@@ -91,14 +91,14 @@ namespace CarLeasingViewer.Controls
         public static DependencyProperty dp_IsLoading = DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(MonthBusinessGrid), new FrameworkPropertyMetadata() { DefaultValue = default(bool) });
         public bool IsLoading { get { return (bool)GetValue(dp_IsLoading); } set { SetValue(dp_IsLoading, value); } }
 
-        public static DependencyProperty dp_SelectedDays = DependencyProperty.Register(nameof(SelectedDays), typeof(IEnumerable<Day>), typeof(MonthBusinessGrid), new FrameworkPropertyMetadata()
+        public static DependencyProperty dp_SelectedDays = DependencyProperty.Register(nameof(SelectedDays), typeof(IEnumerable<WeekDay>), typeof(MonthBusinessGrid), new FrameworkPropertyMetadata()
         {
-            DefaultValue = default(IEnumerable<Day>)
+            DefaultValue = default(IEnumerable<WeekDay>)
             ,
-            PropertyChangedCallback = (s, e) => { (s as MonthBusinessGrid).DateSorting(e.NewValue as IEnumerable<Day>); }
+            PropertyChangedCallback = (s, e) => { (s as MonthBusinessGrid).DateSorting(e.NewValue as IEnumerable<WeekDay>); }
         });
 
-        public IEnumerable<Day> SelectedDays { get { return (IEnumerable<Day>)GetValue(dp_SelectedDays); } set { SetValue(dp_SelectedDays, value); } }
+        public IEnumerable<WeekDay> SelectedDays { get { return (IEnumerable<WeekDay>)GetValue(dp_SelectedDays); } set { SetValue(dp_SelectedDays, value); } }
 
         /// <summary>
         /// Ширина контрола с днями месяца
@@ -170,17 +170,17 @@ namespace CarLeasingViewer.Controls
                         {
                             var m = GetMonth();
                             if (IsMultiselecting())
-                                set.Sort(new DateTime(m.Year, m.Index, m_selectingDays.Min()), new DateTime(m.Year, m.Index, m_selectingDays.Max()));
+                                set.SelectingContext.Select(m_selectingDays.Min(), m_selectingDays.Max());
+                                //set.Sort(m_selectingDays.Min().Date, m_selectingDays.Max().Date);
                             else
-                                set.Sort(new DateTime(m.Year, m.Index, day.Index));
+                                set.SelectingContext.Select(day);
+                                //set.Sort(day.Date);
                         }
                     }
                     break;
                 default:
                     break;
             }
-
-            //todo : select
         }
 
         private void Day_MouseDown(object sender, MouseButtonEventArgs e)
@@ -218,7 +218,7 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        void SelectDay(Day day, bool select = true)
+        void SelectDay(WeekDay day, bool select = true)
         {
             var set = GetSet();
             if (set != null)
@@ -226,7 +226,7 @@ namespace CarLeasingViewer.Controls
                 if (select)
                 {
                     var m = GetMonth();
-                    set.Sort(new DateTime(m.Year, m.Index, day.Index));
+                    set.Sort(new DateTime(m.Year, m.Number, day.Number));
                 }
                 else
                     ResetSorting();
@@ -253,14 +253,14 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        Day GetDay(object sender)
+        WeekDay GetDay(object sender)
         {
             var tb = sender as TextBlock;
 
             if (tb == null)
                 return null;
 
-            return tb.DataContext as Day;
+            return tb.DataContext as WeekDay;
         }
 
         LeasingSet GetSet()
@@ -274,22 +274,22 @@ namespace CarLeasingViewer.Controls
             return context?.Month;
         }
 
-        void HighLightDay(Day day, bool hightlight, bool multiselect = false)
+        void HighLightDay(WeekDay day, bool hightlight, bool multiselect = false)
         {
-            day.Selected = hightlight;
+            //day.Selected = hightlight;
 
             if (!multiselect)
                 m_selectingDays.Clear();
 
             if (hightlight)
-                m_selectingDays.Add(day.Index);
+                m_selectingDays.Add(day);
             else if (multiselect)
-                m_selectingDays.Remove(day.Index);
+                m_selectingDays.Remove(day);
 
             DownlightDays(day, multiselect);
         }
 
-        void DownlightDays(Day day = null, bool multiselect = false)
+        void DownlightDays(WeekDay day = null, bool multiselect = false)
         {
             if (day == null && !multiselect)
             {
@@ -307,14 +307,14 @@ namespace CarLeasingViewer.Controls
                 {
                     foreach (var otherDay in month.Days)
                     {
-                        if (m_selectingDays.Contains(otherDay.Index))
+                        if (m_selectingDays.Contains(otherDay))
                             continue;
                         else
                         {
                             if (otherDay.Selected)
                             {
-                                otherDay.Selected = false;
-                                m_selectingDays.Remove(otherDay.Index);
+                                //otherDay.Selected = false;
+                                m_selectingDays.Remove(otherDay);
                             }
                         }
                     }
@@ -329,8 +329,9 @@ namespace CarLeasingViewer.Controls
                         {
                             if (otherDay.Selected)
                             {
-                                otherDay.Selected = false;
-                                m_selectingDays.Remove(otherDay.Index);
+                                //otherDay.Selected = false;
+
+                                m_selectingDays.Remove(otherDay);
                             }
                         }
                     }
@@ -338,7 +339,7 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        bool HasHightlighted(Day day)
+        bool HasHightlighted(WeekDay day)
         {
             if (day == null)
                 return false;
@@ -449,7 +450,7 @@ namespace CarLeasingViewer.Controls
                 task.Cancel();
         }
 
-        void DateSorting(IEnumerable<Day> days)
+        void DateSorting(IEnumerable<WeekDay> days)
         {
 
             if (days == null)
@@ -467,14 +468,14 @@ namespace CarLeasingViewer.Controls
                 case 1:
                     var set = GetSet();
                     if(set != null)
-                        set.Sort(new DateTime(m.Year, m.Index, days.First().Index));
+                        set.Sort(days.First().Date);
                     break;
                 default:
                     set = GetSet();
-                    var dayIndexes = days.Select(d => d.Index);
+
                     if (set != null)
-                        set.Sort(new DateTime(m.Year, m.Index, dayIndexes.Min())
-                        , new DateTime(m.Year, m.Index, dayIndexes.Max()));
+                        set.Sort(days.Min().Date, days.Min().Date);
+
                     break;
             }
         }

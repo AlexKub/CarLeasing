@@ -6,7 +6,7 @@ namespace CarLeasingViewer.Log.Logers
     /// <summary>
     /// Логирование дней
     /// </summary>
-    public class DayLoger : TypeLoger<Day>
+    public class DayLoger : TypeLoger<WeekDay>
     {
         /// <summary>
         /// Только для служебных вызовов!!!
@@ -18,7 +18,7 @@ namespace CarLeasingViewer.Log.Logers
         /// <param name="set">Набор логеров для записи</param>
         public DayLoger(LogSet set) : base(set) { }
 
-        protected override StringBuilder AppendSubMessage(Day instance, StringBuilder sb, string indent = null)
+        protected override StringBuilder AppendSubMessage(WeekDay instance, StringBuilder sb, string indent = null)
         {
             if (sb == null)
                 sb = new StringBuilder();

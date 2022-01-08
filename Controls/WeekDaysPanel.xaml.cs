@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CarLeasingViewer.Controls
 {
@@ -15,7 +14,7 @@ namespace CarLeasingViewer.Controls
     /// </summary>
     public partial class WeekDaysPanel : UserControl
     {
-        List<Day> m_selectingDays = new List<Day>();
+        List<WeekDay> m_selectingDays = new List<WeekDay>();
         int m_selectingStartDay = 0;
 
         #region Dependency properties
@@ -52,16 +51,16 @@ namespace CarLeasingViewer.Controls
             });
         public Month Month { get { return (Month)GetValue(dp_Month); } set { SetValue(dp_Month, value); } }
 
-        public static DependencyProperty dp_SelectedDaysIn = DependencyProperty.Register(nameof(SelectedDaysIn), typeof(IEnumerable<Day>), typeof(WeekDaysPanel), new FrameworkPropertyMetadata()
+        public static DependencyProperty dp_SelectedDaysIn = DependencyProperty.Register(nameof(SelectedDaysIn), typeof(IEnumerable<WeekDay>), typeof(WeekDaysPanel), new FrameworkPropertyMetadata()
         {
-            DefaultValue = default(IEnumerable<Day>)
+            DefaultValue = default(IEnumerable<WeekDay>)
         ,
-            PropertyChangedCallback = (s, e) => { (s as WeekDaysPanel).SelectDays(e.NewValue as IEnumerable<Day>); }
+            PropertyChangedCallback = (s, e) => { (s as WeekDaysPanel).SelectDays(e.NewValue as IEnumerable<WeekDay>); }
         });
-        public IEnumerable<Day> SelectedDaysIn { get { return (IEnumerable<Day>)GetValue(dp_SelectedDaysIn); } set { SetValue(dp_SelectedDaysIn, value); } }
+        public IEnumerable<WeekDay> SelectedDaysIn { get { return (IEnumerable<WeekDay>)GetValue(dp_SelectedDaysIn); } set { SetValue(dp_SelectedDaysIn, value); } }
 
-        public static DependencyProperty dp_SelectedDaysOut = DependencyProperty.Register(nameof(SelectedDaysOut), typeof(IEnumerable<Day>), typeof(WeekDaysPanel), new FrameworkPropertyMetadata() { DefaultValue = default(IEnumerable<Day>) });
-        public IEnumerable<Day> SelectedDaysOut { get { return (IEnumerable<Day>)GetValue(dp_SelectedDaysOut); } set { SetValue(dp_SelectedDaysOut, value); } }
+        public static DependencyProperty dp_SelectedDaysOut = DependencyProperty.Register(nameof(SelectedDaysOut), typeof(IEnumerable<WeekDay>), typeof(WeekDaysPanel), new FrameworkPropertyMetadata() { DefaultValue = default(IEnumerable<WeekDay>) });
+        public IEnumerable<WeekDay> SelectedDaysOut { get { return (IEnumerable<WeekDay>)GetValue(dp_SelectedDaysOut); } set { SetValue(dp_SelectedDaysOut, value); } }
 
         public static DependencyProperty dp_TitleSearch = DependencyProperty.Register(nameof(TitleSearch), typeof(string), typeof(WeekDaysPanel), new FrameworkPropertyMetadata()
         {
@@ -86,11 +85,10 @@ namespace CarLeasingViewer.Controls
             DaysPanelWidth = DaysBorder.ActualWidth;
         }
 
-        public event Action<Day> DaySelected;
+        public event Action<WeekDay> DaySelected;
 
         public WeekDaysPanel()
         {
-
             InitializeComponent();
         }
 
@@ -132,7 +130,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (!namesFilled) //если имена дней ещё не заполнены
                     {
-                        dayNames[j] = Models.Day.GetShortName(day); //сохраняем имя для текущего дня
+                        dayNames[j] = day.GetShortName(); //сохраняем имя для текущего дня
 
                         dayI++;
 
@@ -157,9 +155,8 @@ namespace CarLeasingViewer.Controls
             if (set == null)
                 return;
 
-            set.ResetSorting();
-
-            //SelectedDaysOut = Enumerable.Empty<Day>();
+            set.SelectingContext.Reset();
+            //set.ResetSorting();
         }
 
         private void Day_MouseUp(object sender, MouseButtonEventArgs e)
@@ -172,35 +169,44 @@ namespace CarLeasingViewer.Controls
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
+                    var set = GetSet();
+
+                    if (set == null)
+                        return;
+
+                    if (day.Selected)
                     {
-                        //ничего не делаем, если зажат Shift/Ctrl - идёт мультиселект
-                        bool keyPressed = ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                                || (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-
-                        if (m_selectingStartDay == 0)
-                        {
-                            HighLightDay(day, false, keyPressed);
-
-                            SetEmptySelection();
-                        }
+                        if (day.IsUnSelecting)
+                            set.SelectingContext.Remove(day);
                         else
-                        {
-                            DaySelected?.Invoke(day);
-
-                            //if (m_selectingDays.Count > 0)
-                            SelectedDaysOut = m_selectingDays.ToList();
-
-                            var set = GetSet();
-                            if (set == null)
-                                return;
-
-                            if (IsMultiselecting())
-                                set.Sort(new DateTime(Month.Year, Month.Index, m_selectingDays.Min().Index), new DateTime(Month.Year, Month.Index, m_selectingDays.Max().Index));
-                            else
-                                set.Sort(new DateTime(Month.Year, Month.Index, day.Index));
-                            //Sort(SortManager.SelectByDay(m_baseCollection, day.Index));
-                        }
+                            set.SelectingContext.Append(day);
                     }
+
+                    day.IsUnSelecting = false;
+                    //ничего не делаем, если зажат Shift/Ctrl - идёт мультиселект
+                    //bool multiselectKeyPressed = ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    //        || (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
+                    //if (m_selectingStartDay == 0)
+                    //{
+                    //    HighLightDay(day, false, multiselectKeyPressed);
+                    //
+                    //    SetEmptySelection();
+                    //}
+                    //else
+                    //{
+                    //    DaySelected?.Invoke(day);
+                    //
+                    //    //if (m_selectingDays.Count > 0)
+                    //    SelectedDaysOut = m_selectingDays.ToList();
+                    //
+                    //    if (IsMultiselecting())
+                    //        set.SelectingContext.Select(m_selectingDays.Min(), m_selectingDays.Max());
+                    //    //set.Sort(m_selectingDays.Min().Date, m_selectingDays.Max().Date);
+                    //    else
+                    //        set.SelectingContext.Select(day);
+                    //    //set.Sort(day.Date);
+                    //}
                     break;
                 default:
                     break;
@@ -218,15 +224,30 @@ namespace CarLeasingViewer.Controls
 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (HasHightlighted(day))
-                    DownlightDays(multiselect: true);
-                else
-                    HighLightDay(day, true, true);
+                var set = GetSet();
 
-
-                //HighLightDay(day, true);
-                //m_selectingDays.Add(day);
+                if (set != null)
+                {
+                    set.SelectingContext.PreSelect(day);
+                }
             }
+            else
+            {
+                bool alreadyHightlighted = day.Selected || day.Hightlighted;
+
+                if (!alreadyHightlighted)
+                    day.Hightlighted = true;
+            }
+        }
+
+        private void Day_MouseLeave(object sender, MouseEventArgs e)
+        {
+            var day = GetDay(sender);
+
+            if (day == null)
+                return;
+
+            day.Hightlighted = false;
         }
 
         private void Day_MouseDown(object sender, MouseButtonEventArgs e)
@@ -238,36 +259,67 @@ namespace CarLeasingViewer.Controls
 
             if (e.ChangedButton == MouseButton.Left)
             {
-                m_selectingStartDay = m_selectingStartDay == day.Index ? 0 : day.Index;
+                var selectingContext = GetSet()?.SelectingContext;
 
-                //изменяем подсветку для Дня при клике
-                //  кликнули первый раз - подсветили
-                //  кликнули повторно - убрали
-                //if (!HasHightlighted(day))
-                //{
-                bool isMultyselecting = ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                || (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+                if (selectingContext == null)
+                    return;
 
-                HighLightDay(day, true, isMultyselecting);
+                if (day.Selected)
+                {
+                    if (selectingContext.Count > 1)
+                    {
+                        if (!IsMultiSelectKeyPressed())
+                        {
+                            selectingContext.PreReset();
+                        }
 
-                DaySelected?.Invoke(day);
-                //NameSearchText = string.Empty;
+                        selectingContext.PreSelect(day);
+                    }
+                    else
+                        day.IsUnSelecting = true;
+                }
+                else
+                {
+                    if (!IsMultiSelectKeyPressed())
+                    {
+                        selectingContext.PreReset();
+                    }
 
-                Keyboard.ClearFocus();
+                    selectingContext.PreSelect(day);
+                }
 
-                //}
+                //bool isMultiSelecting = ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                //                            || (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+                //
+                //m_selectingStartDay = m_selectingStartDay == day.Index ? 0 : day.Index;
+                //
+                ////изменяем подсветку для Дня при клике
+                ////  кликнули первый раз - подсветили
+                ////  кликнули повторно - убрали
+                ////if (!HasHightlighted(day))
+                ////{
+                //
+                //
+                //HighLightDay(day, true, isMultiSelecting);
+                //
+                //DaySelected?.Invoke(day);
+                ////NameSearchText = string.Empty;
+                //
+                //Keyboard.ClearFocus();
+                //
+                ////}
             }
             else if (e.ChangedButton == MouseButton.Right)
             {
-                DownlightDays();
+                //DownlightDays();
 
                 SetEmptySelection();
             }
         }
 
-        void HighLightDay(Day day, bool hightlight, bool multiselect = false)
+        void HighLightDay(WeekDay day, bool hightlight, bool multiselect = false)
         {
-            day.Selected = hightlight;
+            //day.Selected = hightlight;
 
             if (!multiselect)
                 m_selectingDays.Clear();
@@ -280,14 +332,14 @@ namespace CarLeasingViewer.Controls
             DownlightDays(day, multiselect);
         }
 
-        Day GetDay(object sender)
+        WeekDay GetDay(object sender)
         {
             var tb = sender as TextBlock;
 
             if (tb == null)
                 return null;
 
-            return tb.DataContext as Day;
+            return tb.DataContext as WeekDay;
         }
 
         LeasingSet GetSet()
@@ -295,7 +347,7 @@ namespace CarLeasingViewer.Controls
             return (DataContext as MonthHeaderModel)?.OwnerSet;
         }
 
-        void DownlightDays(Day day = null, bool multiselect = false)
+        void DownlightDays(WeekDay day = null, bool multiselect = false)
         {
             if (day == null && !multiselect)
             {
@@ -324,7 +376,7 @@ namespace CarLeasingViewer.Controls
                         if (otherDay.Selected)
                         {
                             //снимаем подсветку
-                            otherDay.Selected = false;
+                            //otherDay.Selected = false;
                             m_selectingDays.Remove(otherDay);
                         }
                     }
@@ -333,17 +385,21 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        bool HasHightlighted(Day day)
+        bool HasHightlighted(WeekDay day)
         {
             if (day == null)
                 return false;
 
-            return day.Selected;
+            return day.Selected || day.Hightlighted;
         }
 
         bool IsMultiselecting() { return m_selectingDays.Count > 1; }
+        bool IsMultiSelectKeyPressed()
+        {
+            return ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) || ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control);
+        }
 
-        void SelectDays(IEnumerable<Day> days)
+        void SelectDays(IEnumerable<WeekDay> days)
         {
             if (days == null)
                 return;
@@ -374,6 +430,7 @@ namespace CarLeasingViewer.Controls
                     Month = context.Month;
             }
         }
+
 
     }
 }

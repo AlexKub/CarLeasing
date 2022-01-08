@@ -195,8 +195,8 @@ namespace CarLeasingViewer.Controls
                 //и простановка индекса ткеущего выбранного месяца
                 if (p == Period.From)
                 {
-                    var fromMonthIndex = FromMonth.Index;
-                    var newIndex = FromMonthes.IndexOf(FromMonth, (m) => m.Index == fromMonthIndex);
+                    var fromMonthIndex = FromMonth.Number;
+                    var newIndex = FromMonthes.IndexOf(FromMonth, (m) => m.Number == fromMonthIndex);
 
                     if (newIndex != FromMonthIndex)
                         FromMonthIndex = newIndex;
@@ -204,8 +204,8 @@ namespace CarLeasingViewer.Controls
                 else if (p == Period.To)
                 {
 
-                    var toMonthIndex = ToMonth.Index;
-                    var newIndex = ToMonthes.IndexOf(ToMonth, (m) => m.Index == toMonthIndex);
+                    var toMonthIndex = ToMonth.Number;
+                    var newIndex = ToMonthes.IndexOf(ToMonth, (m) => m.Number == toMonthIndex);
 
                     if (newIndex != ToMonthIndex)
                         ToMonthIndex = newIndex;

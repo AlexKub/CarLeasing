@@ -74,8 +74,10 @@
     <Compile Include="Controls\LeasingChartManagers\TooltipManager.cs" />
     <Compile Include="Converters\ColumnWidthConverter.cs" />
     <Compile Include="Converters\ItemHeightConverter.cs" />
+    <Compile Include="Converters\WeekDateTooltipConverter.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
+    <Compile Include="Models\Extensions\DayOfWeekExtensions.cs" />
     <Compile Include="Models\LeasingElementID_Manager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasGridDrawManager.cs" />
@@ -142,6 +144,7 @@
     <Compile Include="Models\LeasingSet.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
+    <Compile Include="Models\SelectingContext.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
     <Compile Include="TabContentExtension.cs" />
@@ -172,7 +175,7 @@
     <Compile Include="Models\Leasing.cs" />
     <Compile Include="Models\Car.cs" />
     <Compile Include="Models\CarBusiness.cs" />
-    <Compile Include="Models\Day.cs" />
+    <Compile Include="Models\WeekDay.cs" />
     <Compile Include="Models\GridMap.cs" />
     <Compile Include="Models\Month.cs" />
     <Compile Include="Models\Monthes.cs" />

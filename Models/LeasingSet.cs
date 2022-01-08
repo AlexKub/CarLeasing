@@ -59,6 +59,28 @@ namespace CarLeasingViewer.Models
         /// </summary>
         bool m_baseSetted = true;
 
+        /// <summary>
+        /// Контекст фильтрации
+        /// </summary>
+        readonly SelectingContext m_selectingContext = new SelectingContext();
+
+        /// <summary>
+        /// При изменении набора месяцев
+        /// </summary>
+        public event LeasingSetEvent MonthesChanged;
+        /// <summary>
+        /// При изменении набора Машин
+        /// </summary>
+        public event LeasingSetEvent CarsChanged;
+        /// <summary>
+        /// При изменении набора Комментариев
+        /// </summary>
+        public event LeasingSetEvent CommentsChanged;
+        /// <summary>
+        /// Контекст фильтрации
+        /// </summary>
+        public SelectingContext SelectingContext { get => m_selectingContext; }
+
         private int m_RowsCount;
         /// <summary>
         /// Возвращает или задаёт Количество отрисовываемых строк 
@@ -184,28 +206,25 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public IReadOnlyList<CarCommentModel> Comments { get { return m_Comments; } set { m_Comments = value; CommentsChanged?.Invoke(new LeasingSetEventArgs(this)); OnPropertyChanged(); } }
 
-        /// <summary>
-        /// При изменении набора месяцев
-        /// </summary>
-        public event LeasingSetEvent MonthesChanged;
-        /// <summary>
-        /// При изменении набора Машин
-        /// </summary>
-        public event LeasingSetEvent CarsChanged;
-        /// <summary>
-        /// При изменении набора Комментариев
-        /// </summary>
-        public event LeasingSetEvent CommentsChanged;
+        #region ctors
 
+        /// <summary>
+        /// Общий набор Аренд авто для LeasingChart
+        /// </summary>
         public LeasingSet()
         {
-
+            SubscribeSelectingContext(true, m_selectingContext);
         }
 
-        public LeasingSet(Controls.LeasingChart chart)
+        /// <summary>
+        /// Общий набор Аренд авто для LeasingChart
+        /// </summary>
+        public LeasingSet(Controls.LeasingChart chart) : this()
         {
             Chart = chart;
         }
+
+        #endregion
 
         #region Перевод из одной модели данных в текущую
 
@@ -450,19 +469,23 @@ namespace CarLeasingViewer.Models
             Chart.Draw();
         }
 
+        #endregion
+
         public void Dispose()
         {
+            SubscribeSelectingContext(false, m_selectingContext);
+
             if (Monthes != null)
+            {
                 foreach (var monthHeader in Monthes)
                 {
                     monthHeader.Dispose();
                 }
+            }
 
             if (Chart != null)
                 Chart = null;
         }
-
-        #endregion
 
         string DebugDisplay()
         {
@@ -521,6 +544,39 @@ namespace CarLeasingViewer.Models
                     Chart.Draw();
 
                 m_baseSetted = true;
+            }
+        }
+
+        void SubscribeSelectingContext(bool subscribe, SelectingContext context)
+        {
+            if (subscribe)
+            {
+                context.OnSelectionFinished += OnSelectionFinished;
+            }
+            else
+            {
+                context.OnSelectionFinished -= OnSelectionFinished;
+            }
+        }
+
+        void OnSelectionFinished(SelectingContext context)
+        {
+            if (context.IsEmpty)
+                ResetSorting();
+            else
+            {
+                var selected = context.SelectedDays;
+
+                if (selected.Count == 0)
+                    ResetSorting();
+                else if (selected.Count == 1)
+                {
+                    Sort(selected.First().Date);
+                }
+                else
+                {
+                    Sort(selected.First().Date, selected.Last().Date);
+                }
             }
         }
 
