@@ -144,7 +144,7 @@
     <Compile Include="Models\LeasingSet.cs" />
     <Compile Include="Models\MonthHeaderModel.cs" />
     <Compile Include="Models\MonthLeasing.cs" />
-    <Compile Include="Models\SelectingContext.cs" />
+    <Compile Include="Models\SelectingService.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
     <Compile Include="TabContentExtension.cs" />

@@ -62,7 +62,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Контекст фильтрации
         /// </summary>
-        readonly SelectingContext m_selectingContext = new SelectingContext();
+        readonly SelectingService m_selectingContext = new SelectingService();
 
         /// <summary>
         /// При изменении набора месяцев
@@ -79,7 +79,7 @@ namespace CarLeasingViewer.Models
         /// <summary>
         /// Контекст фильтрации
         /// </summary>
-        public SelectingContext SelectingContext { get => m_selectingContext; }
+        public SelectingService SelectingContext { get => m_selectingContext; }
 
         private int m_RowsCount;
         /// <summary>
@@ -547,7 +547,7 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        void SubscribeSelectingContext(bool subscribe, SelectingContext context)
+        void SubscribeSelectingContext(bool subscribe, SelectingService context)
         {
             if (subscribe)
             {
@@ -559,7 +559,7 @@ namespace CarLeasingViewer.Models
             }
         }
 
-        void OnSelectionFinished(SelectingContext context)
+        void OnSelectionFinished(SelectingService context)
         {
             if (context.IsEmpty)
                 ResetSorting();

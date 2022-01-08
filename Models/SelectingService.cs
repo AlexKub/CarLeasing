@@ -7,20 +7,20 @@ using System.Linq;
 namespace CarLeasingViewer.Models
 {
     /// <summary>
-    /// Контекст фильтрации
+    /// Сервис выбора дней
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DebugDisplay()}")]
-    public class SelectingContext : ViewModelBase, IDisposable
+    public class SelectingService : ViewModelBase, IDisposable
     {
         readonly List<WeekDay> m_daysToRemove = new List<WeekDay>();
         /// <summary>
         /// При изменении выбора
         /// </summary>
-        public event Action<SelectingContext> OnSelectionChanged;
+        public event Action<SelectingService> OnSelectionChanged;
         /// <summary>
         /// Множественный выбор закончился
         /// </summary>
-        public event Action<SelectingContext> OnSelectionFinished;
+        public event Action<SelectingService> OnSelectionFinished;
 
         /// <summary>
         /// Флаг наличия фильтра по дням
