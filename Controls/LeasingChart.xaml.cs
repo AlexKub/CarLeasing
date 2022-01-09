@@ -468,7 +468,7 @@ namespace CarLeasingViewer.Controls
                 var colCount = DayCount + 1;
                 for (int i = 1; i < colCount; i++)
                 {
-                    dv = m_gridM.DrawColumn(i);
+                    dv = m_gridM.DrawColumn(i, rowsI?.Count() ?? 0);
                     if (dv != null)
                         if (!m_children.Contains(dv))
                             m_children.Add(dv);

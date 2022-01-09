@@ -155,7 +155,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
-        public DrawingVisual DrawColumn(int index)
+        public DrawingVisual DrawColumn(int index, int rowCount)
         {
             DrawingVisual dv = null;
             if (index > 0)
@@ -177,7 +177,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (offset > 0d && Canvas.ActualHeight > 0d)
                 {
                     ld.Line = new Line();
-                    dv = DrawColumn(offset, ld);
+                    dv = DrawColumn(offset, ld, rowCount);
                     ld.Visual = dv;
                 }
             }
@@ -185,20 +185,22 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
-        DrawingVisual DrawColumn(double offset, LineData ld)
+        DrawingVisual DrawColumn(double offset, LineData ld, int rowCount)
         {
+            var canvasHegiht = rowCount * RowHeight;
+
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
             GuidelineSet guideSet = new GuidelineSet();
             guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
             guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
             guideSet.GuidelinesY.Add(0d + m_HalfPenWidth);
-            guideSet.GuidelinesY.Add(Canvas.ActualHeight + m_HalfPenWidth);
+            guideSet.GuidelinesY.Add(canvasHegiht + m_HalfPenWidth);
 
             var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
             var dc = dv.RenderOpen();
 
             dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, Canvas.ActualHeight));
+            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, canvasHegiht));
             dc.Pop();
             dc.Close();
 
