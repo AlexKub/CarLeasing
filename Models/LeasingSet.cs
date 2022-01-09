@@ -375,22 +375,77 @@ namespace CarLeasingViewer.Models
             if (rows != null && rows.Count() > 0)
             {
                 var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+
+                var splittedPreiods = new Dictionary<int, TimePeriod>();
+
+                DateTime monthStart = dateStart;
+                DateTime monthEnd = dateStart;
+
+                for (int i = 0; i <= dateEnd.Month - dateStart.Month; i++)
+                {
+                    monthEnd = monthStart.GetEndOfMonth();
+
+                    if (monthEnd > dateEnd)
+                    {
+                        monthEnd = dateEnd;
+                    }
+
+                    splittedPreiods.Add(monthStart.Month, new TimePeriod { Start = monthStart, End = monthEnd });
+
+                    monthStart = monthEnd.Date.AddDays(1);
+                }
+
                 foreach (var row in rows)
                 {
                     if (row.Bars.Count > 0)
                     {
-                        foreach (var bar in row.Bars)
+                        if (splittedPreiods.Count == 1)
                         {
-                            if (bar.Model == null || bar.Model.Leasing == null)
-                                continue;
+                            foreach (var bar in row.Bars)
+                            {
+                                if (bar.Model == null || bar.Model.Leasing == null)
+                                    continue;
 
-                            if (bar.Model.Leasing.DateStart > dateEnd)
-                                break;
+                                if (bar.Model.Leasing.DateStart > dateEnd)
+                                    break;
 
-                            if (bar.Model.Leasing.Cross(dateStart, dateEnd))
+                                if (bar.Model.Leasing.Cross(dateStart, dateEnd))
+                                {
+                                    sorted.Add(row);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var bar in row.Bars)
+                            {
+                                if (bar.Model == null || bar.Model.Leasing == null)
+                                    continue;
+
+                                if (bar.Model.Leasing.DateStart > dateEnd)
+                                    break;
+
+                                foreach (var item in splittedPreiods)
+                                {
+                                    if (bar.Model.Leasing.Cross(item.Value.Start, item.Value.End))
+                                    {
+                                        item.Value.Sorted = true;
+                                    }
+                                }
+
+                                if (splittedPreiods.All(i => i.Value.Sorted))
+                                    break;
+                            }
+
+                            if (splittedPreiods.All(i => i.Value.Sorted))
                             {
                                 sorted.Add(row);
-                                break;
+                            }
+
+                            foreach (var item in splittedPreiods)
+                            {
+                                item.Value.Sorted = false;
                             }
                         }
                     }
@@ -627,6 +682,15 @@ namespace CarLeasingViewer.Models
             {
                 return list == null ? "NULL" : list.Count.ToString();
             }
+        }
+
+        class TimePeriod
+        {
+            public DateTime Start { get; set; }
+
+            public DateTime End { get; set; }
+
+            public bool Sorted { get; set; }
         }
     }
 }

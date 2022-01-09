@@ -90,9 +90,15 @@ namespace CarLeasingViewer.Models
         public int CompareTo(WeekDay other)
         {
             if (other == null)
+                return -1;
+
+            if (other.Index == this.Index)
+                return 0;
+
+            if (other.Index > this.Index)
                 return 1;
 
-            return this.Index.CompareTo(other.Index);
+            return -1;
         }
 
         public override int GetHashCode() => Index;

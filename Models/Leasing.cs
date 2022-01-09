@@ -70,7 +70,7 @@ namespace CarLeasingViewer.Models
 
         string DebugDisplay()
         {
-            return string.IsNullOrEmpty(Title) ? "EMPTY TITLE" : Title;
+            return (string.IsNullOrEmpty(Title) ? "EMPTY TITLE" : Title) + $" | {DateStart.ToString("dd-MM-yyyy")} - {DateEnd.ToString("dd-MM-yyyy")}";
         }
     }
 

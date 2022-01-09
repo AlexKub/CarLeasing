@@ -31,11 +31,11 @@ namespace CarLeasingViewer.Models
         /// </summary>
         public int Count => m_SelectedDays.Count;
 
-        private ObservableCollection<WeekDay> m_SelectedDays = new ObservableCollection<WeekDay>();
+        private SortedSet<WeekDay> m_SelectedDays = new SortedSet<WeekDay>();
         /// <summary>
         /// Возвращает или задаёт 
         /// </summary>
-        public ObservableCollection<WeekDay> SelectedDays
+        public SortedSet<WeekDay> SelectedDays
         {
             get { return m_SelectedDays; }
             set
@@ -177,7 +177,7 @@ namespace CarLeasingViewer.Models
             {
                 ClearSelectedDays();
 
-                SelectedDays = new ObservableCollection<WeekDay>();
+                SelectedDays = new SortedSet<WeekDay>();
 
                 SelectionChanged();
             }
@@ -196,7 +196,7 @@ namespace CarLeasingViewer.Models
 
         void SelectionChanged()
         {
-            SelectedDays = new ObservableCollection<WeekDay>(m_SelectedDays);
+            SelectedDays = new SortedSet<WeekDay>(m_SelectedDays);
 
             if (OnSelectionChanged != null)
                 OnSelectionChanged.Invoke(this);

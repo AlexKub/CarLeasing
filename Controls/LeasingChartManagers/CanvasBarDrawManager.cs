@@ -429,7 +429,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             string DebugerDisplay()
             {
-                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.CarName);
+                return Index.ToString() + " | " + (Model == null ? "NO_MODEL" : Model.CarName) + " | " + (Model?.Leasing == null ? "NO_LEASING" : ( $"{Model.Leasing.Title} {Model.Leasing.DateStart.ToString("dd-MM-yyyy")} - {Model.Leasing.DateEnd.ToString("dd - MM - yyyy")}"));
             }
 
             /// <summary>

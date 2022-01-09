@@ -77,6 +77,7 @@
     <Compile Include="Converters\WeekDateTooltipConverter.cs" />
     <Compile Include="Interfaces\IHightlightable.cs" />
     <Compile Include="Log\SourcePaameter.cs" />
+    <Compile Include="Models\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Models\Extensions\DayOfWeekExtensions.cs" />
     <Compile Include="Models\LeasingElementID_Manager.cs" />
     <Compile Include="Controls\LeasingChartManagers\CanvasBarDrawManager.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Models\SelectingService.cs" />
     <Compile Include="Models\StatisticItemModel.cs" />
     <Compile Include="Models\StatisticModel.cs" />
+    <Compile Include="SortService.cs" />
     <Compile Include="TabContentExtension.cs" />
     <Compile Include="Log\ILoger.cs" />
     <Compile Include="Log\ILogParameter.cs" />
