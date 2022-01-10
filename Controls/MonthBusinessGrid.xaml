@@ -124,10 +124,11 @@
 
                     <!-- Линии сетки -->
                     <controls:LineGrid Margin="0 2 0 0" 
+                                       Panel.ZIndex="0"
                                        Rows="{Binding ElementName=ItemsListView, Path=RowHeights}"
                                        Month="{Binding Month}"
                                        LineWidth="1"
-                                       LineBrush="{StaticResource LightBorderBrush}" Panel.ZIndex="0"
+                                       LineBrush="{StaticResource LightBorderBrush}" 
                                        Visibility="{Binding CarBusiness, Converter={StaticResource GridVisibilityConverter}}"
                                        />
 

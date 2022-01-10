@@ -102,7 +102,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
         DrawingVisual DrawBorder(BarData bd)
         {
-            var startDay = bd.Model.Leasing.DateStart;
+            var leasing = bd.Model.Leasing;
+            var startDay = leasing.DateStart;
 
             bool drawGeo = false;
             foreach (var item in Canvas.RowManager[bd.Index].Bars)
@@ -115,7 +116,18 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                     }
             }
 
-            var brush = bd.Model.Leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
+            var brush = leasing.Blocked ? BlockedBarBrush : BackgroundBrush;
+
+            if (startDay.Day == 1)
+            {
+                var firstSelectedMonth = App.CurrentSet.Monthes.FirstOrDefault()?.Month;
+                
+                if (firstSelectedMonth != null && leasing.CurrentMonth != firstSelectedMonth)
+                {
+                    bd.HorizontalOffset += 1d;
+                }
+            }
+
             var dv = new DrawingVisual();
             using (var dc = dv.RenderOpen())
             {

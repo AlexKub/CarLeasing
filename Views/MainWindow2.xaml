@@ -207,6 +207,7 @@
                                            Width="{Binding ElementName=MonthesScrollViewer, Path=ExtentWidth}"
                                            Height="{Binding ElementName=CarColumnScroll, Path=ExtentHeight}"
                                            LineBrush="{StaticResource LightBorderBrush}" 
+                                           LineBoldBrush="{StaticResource BoldBorderBrush}"
                                            DayCount="{Binding DaysCount}"
                                            Leasings="{Binding Leasings}"
                                            DayColumnWidth="{StaticResource DayColumnWidth}"

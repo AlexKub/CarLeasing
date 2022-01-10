@@ -22,6 +22,9 @@
 
     <!-- Кисть заливки дней при наводке мышью -->
     <SolidColorBrush x:Key="MouseOverDayBrush" Color="DimGray" PresentationOptions:Freeze="True" />
+
+    <!-- Кисть для жирных линий -->
+    <SolidColorBrush x:Key="BoldBorderBrush" Color="DimGray" PresentationOptions:Freeze="True" />
     
     <!-- Заливка для полосок Занятости -->
     <RadialGradientBrush x:Key="OldGradientBarBrush" Center="0.5,0.5" RadiusX="1.8" RadiusY="2" PresentationOptions:Freeze="True">

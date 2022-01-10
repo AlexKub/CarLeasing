@@ -105,7 +105,7 @@ namespace CarLeasingViewer.Controls
                 var newVal = ((double)e.NewValue);
                 if (_this.m_gridM != null)
                 {
-                    _this.m_gridM.ColumnWidth = newVal + 1; //+ 1: захардкожена ширина границы у колонки
+                    _this.m_gridM.ColumnWidth = newVal + 1d; //+ 1: захардкожена ширина границы у колонки
                 }
                 if (_this.m_barM != null)
                 {
@@ -139,6 +139,28 @@ namespace CarLeasingViewer.Controls
         /// Кисть для линий сетки
         /// </summary>
         public Brush LineBrush { get { return (Brush)GetValue(dp_LineBrush); } set { SetValue(dp_LineBrush, value); } }
+
+        public static DependencyProperty dp_LineBoldBrush = DependencyProperty.Register(nameof(LineBoldBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
+        {
+            DefaultValue = default(Brush),
+            PropertyChangedCallback = (s, e) =>
+            {
+                var _this = s as LeasingChart;
+
+                if (_this == null)
+                    return;
+
+                var newVal = e.NewValue as Brush;
+                if (_this.m_gridM != null)
+                {
+                    _this.m_gridM.LineBoldBrush = newVal;
+                }
+            }
+        });
+        /// <summary>
+        /// Кисть для толстых линий сетки
+        /// </summary>
+        public Brush LineBoldBrush { get { return (Brush)GetValue(dp_LineBoldBrush); } set { SetValue(dp_LineBoldBrush, value); } }
 
         public static DependencyProperty dp_BarBrush = DependencyProperty.Register(nameof(BarBrush), typeof(Brush), typeof(LeasingChart), new FrameworkPropertyMetadata()
         {
@@ -448,7 +470,7 @@ namespace CarLeasingViewer.Controls
         /// </summary>
         public void RedrawGrid(IEnumerable<int> rowsI = null)
         {
-            if(rowsI == null)
+            if (rowsI == null)
                 rowsI = Leasings.Select(l => l.RowIndex).Distinct().OrderBy(i => i);
 
             //для случаев, когда меняется размер контрола, а сетка остаётся прежней
@@ -466,9 +488,32 @@ namespace CarLeasingViewer.Controls
                 }
                 //отрисовка колонок сетки
                 var colCount = DayCount + 1;
+
+                var monthDayCounts = LeasingSet.Monthes?.Select(m => m.Month.DayCount).ToList() ?? new List<int>();
+
+                var monthIndex = 0;
+                var monthBorderIndex = monthDayCounts.Count > 0 ? monthDayCounts[monthIndex] : 0;
+
+                bool boldLine = false;
                 for (int i = 1; i < colCount; i++)
                 {
-                    dv = m_gridM.DrawColumn(i, rowsI?.Count() ?? 0);
+                    if (i == monthBorderIndex)
+                    {
+                        boldLine = true;
+
+                        monthIndex++;
+
+                        if (monthDayCounts.Count > monthIndex)
+                        {
+                            monthBorderIndex = monthBorderIndex + monthDayCounts[monthIndex];
+                        }
+                    }
+                    else
+                    {
+                        boldLine = false;
+                    }
+
+                    dv = m_gridM.DrawColumn(i, rowsI?.Count() ?? 0, boldLine);
                     if (dv != null)
                         if (!m_children.Contains(dv))
                             m_children.Add(dv);

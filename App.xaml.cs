@@ -14,6 +14,8 @@ namespace CarLeasingViewer
         static LogSet m_loger = LogManager.GetDefaultLogSet<App>();
         public static LogSet Loger { get { return m_loger; } }
 
+        public static LeasingSet CurrentSet { get; set; }
+
         public static IDictionary<int, IEnumerable<Month>> AvailableMonthes { get; private set; } = new Dictionary<int, IEnumerable<Month>>();
 
         public static IEnumerable<Month> AvailableMonthesAll

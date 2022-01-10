@@ -109,25 +109,6 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (row != null)
                 return row.RowLayout;
 
-            //var rowIndex = (int)(p.Y / RowHeight) - 1;
-            //
-            //if (rowIndex < 0)
-            //    rowIndex = 0;
-            //
-            //if (rowIndex < m_indexes.Count)
-            //{
-            //    if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-            //        return m_bars[m_indexes[rowIndex]];
-            //}
-            //else
-            //    return null;
-            //
-            //rowIndex++;
-            //
-            //if (rowIndex < m_indexes.Count)
-            //    if (m_bars[m_indexes[rowIndex]].Rectangle.Contains(p))
-            //        return m_bars[m_indexes[rowIndex]];
-
             return null;
         }
 

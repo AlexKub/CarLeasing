@@ -126,6 +126,8 @@ namespace CarLeasingViewer.ViewModels
                     break;
             }
 
+            App.CurrentSet = set;
+
             if (m_Window != null)
                 m_Window.LeasingChart.LeasingSet = set;
 

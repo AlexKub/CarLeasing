@@ -10,10 +10,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
     public class CanvasGridDrawManager : CanvasDrawManager
     {
         const double LineWidth = 1d;
+        const double LineBoldWidth = 2d;
         double m_HalfPenWidth;
 
         SortedDictionary<int, LineData> m_rowsData = new SortedDictionary<int, LineData>();
         SortedDictionary<int, LineData> m_columnsData = new SortedDictionary<int, LineData>();
+
+        Pen m_pen;
+        Pen m_BoldPen;
 
         Brush m_lineBrush;
         /// <summary>
@@ -27,7 +31,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 m_lineBrush = value;
 
                 m_pen = new Pen();
-                m_pen.Brush = LineBrush;
+                m_pen.Brush = m_lineBrush;
                 m_pen.Thickness = LineWidth;
                 m_pen.Freeze();
 
@@ -35,11 +39,28 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
+        Brush m_lineBoldBrush;
+        /// <summary>
+        /// Кисть для толстых линий
+        /// </summary>
+        public Brush LineBoldBrush
+        {
+            get { return m_lineBoldBrush; }
+            set
+            {
+                m_lineBoldBrush = value;
+
+                m_BoldPen = new Pen();
+                m_BoldPen.Brush = m_lineBoldBrush;
+                m_BoldPen.Thickness = LineBoldWidth;
+                m_BoldPen.Freeze();
+            }
+        }
+
         public double RowHeight { get; set; }
 
         public double ColumnWidth { get; set; }
 
-        Pen m_pen;
         /// <summary>
         /// Отрисовка строки
         /// </summary>
@@ -155,14 +176,17 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             }
         }
 
-        public DrawingVisual DrawColumn(int index, int rowCount)
+        public DrawingVisual DrawColumn(int index, int rowsCount, bool bold = false)
         {
             DrawingVisual dv = null;
             if (index > 0)
             {
-                LineData ld = null;
-
                 var offset = ColumnWidth * index;
+
+                if (bold)
+                    offset += 1d;
+
+                LineData ld = null;
 
                 if (m_columnsData.ContainsKey(index))
                     ld = m_columnsData[index];
@@ -177,7 +201,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
                 if (offset > 0d && Canvas.ActualHeight > 0d)
                 {
                     ld.Line = new Line();
-                    dv = DrawColumn(offset, ld, rowCount);
+                    dv = DrawColumn(offset, ld, rowsCount, bold);
                     ld.Visual = dv;
                 }
             }
@@ -185,26 +209,30 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             return dv;
         }
 
-        DrawingVisual DrawColumn(double offset, LineData ld, int rowCount)
+        DrawingVisual DrawColumn(double offset, LineData ld, int rowsCount, bool bold = false)
         {
-            var canvasHegiht = rowCount * RowHeight;
+            var canvas_height = rowsCount * RowHeight;
 
             //SnapToDevisePixels. See https://www.wpftutorial.net/DrawOnPhysicalDevicePixels.html
-            GuidelineSet guideSet = new GuidelineSet();
-            guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
-            guideSet.GuidelinesX.Add(offset + m_HalfPenWidth);
-            guideSet.GuidelinesY.Add(0d + m_HalfPenWidth);
-            guideSet.GuidelinesY.Add(canvasHegiht + m_HalfPenWidth);
+            var guideSet = new GuidelineSet();
 
-            var dv = ld.Visual == null ? new DrawingVisual() : ld.Visual;
-            var dc = dv.RenderOpen();
+            var pen_width = bold ? m_HalfPenWidth * 2 : m_HalfPenWidth;
 
-            dc.PushGuidelineSet(guideSet);
-            dc.DrawLine(m_pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, canvasHegiht));
-            dc.Pop();
-            dc.Close();
+            guideSet.GuidelinesX.Add(offset + pen_width);
+            guideSet.GuidelinesX.Add(offset + pen_width);
+            guideSet.GuidelinesY.Add(0d + pen_width);
+            guideSet.GuidelinesY.Add(canvas_height + pen_width);
 
-            return dv;
+            var drawingVisual = ld.Visual == null ? new DrawingVisual() : ld.Visual;
+            var drawingContext = drawingVisual.RenderOpen();
+
+            var pen = bold ? m_BoldPen : m_pen;
+            drawingContext.PushGuidelineSet(guideSet);
+            drawingContext.DrawLine(pen, new System.Windows.Point(offset, 0d), new System.Windows.Point(offset, canvas_height));
+            drawingContext.Pop();
+            drawingContext.Close();
+
+            return drawingVisual;
         }
 
         public CanvasGridDrawManager(LeasingChart canvas) : base(canvas) { }
