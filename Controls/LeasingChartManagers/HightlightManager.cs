@@ -15,7 +15,8 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// Ссылка на текущий график
         /// </summary>
         LeasingChart m_chart;
-        List<Row> m_hightlighted = new List<Row>();
+        List<Row> m_hightlightedRows = new List<Row>();
+        List<Column> m_hightlightedColumns = new List<Column>();
 
         /// <summary>
         /// Подсветка при наведении мышью
@@ -33,14 +34,14 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
         /// <summary>
         /// Подсвеченные строки
         /// </summary>
-        public IReadOnlyList<Row> HightlightedRows { get { return m_hightlighted; } }
+        public IReadOnlyList<Row> HightlightedRows { get { return m_hightlightedRows; } }
 
         /// <summary>
         /// Подсветка строки
         /// </summary>
         /// <param name="index">Индекс строки</param>
         /// <param name="action">Действие по подсветке</param>
-        public void Hightlight(int index, HightlightAction action)
+        public void HightlightRow(int index, HightlightAction action)
         {
             var row = GetRow(index);
 
@@ -87,10 +88,10 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             if (index >= 0)
             {
                 //выбираем строку
-                Hightlight(index, HightlightAction.Select);
+                HightlightRow(index, HightlightAction.Select);
             }
             else
-                Hightlight(index, HightlightAction.None);
+                HightlightRow(index, HightlightAction.None);
         }
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
 
             if (!row.RowLayout.Hightlighted)
                 //подсвечиваем как при наведении мышью
-                Hightlight(index, HightlightAction.Hightlight);
+                HightlightRow(index, HightlightAction.Hightlight);
         }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             {
                 var row = GetRow(index);
                 if (!(row.HightlightState == HightlightAction.Select))
-                    Hightlight(index, HightlightAction.Hightlight);
+                    HightlightRow(index, HightlightAction.Hightlight);
             }
             else
                 Clear();
@@ -160,16 +161,38 @@ namespace CarLeasingViewer.Controls.LeasingChartManagers
             var oldState = row.HightlightState;
             row.HightlightState = HightlightAction.None;
             row.Selected = false;
-            m_hightlighted.Remove(row);
+            m_hightlightedRows.Remove(row);
 
             if (oldState == HightlightAction.Select)
                 m_chart.RowManager.CallRowSelectionChanged(row);
         }
 
+        /// <summary>
+        /// Снятие подсветки с колонки
+        /// </summary>
+        /// <param name="column">Строка</param>
+        void UnLightColumn(Column column)
+        {
+            column.Hightlight(DefaultBrush);
+            var oldState = column.HightlightState;
+            column.HightlightState = HightlightAction.None;
+            column.Selected = false;
+            m_hightlightedColumns.Remove(column);
+
+            if (oldState == HightlightAction.Select)
+                m_chart.ColumnManager.CallColumnSelectionChanged(column);
+        }
+
         void HightlightRow(Row row, Brush brush)
         {
             row.Hightlight(brush);
-            m_hightlighted.Add(row);
+            m_hightlightedRows.Add(row);
+        }
+
+        void HightlightColumn(Column column, Brush brush)
+        {
+            column.Hightlight(brush);
+            m_hightlightedColumns.Add(column);
         }
 
         /// <summary>

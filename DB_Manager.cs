@@ -80,7 +80,7 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT (");
+                sb.Append("WITH total AS (");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
@@ -93,12 +93,17 @@ namespace CarLeasingViewer
                 curentSettings.SelectedDBSearchType = DBSearchType.Curent;
                 sb.Append(GetAvailableMonthesQuery(curentSettings, year));
                 sb.Append(")");
+                sb.Append(" SELECT DISTINCT * FROM total");
+                sb.Append(" ORDER BY Year");
 
                 sql = sb.ToString();
             }
             else
+            {
                 sql = GetAvailableMonthesQuery(settings, year);
 
+                sql += " ORDER BY Year";
+            }
             try
             {
                 using (var con = new SqlConnection(m_connectionString))
@@ -166,7 +171,7 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT (");
+                sb.Append("WITH total AS (");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
@@ -179,6 +184,7 @@ namespace CarLeasingViewer
                 curentSettings.SelectedDBSearchType = DBSearchType.Curent;
                 sb.Append(GetBusinessByMonthQuery(month, curentSettings, region));
                 sb.Append(")");
+                sb.Append(" SELECT DISTINCT * FROM total");
 
                 sql = sb.ToString();
             }
@@ -298,7 +304,7 @@ namespace CarLeasingViewer
             if (settings.SelectedDBSearchType == DBSearchType.All)
             {
                 var sb = new StringBuilder(1000);
-                sb.Append("SELECT DISTINCT ").Append("(");
+                sb.Append("WITH total AS ").Append("(");
                 //настройки с поиском старых заказов
                 var oldSettings = new SearchSettings(settings);
                 oldSettings.SelectedDBSearchType = DBSearchType.Old;
@@ -312,7 +318,7 @@ namespace CarLeasingViewer
                 curentSettings.SelectedDBSearchType = DBSearchType.Curent;
                 sb.Append(GetBusinessByMonthesQuery(start, end, curentSettings, region));
                 sb.Append(")");//.Append(" ORDER BY [Document No_]");
-
+                sb.Append(" SELECT DISTINCT * FROM total");
                 sql = sb.ToString();
             }
             else
@@ -372,7 +378,7 @@ namespace CarLeasingViewer
                                 b.Comment = (string)reader["Comment"];
                                 b.Monthes = Month.GetMonthes(b.DateStart, b.DateEnd);
                                 b.Saler = (string)reader["Saler"];
-                                b.Blocked = (bool)reader["Blocked"];
+                                b.Blocked = ((byte)reader["Blocked"]) > 0;
 
                                 cb.Add(b);
                             }
@@ -468,9 +474,7 @@ namespace CarLeasingViewer
                         	AND i.IsService = 0
                         	AND i.IsFranchise = 0
                             AND h.[Date Begin] IS NOT NULL
-                            {(year > 0 ? ("AND YEAR(h.[Date Begin]) = " + year.ToString()) : "")}
-                        
-                        ORDER BY Year";
+                            {(year > 0 ? ("AND YEAR(h.[Date Begin]) = " + year.ToString()) : "")} ";
         }
 
         String GetBusinessByMonthesQuery(Month start, Month end, SearchSettings settings = null, Region region = null)

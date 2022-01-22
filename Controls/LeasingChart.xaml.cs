@@ -40,10 +40,12 @@ namespace CarLeasingViewer.Controls
         /// Управление отрисовкой Layout'ов строк
         /// </summary>
         CanvasRowLayoutDrawManager m_rowLayoutM;
+        CanvasColumnLayoutDrawManager m_columnLayoutM;
         /// <summary>
         /// Управление абстракциями строк
         /// </summary>
         RowManager m_rowM;
+        ColumnManager m_columnM;
         /// <summary>
         /// Управление подсветкой
         /// </summary>
@@ -67,11 +69,13 @@ namespace CarLeasingViewer.Controls
         /// Layout'ы строк на графике
         /// </summary>
         public CanvasRowLayoutDrawManager RowLayoutDrawer { get { return m_rowLayoutM; } }
+        public CanvasColumnLayoutDrawManager ColumnLayoutDrawer { get { return m_columnLayoutM; } }
 
         /// <summary>
         /// Строки на графике
         /// </summary>
         public RowManager RowManager { get { return m_rowM; } }
+        public ColumnManager ColumnManager { get { return m_columnM; } }
 
         public HightlightManager HightlightManager { get { return m_hightlightM; } }
 
@@ -315,8 +319,10 @@ namespace CarLeasingViewer.Controls
             m_barM = new CanvasBarDrawManager(this);
             m_textM = new CanvasTextDrawManager(this);
             m_rowLayoutM = new CanvasRowLayoutDrawManager(this);
+            m_columnLayoutM = new CanvasColumnLayoutDrawManager(this);
             //важно!!! подписывать крайним - зависим (подписывается) от других
             m_rowM = new RowManager(this);
+            m_columnM = new ColumnManager(this);
             m_hightlightM = new HightlightManager(this);
             m_tooltipM = new TooltipManager(this);
 
@@ -411,7 +417,7 @@ namespace CarLeasingViewer.Controls
             }
         }
 
-        private void M_rowM_RowSelectionChanged(RowManager.Row row)
+        private void M_rowM_RowSelectionChanged(Row row)
         {
             RowSelectionChanged?.Invoke(row);
         }

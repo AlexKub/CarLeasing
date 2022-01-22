@@ -1,7 +1,6 @@
 ﻿using CarLeasingViewer.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CarLeasingViewer.Models

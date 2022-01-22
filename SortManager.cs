@@ -64,9 +64,9 @@ namespace CarLeasingViewer
         /// <param name="date">Искомая дата</param>
         /// <param name="start">Запустить задачу</param>
         /// <returns>Возвращает задачу по выборке</returns>
-        public static Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>> SelectByDay(Controls.LeasingChart chart, DateTime date, bool start = true)
+        public static Task<IEnumerable<Controls.LeasingChartManagers.Row>> SelectByDay(Controls.LeasingChart chart, DateTime date, bool start = true)
         {
-            var task = new Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>>(() =>
+            var task = new Task<IEnumerable<Controls.LeasingChartManagers.Row>>(() =>
             {
                 return chart.RowManager.Rows
                 .Where(cb => cb.Bars.Any(b => b?.Model?.Leasing.Include(date) ?? false));
@@ -86,9 +86,9 @@ namespace CarLeasingViewer
         /// <param name="dateEnd">Дата окончания периода</param>
         /// <param name="start">Запустить задачу</param>
         /// <returns>Возвращает задачу по выборке</returns>
-        public static Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>> SelectByDays(Controls.LeasingChart chart, DateTime dateStart, DateTime dateEnd, bool start = true)
+        public static Task<IEnumerable<Controls.LeasingChartManagers.Row>> SelectByDays(Controls.LeasingChart chart, DateTime dateStart, DateTime dateEnd, bool start = true)
         {
-            var task = new Task<IEnumerable<Controls.LeasingChartManagers.RowManager.Row>>(() =>
+            var task = new Task<IEnumerable<Controls.LeasingChartManagers.Row>>(() =>
             {
                 return chart.RowManager.Rows
                 .Where(cb => cb.Bars.Any(b => b?.Model?.Leasing.Cross(dateStart, dateEnd) ?? false));

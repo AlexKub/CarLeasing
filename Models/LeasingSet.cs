@@ -336,7 +336,7 @@ namespace CarLeasingViewer.Models
 
             if (rows != null && rows.Count() > 0)
             {
-                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                var sorted = new List<Controls.LeasingChartManagers.Row>();
                 foreach (var row in rows)
                 {
                     if (row.Bars.Count > 0)
@@ -374,7 +374,7 @@ namespace CarLeasingViewer.Models
 
             if (rows != null && rows.Count() > 0)
             {
-                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                var sorted = new List<Controls.LeasingChartManagers.Row>();
 
                 var splittedPreiods = new Dictionary<int, TimePeriod>();
 
@@ -466,7 +466,7 @@ namespace CarLeasingViewer.Models
             SetSorted(null);
         }
 
-        void SetSorted(IEnumerable<Controls.LeasingChartManagers.RowManager.Row> rows)
+        void SetSorted(IEnumerable<Controls.LeasingChartManagers.Row> rows)
         {
             var cars = new List<CarModel>();
             var leasings = new List<LeasingElementModel>();
@@ -647,7 +647,7 @@ namespace CarLeasingViewer.Models
 
             public List<LeasingElementModel> Leasings { get; private set; }
 
-            public List<Controls.LeasingChartManagers.RowManager.Row> Rows { get; private set; }
+            public List<Controls.LeasingChartManagers.Row> Rows { get; private set; }
 
             public BaseSet(List<CarModel> cars, List<CarCommentModel> comments, List<LeasingElementModel> leasings)
             {
@@ -656,11 +656,11 @@ namespace CarLeasingViewer.Models
                 Leasings = leasings;
 
                 var rowIndex = 0;
-                var rows = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                var rows = new List<Controls.LeasingChartManagers.Row>();
                 var rowLeasings = new List<LeasingElementModel>();
                 foreach (var car in Cars)
                 {
-                    var newRow = new Controls.LeasingChartManagers.RowManager.Row(rowIndex)
+                    var newRow = new Controls.LeasingChartManagers.Row(rowIndex)
                     {
                         Car = car,
                         Comment = comments[rowIndex]

@@ -116,11 +116,11 @@
                         <!--Сетки занятости по месяцам-->
                         <Border Grid.Row="2" Style="{StaticResource StandartBorder}">
                             <Grid>
-                                <ScrollViewer >
+                                <ScrollViewer>
                                     <ItemsControl ItemsSource="{Binding Leasings}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <controls:MonthBusinessGrid Margin="0 0 5 10" MaxHeight="500" 
+                                                <controls:MonthBusinessGrid Margin="-2 0 5 10" MaxHeight="500" 
                                                                             NameSearchText="{Binding ElementName=test, Path=Text, UpdateSourceTrigger=PropertyChanged}"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>

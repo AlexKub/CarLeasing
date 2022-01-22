@@ -1,6 +1,7 @@
 ﻿using CarLeasingViewer.Models;
 using RTCManifestGenerator.Commands;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace CarLeasingViewer.ViewModels
@@ -20,6 +21,24 @@ namespace CarLeasingViewer.ViewModels
         /// Возвращает или задаёт Месяц окончания периода осмотра
         /// </summary>
         public Month ToMonth { get { return m_ToMonth; } set { m_ToMonth = value; OnPropertyChanged(); } }
+
+        private IEnumerable<int> m_AvailableYears;
+        /// <summary>
+        /// Возвращает или задаёт список годов, доступныхз для выбора
+        /// </summary>
+        public IEnumerable<int> AvailableYears
+        {
+            get { return m_AvailableYears; }
+            set
+            {
+                if (m_AvailableYears == value)
+                    return;
+
+                m_AvailableYears = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Общие настройки поиска
@@ -125,6 +144,8 @@ namespace CarLeasingViewer.ViewModels
                     ToMonth = set.Monthes[set.Monthes.Count - 1].Month;
                     break;
             }
+
+            AvailableYears = set.Monthes.Where(m => m.Month != null).Select(m => m.Month.Year).Distinct().ToList();
 
             App.CurrentSet = set;
 

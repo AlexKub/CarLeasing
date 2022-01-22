@@ -171,7 +171,7 @@ namespace CarLeasingViewer.Views
             }
         }
 
-        private void LeasingChart_RowSelectionChanged(RowManager.Row row)
+        private void LeasingChart_RowSelectionChanged(Row row)
         {
             var vm = DataContext as LeasingViewViewModel;
 

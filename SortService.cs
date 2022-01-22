@@ -6,9 +6,9 @@ namespace CarLeasingViewer
 {
     public class SortService
     {
-        readonly List<Controls.LeasingChartManagers.RowManager.Row> m_sortedRows = new List<Controls.LeasingChartManagers.RowManager.Row>();
+        readonly List<Controls.LeasingChartManagers.Row> m_sortedRows = new List<Controls.LeasingChartManagers.Row>();
 
-        readonly List<Controls.LeasingChartManagers.RowManager.Row> m_totalRows = new List<Controls.LeasingChartManagers.RowManager.Row>();
+        readonly List<Controls.LeasingChartManagers.Row> m_totalRows = new List<Controls.LeasingChartManagers.Row>();
 
         /// <summary>
         /// Сортировка моделей по дате
@@ -50,7 +50,7 @@ namespace CarLeasingViewer
 
             if (rows != null && rows.Count() > 0)
             {
-                var sorted = new List<Controls.LeasingChartManagers.RowManager.Row>();
+                var sorted = new List<Controls.LeasingChartManagers.Row>();
                 foreach (var row in rows)
                 {
                     if (row.Bars.Count > 0)
