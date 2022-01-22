@@ -99,7 +99,13 @@ namespace CarLeasingViewer.Controls
             PropertyChangedCallback = (s, e) =>
             {
                 var _this = s as PeriodSelector;
+
                 _this.RefreshSelectedIndex(Period.To);
+
+                if (e.NewValue != null)
+                {
+                    _this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: (int)e.NewValue);
+                }
             }
         });
         public int ToYear { get { return (int)GetValue(dp_ToYearProperty); } set { SetValue(dp_ToYearProperty, value); } }
