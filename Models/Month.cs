@@ -14,6 +14,8 @@ namespace CarLeasingViewer.Models
 
         public IEnumerable<WeekDay> Days => m_days;
 
+        public int Index { get; private set; }
+
         /// <summary>
         /// Получение даты в месяце по индексу (Индекс начинается с 1)
         /// </summary>
@@ -142,6 +144,8 @@ namespace CarLeasingViewer.Models
             Number = (int)month;
             DayCount = GetDayCount(month, year);
             m_days = GetDays().ToList();
+
+            Index = (Number * 10000) + year;
         }
         public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
 
@@ -513,14 +517,14 @@ namespace CarLeasingViewer.Models
             var m = obj as Month;
 
             if (m != null)
-                return m.Value == this.Value && m.Year == this.Year;
+                return m.Index == this.Index;
             else
                 return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            return Year + Number;
+            return Index;
         }
 
         public static bool operator >(Month m1, Month m2)
@@ -528,11 +532,7 @@ namespace CarLeasingViewer.Models
             if (m1 == null || m2 == null)
                 return false;
 
-            if (m1.Year == m2.Year)
-                return m1.Number > m2.Number;
-
-            else
-                return m1.Year > m2.Year;
+            return m1.Index > m2.Index;
         }
 
         public static bool operator <(Month m1, Month m2)
@@ -540,11 +540,7 @@ namespace CarLeasingViewer.Models
             if (m1 == null || m2 == null)
                 return false;
 
-            if (m1.Year == m2.Year)
-                return m1.Number < m2.Number;
-
-            else
-                return m1.Year < m2.Year;
+            return m1.Index < m2.Index;
         }
 
         public static bool operator >=(Month m1, Month m2)
@@ -552,11 +548,7 @@ namespace CarLeasingViewer.Models
             if (m1 == null || m2 == null)
                 return false;
 
-            if (m1.Year == m2.Year)
-                return m1.Number >= m2.Number;
-
-            else
-                return m1.Year >= m2.Year;
+            return m1.Index >= m2.Index;
         }
 
         public static bool operator <=(Month m1, Month m2)
@@ -564,11 +556,7 @@ namespace CarLeasingViewer.Models
             if (m1 == null || m2 == null)
                 return false;
 
-            if (m1.Year == m2.Year)
-                return m1.Number <= m2.Number;
-
-            else
-                return m1.Year <= m2.Year;
+            return m1.Index <= m2.Index;
         }
 
         public static bool operator ==(Month m1, Month m2)
@@ -579,7 +567,7 @@ namespace CarLeasingViewer.Models
             if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
                 return false;
 
-            return m1.Year == m2.Year && m1.Number == m2.Number;
+            return m1.Index == m2.Index;
         }
 
         public static bool operator !=(Month m1, Month m2)
@@ -590,7 +578,7 @@ namespace CarLeasingViewer.Models
             if (ReferenceEquals(m1, null) || ReferenceEquals(m2, null))
                 return true;
 
-            return m1.Number != m2.Number || m1.Year != m2.Year;
+            return m1.Index != m2.Index;
         }
     }
 }
