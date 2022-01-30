@@ -131,7 +131,7 @@ namespace CarLeasingViewer.ViewModels
             if (set == null)
                 return;
 
-            switch(set.Monthes.Count)
+            /*switch(set.Monthes.Count)
             {
                 case 0:
                     break;
@@ -146,7 +146,7 @@ namespace CarLeasingViewer.ViewModels
             }
 
             AvailableYears = set.Monthes.Where(m => m.Month != null).Select(m => m.Month.Year).Distinct().ToList();
-
+            */
             App.CurrentSet = set;
 
             if (m_Window != null)

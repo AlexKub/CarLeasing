@@ -89,6 +89,17 @@ namespace CarLeasingViewer.Controls
             {
                 var _this = s as PeriodSelector;
                 _this.RefreshSelectedIndex(Period.From);
+
+                if (e.NewValue != null)
+                {
+                    var selectedYear = (int)e.NewValue;
+                    
+                    var monthes = GetLeasingMonthes(_this.LeasingSet, selectedYear);
+
+                    _this.FromMonthes = monthes;
+
+                    _this.FromMonth = monthes.First();
+                }
             }
         });
         public int FromYear { get { return (int)GetValue(dp_FromYearProperty); } set { SetValue(dp_FromYearProperty, value); } }
@@ -104,7 +115,13 @@ namespace CarLeasingViewer.Controls
 
                 if (e.NewValue != null)
                 {
-                    _this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: (int)e.NewValue);
+                    var selectedYear = (int)e.NewValue;
+
+                    var monthes = GetLeasingMonthes(_this.LeasingSet, selectedYear);
+
+                    _this.ToMonthes = monthes;
+
+                    _this.ToMonth = monthes.Last();
                 }
             }
         });
@@ -122,7 +139,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (_this.FromYear != month.Year)
                     {
-                        _this.FromMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
+                        //_this.FromMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
 
                         _this.RefreshSelectedIndex(Period.From);
 
@@ -147,7 +164,7 @@ namespace CarLeasingViewer.Controls
                 {
                     if (_this.ToYear != month.Year)
                     {
-                        _this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
+                        //_this.ToMonthes = DB_Manager.Default.GetAvailableMonthes(year: month.Year);
 
                         _this.RefreshSelectedIndex(Period.To);
 
@@ -159,6 +176,47 @@ namespace CarLeasingViewer.Controls
             }
         });
         public Month ToMonth { get { return (Month)GetValue(dp_ToMonthProperty); } set { SetValue(dp_ToMonthProperty, value); } }
+
+        public LeasingSet LeasingSet { get { return (LeasingSet)GetValue(dp_LeasingSetProperty); } set { SetValue(dp_LeasingSetProperty, value); } }
+
+        public static readonly DependencyProperty dp_LeasingSetProperty = DependencyProperty.Register(nameof(LeasingSet), typeof(LeasingSet), typeof(PeriodSelector), new FrameworkPropertyMetadata
+        {
+            DefaultValue = default(LeasingSet),
+            PropertyChangedCallback = (s, e) =>
+            {
+                var _this = s as PeriodSelector;
+                var newSet = e.NewValue as LeasingSet;
+
+                if (newSet != null)
+                {
+                    switch (newSet.Monthes.Count)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            _this.FromMonth = newSet.Monthes[0].Month;
+                            _this.ToMonth = newSet.Monthes[0].Month;
+
+                            _this.FromMonthes = new[] { _this.FromMonth };
+                            _this.ToMonthes = new[] { _this.ToMonth };
+                            break;
+                        default:
+                            _this.FromMonth = newSet.Monthes[0].Month;
+                            _this.ToMonth = newSet.Monthes[newSet.Monthes.Count - 1].Month;
+
+                            var setMonthes = newSet.Monthes.Where(m => m.Month != null).Select(m => m.Month).Distinct().OrderBy(m => m.DayCount).ToList();
+
+                            var years = setMonthes.Select(m => m.Year).Distinct().OrderBy(y => y).ToList();
+
+                            _this.FromMonthes = setMonthes.Where(m => m.Year == years.First()).ToList();
+                            _this.ToMonthes = setMonthes.Where(m => m.Year == years.Last()).ToList();
+                            break;
+                    }
+
+                    _this.AvailableYears = newSet.Monthes.Where(m => m.Month != null).Select(m => m.Month.Year).Distinct().ToList();
+                }
+            }
+        });
 
         #endregion
 
@@ -261,6 +319,22 @@ namespace CarLeasingViewer.Controls
                 if (ToYear != ToMonth.Year)
                     ToYear = ToMonth.Year;
             }
+        }
+
+        static List<Month> GetLeasingMonthes(LeasingSet set)
+        {
+            if (set == null)
+                return new List<Month>();
+
+            return set.Monthes.Where(m => m.Month != null).Select(m => m.Month).Distinct().OrderBy(m => m.Index).ToList();
+        }
+
+        static List<Month> GetLeasingMonthes(LeasingSet set, int year)
+        {
+            if (set == null)
+                return new List<Month>();
+
+            return set.Monthes.Where(m => m.Month != null && m.Month.Year == year).Select(m => m.Month).Distinct().OrderBy(m => m.Index).ToList();
         }
 
         private enum Period
