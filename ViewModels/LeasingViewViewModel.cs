@@ -158,6 +158,9 @@ namespace CarLeasingViewer.ViewModels
 
         public void Update()
         {
+            FromMonth = m_Window.PeriodSelector.FromMonth;
+            ToMonth = m_Window.PeriodSelector.ToMonth;
+
             if (FromMonth == null || ToMonth == null)
                 return;
 

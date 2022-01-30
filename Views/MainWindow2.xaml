@@ -79,7 +79,7 @@
             </Grid.ColumnDefinitions>
 
             <!--Выбор срока/периода просмотра-->
-            <controls:PeriodSelector Margin="5" HorizontalAlignment="Left" 
+            <controls:PeriodSelector x:Name="PeriodSelector" Margin="5" HorizontalAlignment="Left" 
                                      ShowAction="{Binding SortPeriodCommand}"
                                      LeasingSet="{Binding LeasingSet}"/>
 
