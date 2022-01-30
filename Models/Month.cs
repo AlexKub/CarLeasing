@@ -145,7 +145,7 @@ namespace CarLeasingViewer.Models
             DayCount = GetDayCount(month, year);
             m_days = GetDays().ToList();
 
-            Index = (Number * 10000) + year;
+            Index = (year * 100) + Number;
         }
         public Month(int year, int monthIndex) : this(year, (Monthes)monthIndex) { }
 
